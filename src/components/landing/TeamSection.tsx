@@ -21,7 +21,7 @@ const team = [
   {
     name: "Aliza Fayyaz",
     role: "UI/UX Designer",
-    image: "/team/member4.jpg",
+    image: "/Aliza.jpg",
   },
   {
     name: "Mujtaba Ahmad",
@@ -31,7 +31,7 @@ const team = [
   {
     name: "Uzair Ahmad",
     role: "BUSINESS DEVELOPMENT MANAGER",
-    image: "/team/member6.jpg",
+    image: "/Uzair.png",
   }
 ];
 
