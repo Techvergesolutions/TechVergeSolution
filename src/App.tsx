@@ -4,10 +4,18 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+
+// Pages
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import TermsAndConditions from "./pages/TermsAndConditions";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+
+// Components
 import Loader from "./components/ui/Loader";
+import { CookieConsent } from "./components/ui/CookieConsent";
+import ScrollToTop from "./components/ui/ScrollToTop";
 
 const queryClient = new QueryClient();
 
@@ -15,33 +23,41 @@ const App = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    // This simulates the initial loading phase of the site
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 2000);
-
     return () => clearTimeout(timer);
   }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        {/* AnimatePresence allows the Loader to fade out before being removed */}
         <AnimatePresence mode="wait">
           {isLoading ? (
             <Loader key="loader" />
           ) : (
-            <div key="content">
+            <motion.div 
+              key="content"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
               <Toaster />
-              <Sonner />
+              <Sonner theme="dark" position="bottom-right" closeButton />
+              
+              {/* This will now trigger immediately upon Loader exit */}
+              <CookieConsent />
+
               <BrowserRouter>
+                <ScrollToTop />
                 <Routes>
                   <Route path="/" element={<Index />} />
-                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="/terms" element={<TermsAndConditions />} />
+                  <Route path="/privacy" element={<PrivacyPolicy />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </BrowserRouter>
-            </div>
+            </motion.div>
           )}
         </AnimatePresence>
       </TooltipProvider>
