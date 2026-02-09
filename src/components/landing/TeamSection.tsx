@@ -25,7 +25,7 @@ const team = [
   },
   {
     name: "Mujtaba Ahmad",
-    role: "QUALITY ASSURANCE ENGINEER",
+    role: "Full Stack Developer",
     image: "/Mujtaba.png",
   },
   {
