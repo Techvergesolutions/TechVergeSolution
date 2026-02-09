@@ -30,7 +30,7 @@ const team = [
   },
   {
     name: "Uzair Ahmad",
-    role: "BUSINESS DEVELOPMENT MANAGER",
+    role: "Quality Assurance Engineer",
     image: "/Uzair.png",
   }
 ];
