@@ -1,237 +1,175 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import emailjs from "@emailjs/browser";
 import { AnimatedSection } from "../ui/AnimatedSection";
-import { 
-  Send, 
-  MapPin, 
-  Mail, 
-  Phone, 
-  Globe2, 
-  ArrowRight,
-  CheckCircle
-} from "lucide-react";
+import { Send, MapPin, Mail, Phone, CheckCircle, Loader2, Globe2 } from "lucide-react";
 
 export const ContactSection = () => {
-  const formRef = useRef<HTMLFormElement>(null);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    company: "",
-    message: "",
-  });
+  const [status, setStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [formData, setFormData] = useState({ name: "", email: "", company: "", message: "" });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    
+    if (!formData.name.trim()) newErrors.name = "Name is required";
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!emailRegex.test(formData.email)) {
+      newErrors.email = "Enter a valid email (e.g., name@domain.com)";
+    }
+    if (formData.message.trim().length < 10) {
+      newErrors.message = "Please provide more details (min 10 characters)";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateForm()) return;
+    setStatus('submitting');
 
-    // Your EmailJS Credentials
-    const SERVICE_ID = "service_4xqq7av";
-    const TEMPLATE_ID = "template_p2p5fin";
-    const PUBLIC_KEY = "isKcVKE2NuG3tL8XH";
+    try {
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          from_name: formData.name,
+          reply_to: formData.email,
+          company_name: formData.company,
+          message: formData.message,
+        }),
+      });
 
-    if (formRef.current) {
-      emailjs
-        .sendForm(SERVICE_ID, TEMPLATE_ID, formRef.current, PUBLIC_KEY)
-        .then(
-  () => {
-    setIsSubmitted(true);
-    setTimeout(() => setIsSubmitted(false), 3000);
-    setFormData({ name: "", email: "", company: "", message: "" });
-  },
-  (error) => {
-    // This will tell you EXACTLY what EmailJS is complaining about
-    alert("Error: " + error.text); 
-  }
-);
+      if (response.ok) {
+        setStatus('success');
+        setFormData({ name: "", email: "", company: "", message: "" });
+        setTimeout(() => setStatus('idle'), 5000);
+      } else {
+        const err = await response.json();
+        throw new Error(err.error || 'Failed to send');
+      }
+    } catch (error: any) {
+      alert(error.message);
+      setStatus('idle');
     }
   };
 
   return (
-    <section id="contact" className="relative py-32 overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 grid-pattern opacity-20" />
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-secondary/10 rounded-full blur-3xl" />
-
+    <section id="contact" className="relative py-32 overflow-hidden bg-background">
+      <div className="absolute inset-0 grid-pattern opacity-10" />
+      
       <div className="section-container relative z-10">
         <AnimatedSection className="text-center mb-16">
-          <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-4 block">
-            Get Started
-          </span>
+          <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-4 block">Get Started</span>
           <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
             Let's Build <span className="text-gradient">Together</span>
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Ready to transform your business with cutting-edge technology?
-            Get in touch and let's discuss how we can help you scale.
+          <p className="text-muted-foreground max-w-2xl mx-auto">
+            Ready to transform your business with cutting-edge technology? Get in touch.
           </p>
         </AnimatedSection>
 
         <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
-          {/* Contact Form */}
+          {/* Form Side */}
           <AnimatedSection delay={0.1}>
-            <motion.form
-              ref={formRef}
-              onSubmit={handleSubmit}
-              className="glass-card p-8 rounded-2xl space-y-6"
-            >
+            <form onSubmit={handleSubmit} className="glass-card p-8 rounded-2xl space-y-5 border border-border/50">
               <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="text-sm font-medium text-foreground mb-2 block">
-                    Your Name
-                  </label>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Your Name</label>
                   <input
                     type="text"
-                    name="from_name" // Variable name for EmailJS template
-                    required
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-4 py-3 rounded-lg bg-muted border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-foreground placeholder:text-muted-foreground"
+                    className={`w-full px-4 py-3 rounded-lg bg-muted border ${errors.name ? 'border-red-500' : 'border-border'} focus:border-primary outline-none transition-all`}
                     placeholder="John Doe"
                   />
+                  {errors.name && <p className="text-red-500 text-xs">{errors.name}</p>}
                 </div>
-                <div>
-                  <label className="text-sm font-medium text-foreground mb-2 block">
-                    Email Address
-                  </label>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Email Address</label>
                   <input
                     type="email"
-                    name="reply_to" // Variable name for EmailJS template
-                    required
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-4 py-3 rounded-lg bg-muted border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-foreground placeholder:text-muted-foreground"
+                    className={`w-full px-4 py-3 rounded-lg bg-muted border ${errors.email ? 'border-red-500' : 'border-border'} focus:border-primary outline-none transition-all`}
                     placeholder="john@company.com"
                   />
+                  {errors.email && <p className="text-red-500 text-xs">{errors.email}</p>}
                 </div>
               </div>
 
-              <div>
-                <label className="text-sm font-medium text-foreground mb-2 block">
-                  Company Name
-                </label>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Company Name</label>
                 <input
                   type="text"
-                  name="company_name" // Variable name for EmailJS template
                   value={formData.company}
                   onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                  className="w-full px-4 py-3 rounded-lg bg-muted border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-foreground placeholder:text-muted-foreground"
+                  className="w-full px-4 py-3 rounded-lg bg-muted border border-border focus:border-primary outline-none transition-all"
                   placeholder="Your Company (optional)"
                 />
               </div>
 
-              <div>
-                <label className="text-sm font-medium text-foreground mb-2 block">
-                  Project Details
-                </label>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Project Details</label>
                 <textarea
-                  name="message" // Variable name for EmailJS template
-                  required
                   rows={4}
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  className="w-full px-4 py-3 rounded-lg bg-muted border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-foreground placeholder:text-muted-foreground resize-none"
-                  placeholder="Tell us about your project, goals, and timeline..."
+                  className={`w-full px-4 py-3 rounded-lg bg-muted border ${errors.message ? 'border-red-500' : 'border-border'} focus:border-primary outline-none transition-all resize-none`}
+                  placeholder="Tell us about your project goals..."
                 />
+                {errors.message && <p className="text-red-500 text-xs">{errors.message}</p>}
               </div>
 
               <motion.button
                 type="submit"
-                className="w-full btn-primary py-4 rounded-xl text-primary-foreground font-semibold text-lg flex items-center justify-center gap-2 group"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                disabled={isSubmitted}
+                className="w-full btn-primary py-4 rounded-xl text-primary-foreground font-semibold flex items-center justify-center gap-2"
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
+                disabled={status !== 'idle'}
               >
-                {isSubmitted ? (
-                  <>
-                    <CheckCircle className="w-5 h-5" />
-                    Message Sent!
-                  </>
-                ) : (
-                  <>
-                    <Send className="w-5 h-5" />
-                    Send Message
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </>
-                )}
+                {status === 'submitting' ? <Loader2 className="animate-spin" /> : status === 'success' ? <CheckCircle /> : <Send size={18} />}
+                {status === 'submitting' ? 'Sending...' : status === 'success' ? 'Message Sent!' : 'Send Message'}
               </motion.button>
-            </motion.form>
+            </form>
           </AnimatedSection>
 
-          {/* Contact Info */}
-          <AnimatedSection delay={0.2} direction="right">
-            <div className="space-y-8">
-              <div>
-                <h3 className="font-display text-2xl font-bold mb-4">
-                  Why Choose <span className="text-gradient">Techverge Solution</span>?
-                </h3>
-                <ul className="space-y-4">
-                  {[
-                    "Expert team with 5+ years of enterprise experience",
-                    "Proven track record with 200+ successful projects",
-                    "Dedicated support and maintenance packages",
-                    "Scalable solutions that grow with your business",
-                    "Transparent pricing with no hidden costs",
-                  ].map((item, index) => (
-                    <motion.li
-                      key={index}
-                      initial={{ opacity: 0, x: 20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      className="flex items-start gap-3 text-muted-foreground"
-                    >
-                      <CheckCircle className="w-5 h-5 text-secondary mt-0.5 flex-shrink-0" />
-                      {item}
-                    </motion.li>
-                  ))}
-                </ul>
+          {/* Content Side */}
+          <div className="space-y-8">
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold">Why Choose <span className="text-primary">Techverge Solution</span>?</h3>
+              <ul className="space-y-4">
+                {["5+ years of enterprise experience", "200+ successful projects", "Dedicated support packages", "Scalable business solutions", "Transparent pricing"].map((item, i) => (
+                  <li key={i} className="flex items-center gap-3">
+                    <CheckCircle className="text-primary w-5 h-5" />
+                    <span className="text-muted-foreground">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="glass-card p-8 rounded-2xl space-y-6 border border-border/50">
+              <div className="flex items-center gap-4">
+                <MapPin className="text-primary" />
+                <p className="text-sm">Albuquerque, New Mexico, USA</p>
               </div>
-
-              <div className="glass-card p-6 rounded-2xl space-y-4">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <MapPin className="w-6 h-6 text-primary" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-foreground">Location</h4>
-                    <p className="text-muted-foreground text-sm">Albuquerque, New Mexico, USA</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <Mail className="w-6 h-6 text-primary" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-foreground">Email</h4>
-                    <p className="text-muted-foreground text-sm">techvergesolutions@gmail.com</p>
-                    <p className="text-muted-foreground text-sm">solutiontechverge@gmail.com</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <Phone className="w-6 h-6 text-primary" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-foreground">Phone</h4>
-                    <p className="text-muted-foreground text-sm">+1 (505) 523-1081</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center">
-                    <Globe2 className="w-6 h-6 text-secondary" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-foreground">Serving Worldwide</h4>
-                    <p className="text-muted-foreground text-sm">Available 24/7 for global clients</p>
-                  </div>
-                </div>
+              <div className="flex items-center gap-4">
+                <Mail className="text-primary" />
+                <p className="text-sm">techvergsolutions@gmail.com</p>
+              </div>
+              <div className="flex items-center gap-4">
+                <Phone className="text-primary" />
+                <p className="text-sm">+1 (505) 523-1081</p>
+              </div>
+              <div className="pt-6 border-t border-border flex items-center gap-4">
+                <Globe2 className="text-secondary" />
+                <p className="text-sm font-medium">Serving Global Clients 24/7</p>
               </div>
             </div>
-          </AnimatedSection>
+          </div>
         </div>
       </div>
     </section>
