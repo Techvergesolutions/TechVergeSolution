@@ -12,14 +12,21 @@ export const ContactSection = () => {
     const newErrors: Record<string, string> = {};
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     
+    const blockedDomains = ['test.com', 'example.com', 'abc.com', 'none.com'];
+    const domain = formData.email.split('@')[1]?.toLowerCase();
+
     if (!formData.name.trim()) newErrors.name = "Name is required";
+    
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
     } else if (!emailRegex.test(formData.email)) {
-      newErrors.email = "Enter a valid email (e.g., name@domain.com)";
+      newErrors.email = "Please enter a valid email address";
+    } else if (blockedDomains.includes(domain)) {
+      newErrors.email = "Please use a real email address (test domains are blocked)";
     }
+
     if (formData.message.trim().length < 10) {
-      newErrors.message = "Please provide more details (min 10 characters)";
+      newErrors.message = "Please provide a bit more detail (min. 10 characters)";
     }
 
     setErrors(newErrors);
@@ -60,7 +67,6 @@ export const ContactSection = () => {
   return (
     <section id="contact" className="relative py-32 overflow-hidden bg-background">
       <div className="absolute inset-0 grid-pattern opacity-10" />
-      
       <div className="section-container relative z-10">
         <AnimatedSection className="text-center mb-16">
           <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-4 block">Get Started</span>
@@ -68,14 +74,13 @@ export const ContactSection = () => {
             Let's Build <span className="text-gradient">Together</span>
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Ready to transform your business with cutting-edge technology? Get in touch.
+            Ready to transform your business with cutting-edge technology? Get in touch and let's discuss how we can help you scale.
           </p>
         </AnimatedSection>
 
         <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
-          {/* Form Side */}
           <AnimatedSection delay={0.1}>
-            <form onSubmit={handleSubmit} className="glass-card p-8 rounded-2xl space-y-5 border border-border/50">
+            <form onSubmit={handleSubmit} className="glass-card p-8 rounded-2xl space-y-5 border border-border/50 bg-black/20 backdrop-blur-sm">
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Your Name</label>
@@ -84,9 +89,9 @@ export const ContactSection = () => {
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className={`w-full px-4 py-3 rounded-lg bg-muted border ${errors.name ? 'border-red-500' : 'border-border'} focus:border-primary outline-none transition-all`}
-                    placeholder="John Doe"
+                    placeholder="Name"
                   />
-                  {errors.name && <p className="text-red-500 text-xs">{errors.name}</p>}
+                  {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Email Address</label>
@@ -95,9 +100,9 @@ export const ContactSection = () => {
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className={`w-full px-4 py-3 rounded-lg bg-muted border ${errors.email ? 'border-red-500' : 'border-border'} focus:border-primary outline-none transition-all`}
-                    placeholder="john@company.com"
+                    placeholder="Email"
                   />
-                  {errors.email && <p className="text-red-500 text-xs">{errors.email}</p>}
+                  {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
                 </div>
               </div>
 
@@ -108,7 +113,7 @@ export const ContactSection = () => {
                   value={formData.company}
                   onChange={(e) => setFormData({ ...formData, company: e.target.value })}
                   className="w-full px-4 py-3 rounded-lg bg-muted border border-border focus:border-primary outline-none transition-all"
-                  placeholder="Your Company (optional)"
+                  placeholder="Company Name (Optional)"
                 />
               </div>
 
@@ -119,14 +124,14 @@ export const ContactSection = () => {
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                   className={`w-full px-4 py-3 rounded-lg bg-muted border ${errors.message ? 'border-red-500' : 'border-border'} focus:border-primary outline-none transition-all resize-none`}
-                  placeholder="Tell us about your project goals..."
+                  placeholder="Tell us about your project, goals, and timeline..."
                 />
-                {errors.message && <p className="text-red-500 text-xs">{errors.message}</p>}
+                {errors.message && <p className="text-red-500 text-xs mt-1">{errors.message}</p>}
               </div>
 
               <motion.button
                 type="submit"
-                className="w-full btn-primary py-4 rounded-xl text-primary-foreground font-semibold flex items-center justify-center gap-2"
+                className="w-full py-4 rounded-xl text-primary-foreground font-semibold flex items-center justify-center gap-2 bg-primary hover:opacity-90 transition-opacity"
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.99 }}
                 disabled={status !== 'idle'}
@@ -137,36 +142,58 @@ export const ContactSection = () => {
             </form>
           </AnimatedSection>
 
-          {/* Content Side */}
           <div className="space-y-8">
             <div className="space-y-6">
               <h3 className="text-2xl font-bold">Why Choose <span className="text-primary">Techverge Solution</span>?</h3>
               <ul className="space-y-4">
-                {["5+ years of enterprise experience", "200+ successful projects", "Dedicated support packages", "Scalable business solutions", "Transparent pricing"].map((item, i) => (
+                {["Expert team with 5+ years of enterprise experience", "Proven track record with 200+ successful projects", "Dedicated support and maintenance packages", "Scalable solutions that grow with your business", "Transparent pricing with no hidden costs"].map((item, i) => (
                   <li key={i} className="flex items-center gap-3">
-                    <CheckCircle className="text-primary w-5 h-5" />
+                    <CheckCircle className="text-primary w-5 h-5 flex-shrink-0" />
                     <span className="text-muted-foreground">{item}</span>
                   </li>
                 ))}
               </ul>
             </div>
 
-            <div className="glass-card p-8 rounded-2xl space-y-6 border border-border/50">
+            <div className="glass-card p-8 rounded-2xl space-y-6 border border-border/50 bg-black/10">
               <div className="flex items-center gap-4">
-                <MapPin className="text-primary" />
-                <p className="text-sm">Albuquerque, New Mexico, USA</p>
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <MapPin className="text-primary" size={20} />
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Location</p>
+                  <p className="text-sm font-medium">Albuquerque, New Mexico, USA</p>
+                </div>
               </div>
+              
               <div className="flex items-center gap-4">
-                <Mail className="text-primary" />
-                <p className="text-sm">techvergsolutions@gmail.com</p>
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Mail className="text-primary" size={20} />
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Email</p>
+                  <p className="text-sm font-medium">info@techvergesolution.com</p>
+                </div>
               </div>
+
               <div className="flex items-center gap-4">
-                <Phone className="text-primary" />
-                <p className="text-sm">+1 (505) 523-1081</p>
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Phone className="text-primary" size={20} />
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Phone</p>
+                  <p className="text-sm font-medium">+1 (505) 523-1081</p>
+                </div>
               </div>
-              <div className="pt-6 border-t border-border flex items-center gap-4">
-                <Globe2 className="text-secondary" />
-                <p className="text-sm font-medium">Serving Global Clients 24/7</p>
+
+              <div className="pt-6 border-t border-border/50 flex items-center gap-4">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Globe2 className="text-primary" size={20} />
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Availability</p>
+                  <p className="text-sm font-medium">Serving Worldwide 24/7</p>
+                </div>
               </div>
             </div>
           </div>

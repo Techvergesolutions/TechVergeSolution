@@ -8,31 +8,31 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const { from_name, reply_to, company_name, message } = req.body;
 
-  // Final server-side safety check
   if (!from_name || !reply_to || !message) {
     return res.status(400).json({ error: "Missing required fields." });
   }
 
   try {
-    // 1. NOTIFICATION TO YOU (The Lead)
+    // 1. NOTIFICATION TO YOU
     await resend.emails.send({
       from: `${from_name} <info@techvergesolution.com>`, 
       to: 'techvergsolutions@gmail.com',
       subject: `New Lead: ${from_name}`,
-      reply_to: reply_to, 
+      // FIX: Changed from reply_to to replyTo
+      replyTo: reply_to, 
       html: `
         <div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
           <h2 style="color: #00cfef;">New Project Inquiry</h2>
           <p><strong>Name:</strong> ${from_name}</p>
           <p><strong>Email:</strong> ${reply_to}</p>
-          <p><strong>Company:</strong> ${company_name || 'N/A'}</p>
+          <p><strong>Company:</strong> ${company_name || 'Not provided'}</p>
           <hr />
           <p><strong>Message:</strong></p>
           <p style="white-space: pre-wrap;">${message}</p>
         </div>`
     });
 
-    // 2. AUTO-REPLY TO CLIENT (The Welcome)
+    // 2. AUTO-REPLY TO CLIENT
     await resend.emails.send({
       from: 'Techverge Solution <info@techvergesolution.com>',
       to: reply_to,

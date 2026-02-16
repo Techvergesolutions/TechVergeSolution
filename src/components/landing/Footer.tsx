@@ -19,7 +19,6 @@ const footerLinks = {
 
 const socialLinks = [
   { icon: Linkedin, href: "https://www.linkedin.com/company/techverg-solution/", label: "LinkedIn" },
-  { icon: Github, href: "https://github.com/Techvergesolutions", label: "GitHub" },
   { icon: Instagram, href: "https://www.instagram.com/techvergsolutions/", label: "Instagram" },
 ];
 
