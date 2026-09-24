@@ -48,8 +48,9 @@ export const HeroSection = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto"
           >
-            <span className="text-gradient font-semibold">Innovation at Scale</span> — Empowering
-            new businesses and enterprises with cutting-edge technology solutions that grow with you.
+            <span className="text-gradient font-semibold">Innovation at Scale</span> — From design
+            to production: web, mobile, CRM & SaaS, custom software, cloud DevOps, and AI
+            automations for new businesses and enterprises.
           </motion.p>
 
           {/* CTA Buttons */}

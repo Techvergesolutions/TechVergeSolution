@@ -2,8 +2,11 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Eye, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 const PrivacyPolicy = () => {
+  usePageTitle('Privacy Policy | Techverge Solution');
+
   const policies = [
     { title: "1. Information Collection", text: "We collect personal data such as names, email addresses, and phone numbers when voluntarily submitted through contact forms." },
     { title: "2. Automatic Data Collection", text: "Our servers automatically record log data, including IP addresses, browser types, and pages visited." },

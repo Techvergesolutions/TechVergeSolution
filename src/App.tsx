@@ -15,6 +15,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 // Components
 import Loader from "./components/ui/Loader";
 import { CookieConsent } from "./components/ui/CookieConsent";
+import { GoogleTagManager } from "./components/GoogleTagManager";
 import ScrollToTop from "./components/ui/ScrollToTop";
 
 const queryClient = new QueryClient();
@@ -45,8 +46,8 @@ const App = () => {
               <Toaster />
               <Sonner theme="dark" position="bottom-right" closeButton />
               
-              {/* This will now trigger immediately upon Loader exit */}
               <CookieConsent />
+              <GoogleTagManager />
 
               <BrowserRouter>
                 <ScrollToTop />

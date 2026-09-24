@@ -2,8 +2,11 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ShieldCheck, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 const TermsAndConditions = () => {
+  usePageTitle('Terms & Conditions | Techverge Solution');
+
   const terms = [
     { h: "1. Agreement to Terms", p: "By accessing our website or using our services, you agree to be bound by these Terms and Conditions." },
     { h: "2. Intellectual Property", p: "Unless otherwise stated, Techverge Solution owns the intellectual property rights for all material on the website until full payment for a project is received." },

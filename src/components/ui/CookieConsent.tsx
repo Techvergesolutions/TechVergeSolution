@@ -25,6 +25,7 @@ export const CookieConsent = () => {
             <button
               onClick={() => {
                 localStorage.setItem("cookie-consent", "accepted");
+                window.dispatchEvent(new Event("cookie-consent-updated"));
                 toast.dismiss(t);
               }}
               className="flex-1 px-4 py-2 bg-primary text-primary-foreground text-[10px] uppercase tracking-widest font-bold rounded-md hover:opacity-90 transition-all"
@@ -34,6 +35,7 @@ export const CookieConsent = () => {
             <button
               onClick={() => {
                 localStorage.setItem("cookie-consent", "declined");
+                window.dispatchEvent(new Event("cookie-consent-updated"));
                 toast.dismiss(t);
               }}
               className="flex-1 px-4 py-2 bg-white/5 text-white text-[10px] uppercase tracking-widest font-bold rounded-md hover:bg-white/10 transition-colors"

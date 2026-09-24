@@ -4,10 +4,12 @@ import { Link } from "react-router-dom";
 
 const footerLinks = {
   services: [
-    { name: "CRM Solutions", href: "#services" },
+    { name: "Web Design & Development", href: "#services" },
     { name: "Mobile Apps", href: "#services" },
-    { name: "Web Development", href: "#services" },
-    { name: "Desktop Apps", href: "#services" },
+    { name: "CRM & SaaS", href: "#services" },
+    { name: "AI Automation", href: "#services" },
+    { name: "Custom Software", href: "#services" },
+    { name: "Cloud & DevOps", href: "#services" },
   ],
   company: [
     { name: "About Us", href: "#" },
@@ -52,8 +54,8 @@ export const Footer = () => {
               </span>
             </motion.a>
             <p className="text-muted-foreground mb-6 max-w-sm">
-              Innovation at Scale. We build unique websites and applications that help
-              businesses grow and succeed in the digital world.
+              Innovation at Scale. From UI/UX design to production—websites, mobile apps,
+              CRM, SaaS, custom software, DevOps, and AI automation that help businesses grow.
             </p>
             <div className="flex gap-4">
               {socialLinks.map((social) => (

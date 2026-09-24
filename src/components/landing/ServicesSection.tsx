@@ -5,51 +5,55 @@ import {
   Smartphone, 
   Database, 
   Layers, 
-  Monitor, 
-  Zap 
+  Bot, 
+  Cloud 
 } from "lucide-react";
 
 const services = [
   {
     icon: Database,
     title: "CRM & SaaS Solutions",
-    description: "Custom CRM platforms and SaaS applications that streamline your business operations and scale with your growth.",
-    features: ["Custom Workflows", "Analytics Dashboard", "API Integrations"],
+    description:
+      "Custom CRM platforms and SaaS products that streamline operations—from lead management and analytics dashboards to multi-tenant apps that scale with your business.",
+    features: ["Custom Workflows", "Analytics Dashboards", "API Integrations", "Multi-Tenant SaaS"],
   },
-  // ... other services remain the same
   {
     icon: Smartphone,
-    title: "Mobile Development",
-    description: "Native and cross-platform mobile apps for iOS and Android that deliver exceptional user experiences.",
-    features: ["iOS & Android", "React Native", "Flutter Apps"],
+    title: "Mobile App Development",
+    description:
+      "Native and cross-platform mobile apps for iOS and Android—React Native, Flutter, and production-ready experiences that feel fast and polished.",
+    features: ["iOS & Android", "React Native", "Flutter", "App Store Launch"],
   },
   {
     icon: Globe,
     title: "Web Design & Development",
-    description: "Stunning, responsive websites that convert visitors into customers and establish your digital presence.",
-    features: ["Custom Design", "SEO Optimized", "Fast Performance"],
+    description:
+      "UI/UX design, branding, and graphic design paired with responsive websites—React, Next.js, Node.js, and WordPress/CMS builds that convert and perform.",
+    features: ["UI/UX & Branding", "React & Next.js", "WordPress / CMS", "SEO-Ready Sites"],
   },
   {
-    icon: Monitor,
-    title: "Desktop Applications",
-    description: "Powerful desktop solutions for Mac and Windows that enhance productivity and streamline workflows.",
-    features: ["Mac & Windows", "Cross-Platform", "Electron Apps"],
+    icon: Bot,
+    title: "AI Automation & Chatbots",
+    description:
+      "AI chatbots, LLM integrations, and workflow automation that cut manual work—from customer support assistants to business process automation.",
+    features: ["AI Chatbots", "LLM Integrations", "Workflow Automation", "Business Automation"],
   },
   {
     icon: Layers,
-    title: "Custom Applications",
-    description: "Bespoke software solutions tailored to your unique business needs and industry requirements.",
-    features: ["Full Stack", "Microservices", "Cloud Native"],
+    title: "Custom & Enterprise Software",
+    description:
+      "Bespoke full-stack systems, enterprise apps, APIs, and microservices—built for your industry requirements, security needs, and growth plans.",
+    features: ["Full Stack", "APIs & Microservices", "Enterprise Apps", "Cloud Native"],
   },
   {
-    icon: Zap,
-    title: "Enterprise Solutions",
-    description: "Scalable enterprise systems that transform how your organization operates and competes.",
-    features: ["Scalability", "Security First", "24/7 Support"],
+    icon: Cloud,
+    title: "Cloud, DevOps & Deployment",
+    description:
+      "Cloud architecture, CI/CD pipelines, and production deployment—so new and established stacks ship reliably from design through live operations.",
+    features: ["Cloud Architecture", "CI/CD Pipelines", "Production Deploy", "Digital Transformation"],
   },
 ];
 
-// Tilt Card Component for the 3D effect
 const ServiceCard = ({ service, index }: { service: typeof services[0], index: number }) => {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -57,7 +61,6 @@ const ServiceCard = ({ service, index }: { service: typeof services[0], index: n
   const mouseXSpring = useSpring(x);
   const mouseYSpring = useSpring(y);
 
-  // Rotate values: adjust these numbers to increase/decrease tilt intensity
   const rotateX = useTransform(mouseYSpring, [-0.3, 0.3], ["10deg", "-10deg"]);
   const rotateY = useTransform(mouseXSpring, [-0.3, 0.3], ["-10deg", "10deg"]);
 
@@ -104,7 +107,6 @@ const ServiceCard = ({ service, index }: { service: typeof services[0], index: n
         whileHover={{ scale: 1.02 }}
         className="glass-card p-8 rounded-2xl h-full hover-glow cursor-pointer relative overflow-hidden transition-shadow duration-300"
       >
-        {/* Hover gradient overlay */}
         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10" />
         </div>
@@ -152,9 +154,10 @@ export const ServicesSection = () => {
           <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
             Solutions That <span className="text-gradient">Scale</span>
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            From startups to enterprises, we deliver technology solutions that drive growth
-            and transform businesses across the globe.
+          <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
+            From UI/UX and branding through web, mobile, CRM, SaaS, custom enterprise software,
+            cloud DevOps, and AI automation—we take products from design to production for startups
+            and established businesses worldwide.
           </p>
         </AnimatedSection>
 
