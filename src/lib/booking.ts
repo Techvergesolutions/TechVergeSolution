@@ -8,7 +8,15 @@ export const CONTACT_STRATEGY_PATH = "/contact?intent=strategy";
 export const CONTACT_AUDIT_PATH = "/contact?intent=audit";
 export const CONTACT_SIMILAR_PATH = "/contact?intent=similar";
 
-/** Resolve external booking URL from env. Never invents a fake calendar link. */
+/**
+ * Resolve external booking URL from env. Never invents a fake calendar link.
+ *
+ * Google Calendar Appointment Schedules (recommended):
+ * Calendar → Create → Appointment schedule → enable Google Meet → set
+ * availability on the TechVerge host calendar → publish → copy booking page
+ * URL into VITE_BOOKING_URL. Google emails host + guest with the Meet link
+ * automatically; no custom mailer needed for booking confirmations.
+ */
 export function getBookingUrl(): string | null {
   const booking =
     import.meta.env.VITE_BOOKING_URL || import.meta.env.VITE_CALENDLY_URL || "";

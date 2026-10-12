@@ -5,8 +5,11 @@ import { Send, MapPin, Mail, Phone, CheckCircle, Loader2, Calendar, MessageCircl
 import { toast } from "sonner";
 import {
   BOOKING_CTA_LABEL,
+  CONTACT_STRATEGY_PATH,
   getBookingUrl,
+  goToContactIntent,
   isHttpUrl,
+  isOnContactPage,
 } from "@/lib/booking";
 import { trackEvent } from "@/lib/analytics";
 
@@ -258,10 +261,8 @@ export const ContactSection = ({ hidePageHeader = false }: ContactSectionProps) 
   };
 
   const bookingUrl = getBookingUrl();
-  const bookingHref =
-    bookingUrl ??
-    `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("Strategy Call Request")}`;
-  const bookingIsExternal = isHttpUrl(bookingHref);
+  const bookingHref = bookingUrl ?? CONTACT_STRATEGY_PATH;
+  const bookingIsExternal = Boolean(bookingUrl && isHttpUrl(bookingUrl));
 
   return (
     <section id="contact" className="relative py-24 md:py-32 overflow-hidden bg-background">
@@ -549,7 +550,11 @@ export const ContactSection = ({ hidePageHeader = false }: ContactSectionProps) 
                 </motion.button>
 
                 <div className="pt-2 text-center space-y-3 border-t border-border/40">
-                  <p className="text-sm text-muted-foreground">Prefer to talk now?</p>
+                  <p className="text-sm text-muted-foreground">
+                    {bookingUrl
+                      ? "Prefer to talk now? Pick a time — Google emails you both a Meet link."
+                      : "Prefer to talk now? We'll prefill a strategy-call request below."}
+                  </p>
                   <a
                     href={bookingHref}
                     {...(bookingIsExternal
@@ -557,7 +562,13 @@ export const ContactSection = ({ hidePageHeader = false }: ContactSectionProps) 
                       : {})}
                     className="btn-outline-glow inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-foreground font-semibold w-full sm:w-auto min-h-[48px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                     aria-label={BOOKING_CTA_LABEL}
-                    onClick={() => trackEvent("booking_cta_click", { placement: "contact" })}
+                    onClick={(e) => {
+                      trackEvent("booking_cta_click", { placement: "contact" });
+                      if (!bookingUrl && isOnContactPage()) {
+                        e.preventDefault();
+                        goToContactIntent("strategy");
+                      }
+                    }}
                   >
                     <Calendar size={18} />
                     {BOOKING_CTA_LABEL}
