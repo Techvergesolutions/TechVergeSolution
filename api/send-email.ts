@@ -41,7 +41,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const volume = String(body.volume ?? body.monthly_volume ?? '').trim();
   const current_tools = String(body.current_tools ?? body.tools_crm ?? '').trim();
   const budget = String(body.budget ?? body.estimated_budget ?? '').trim();
-  const form_started_at = body.form_started_at;
 
   if (!from_name || !reply_to || !message) {
     return res.status(400).json({ error: 'Missing required fields.' });
@@ -50,14 +49,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(reply_to)) {
     return res.status(400).json({ error: 'Invalid email address.' });
-  }
-
-  // Optional: reject suspiciously fast submissions (< 2s) when timestamp present
-  if (typeof form_started_at === 'number' || typeof form_started_at === 'string') {
-    const started = Number(form_started_at);
-    if (Number.isFinite(started) && Date.now() - started < 2000) {
-      return res.status(200).json({ success: true });
-    }
   }
 
   const safeName = escapeHtml(from_name);
@@ -72,9 +63,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const subjectName = from_name.replace(/[\r\n]/g, ' ').slice(0, 80);
 
+  if (!process.env.RESEND_API_KEY) {
+    console.error('RESEND_API_KEY is not set');
+    return res.status(500).json({ error: 'Email service is not configured.' });
+  }
+
   try {
     // 1. NOTIFICATION TO TECHVERGE (fixed From — never put user input in From header)
-    await resend.emails.send({
+    // Resend returns { data, error } and does NOT throw on API failures
+    const notify = await resend.emails.send({
       from: 'Techverge Solution <info@techvergesolution.com>',
       to: 'techvergsolutions@gmail.com',
       subject: `New Project Inquiry: ${subjectName}`,
@@ -96,8 +93,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         </div>`,
     });
 
+    if (notify.error) {
+      console.error('Resend notify error:', notify.error);
+      return res.status(500).json({ error: notify.error.message || 'Failed to send notification email.' });
+    }
+
     // 2. AUTO-REPLY TO CLIENT (generic thank-you)
-    await resend.emails.send({
+    const autoReply = await resend.emails.send({
       from: 'Techverge Solution <info@techvergesolution.com>',
       to: reply_to,
       subject: 'Message Received - Techverge Solution',
@@ -116,6 +118,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           </footer>
         </div>`,
     });
+
+    if (autoReply.error) {
+      // Notification already sent — log but still report partial success
+      console.error('Resend auto-reply error:', autoReply.error);
+    }
 
     return res.status(200).json({ success: true });
   } catch (error: unknown) {
