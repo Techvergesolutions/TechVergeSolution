@@ -3,57 +3,124 @@ import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+function escapeHtml(value: unknown): string {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function isHoneypotFilled(body: Record<string, unknown>): boolean {
+  const traps = ['website_url', '_gotcha', 'company_fax'];
+  return traps.some((key) => {
+    const v = body[key];
+    return typeof v === 'string' && v.trim().length > 0;
+  });
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { from_name, reply_to, company_name, message } = req.body;
+  const body = (req.body ?? {}) as Record<string, unknown>;
 
-  if (!from_name || !reply_to || !message) {
-    return res.status(400).json({ error: "Missing required fields." });
+  // Silent spam drop — look like success so bots don't retry
+  if (isHoneypotFilled(body)) {
+    return res.status(200).json({ success: true });
   }
 
+  // Support both legacy and new field names
+  const from_name = String(body.from_name ?? body.full_name ?? '').trim();
+  const reply_to = String(body.reply_to ?? body.email ?? body.work_email ?? '').trim();
+  const company_name = String(body.company_name ?? body.company ?? '').trim();
+  const message = String(body.message ?? body.additional_details ?? '').trim();
+
+  const website = String(body.website ?? '').trim();
+  const automate = String(body.automate ?? body.what_to_automate ?? '').trim();
+  const volume = String(body.volume ?? body.monthly_volume ?? '').trim();
+  const current_tools = String(body.current_tools ?? body.tools_crm ?? '').trim();
+  const budget = String(body.budget ?? body.estimated_budget ?? '').trim();
+  const form_started_at = body.form_started_at;
+
+  if (!from_name || !reply_to || !message) {
+    return res.status(400).json({ error: 'Missing required fields.' });
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(reply_to)) {
+    return res.status(400).json({ error: 'Invalid email address.' });
+  }
+
+  // Optional: reject suspiciously fast submissions (< 2s) when timestamp present
+  if (typeof form_started_at === 'number' || typeof form_started_at === 'string') {
+    const started = Number(form_started_at);
+    if (Number.isFinite(started) && Date.now() - started < 2000) {
+      return res.status(200).json({ success: true });
+    }
+  }
+
+  const safeName = escapeHtml(from_name);
+  const safeEmail = escapeHtml(reply_to);
+  const safeCompany = escapeHtml(company_name || 'Not provided');
+  const safeMessage = escapeHtml(message);
+  const safeWebsite = escapeHtml(website || 'Not provided');
+  const safeAutomate = escapeHtml(automate || 'Not provided');
+  const safeVolume = escapeHtml(volume || 'Not provided');
+  const safeTools = escapeHtml(current_tools || 'Not provided');
+  const safeBudget = escapeHtml(budget || 'Not provided');
+
+  const subjectName = from_name.replace(/[\r\n]/g, ' ').slice(0, 80);
+
   try {
-    // 1. NOTIFICATION TO YOU
+    // 1. NOTIFICATION TO TECHVERGE (fixed From — never put user input in From header)
     await resend.emails.send({
-      from: `${from_name} <info@techvergesolution.com>`, 
+      from: 'Techverge Solution <info@techvergesolution.com>',
       to: 'techvergsolutions@gmail.com',
-      subject: `New Lead: ${from_name}`,
-      // FIX: Changed from reply_to to replyTo
-      replyTo: reply_to, 
+      subject: `New Project Inquiry: ${subjectName}`,
+      replyTo: reply_to,
       html: `
         <div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
           <h2 style="color: #00cfef;">New Project Inquiry</h2>
-          <p><strong>Name:</strong> ${from_name}</p>
-          <p><strong>Email:</strong> ${reply_to}</p>
-          <p><strong>Company:</strong> ${company_name || 'Not provided'}</p>
+          <p><strong>Name:</strong> ${safeName}</p>
+          <p><strong>Email:</strong> ${safeEmail}</p>
+          <p><strong>Company:</strong> ${safeCompany}</p>
+          <p><strong>Website:</strong> ${safeWebsite}</p>
+          <p><strong>What to automate:</strong> ${safeAutomate}</p>
+          <p><strong>Monthly volume:</strong> ${safeVolume}</p>
+          <p><strong>Current tools / CRM:</strong> ${safeTools}</p>
+          <p><strong>Estimated budget:</strong> ${safeBudget}</p>
           <hr />
-          <p><strong>Message:</strong></p>
-          <p style="white-space: pre-wrap;">${message}</p>
-        </div>`
+          <p><strong>Additional details:</strong></p>
+          <p style="white-space: pre-wrap;">${safeMessage}</p>
+        </div>`,
     });
 
-    // 2. AUTO-REPLY TO CLIENT
+    // 2. AUTO-REPLY TO CLIENT (generic thank-you)
     await resend.emails.send({
       from: 'Techverge Solution <info@techvergesolution.com>',
       to: reply_to,
       subject: 'Message Received - Techverge Solution',
       html: `
         <div style="font-family: sans-serif; max-width: 600px; color: #333;">
-          <h2 style="color: #00cfef;">Hello ${from_name},</h2>
+          <h2 style="color: #00cfef;">Hello ${safeName},</h2>
           <p>Thank you for reaching out to <strong>Techverge Solution</strong>!</p>
-          <p>We have received your message regarding <strong>${company_name || 'your project'}</strong>. Our team is currently reviewing your inquiry and will get back to you within 24 hours.</p>
+          <p>We've received your project inquiry${
+            company_name ? ` for <strong>${safeCompany}</strong>` : ''
+          }. Our team will review your workflow and get back to you within 24 hours.</p>
           <br />
           <p>Best Regards,</p>
           <p><strong>The Techverge Team</strong></p>
           <footer style="margin-top: 20px; font-size: 11px; color: #999; border-top: 1px solid #eee; padding-top: 10px;">
             Techverge Solution | Serving Worldwide
           </footer>
-        </div>`
+        </div>`,
     });
 
     return res.status(200).json({ success: true });
-  } catch (error: any) {
-    console.error("Resend API Error:", error);
-    return res.status(500).json({ error: error.message });
+  } catch (error: unknown) {
+    console.error('Resend API Error:', error);
+    const messageText = error instanceof Error ? error.message : 'Failed to send email';
+    return res.status(500).json({ error: messageText });
   }
 }

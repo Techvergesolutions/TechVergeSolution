@@ -6,33 +6,33 @@ const team = [
   {
     name: "Umer Arshad",
     role: "Founder & CEO",
-    image: "/Umer.png",
+    image: "/Umer.webp",
   },
   {
     name: "Rana Hamza",
     role: "Co-Founder & Lead Software Architect",
-    image: "/Hamza.png",
+    image: "/Hamza.webp",
   },
   {
     name: "Faseeh Tahir",
     role: "Chief Project Manager",
-    image: "/Faseeh.jpeg",
+    image: "/Faseeh.webp",
   },
   {
     name: "Aliza Fayyaz",
     role: "UI/UX Designer",
-    image: "/Aliza.jpg",
+    image: "/Aliza.webp",
   },
   {
     name: "Mujtaba Ahmad",
     role: "Full Stack Developer",
-    image: "/Mujtaba.png",
+    image: "/Mujtaba.webp",
   },
   {
     name: "Uzair Ahmad",
     role: "Quality Assurance Engineer",
-    image: "/Uzair.png",
-  }
+    image: "/Uzair.webp",
+  },
 ];
 
 export const TeamSection = () => {
@@ -71,7 +71,11 @@ export const TeamSection = () => {
                   
                   <img
                     src={member.image}
-                    alt={member.name}
+                    alt={`${member.name}, ${member.role} at TechVerge Solutions`}
+                    width={800}
+                    height={800}
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-100 group-hover:scale-110"
                   />
 

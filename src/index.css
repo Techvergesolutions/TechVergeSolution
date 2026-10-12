@@ -1,7 +1,4 @@
-/* 1. IMPORTS FIRST (Must be at the very top) */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
-
-/* 2. TAILWIND DIRECTIVES */
+/* Fonts load via preconnect + stylesheet in index.html (display=swap). */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -125,6 +122,11 @@
     filter: brightness(1.1);
   }
 
+  .btn-primary:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(190 100% 50% / 0.8);
+  }
+
   .btn-outline-glow {
     @apply border-2 transition-all duration-300;
     border-color: hsl(190 100% 50% / 0.5);
@@ -134,6 +136,11 @@
     border-color: hsl(190 100% 50%);
     box-shadow: var(--shadow-glow);
     background: hsl(190 100% 50% / 0.1);
+  }
+
+  .btn-outline-glow:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(190 100% 50% / 0.8);
   }
 
   .section-container {

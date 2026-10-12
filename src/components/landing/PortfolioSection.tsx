@@ -1,287 +1,221 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowUpRight, TrendingUp, ChevronLeft, ChevronRight, X, LayoutGrid } from "lucide-react";
+import { useState } from "react";
+import { AnimatedSection } from "../ui/AnimatedSection";
+import { SimilarProjectCta } from "@/components/cta/SimilarProjectCta";
+import { trackEvent } from "@/lib/analytics";
+import { caseStudies, type CaseStudy, type CaseStudyIcon } from "@/data/caseStudies";
+import {
+  ArrowUpRight,
+  Timer,
+  CalendarDays,
+  GraduationCap,
+  Utensils,
+  Users,
+  Brain,
+  Activity,
+  Bot,
+  ShoppingBag,
+  type LucideIcon,
+} from "lucide-react";
 
-interface Project {
-  title: string;
-  category: string;
-  tagline: string;
-  image: string;
-  metrics: string;
-  tags: string[];
-  link: string;
-}
+const ICON_MAP: Record<CaseStudyIcon, LucideIcon> = {
+  timer: Timer,
+  calendar: CalendarDays,
+  graduation: GraduationCap,
+  utensils: Utensils,
+  users: Users,
+  brain: Brain,
+  activity: Activity,
+  bot: Bot,
+  shopping: ShoppingBag,
+};
 
-const projects: Project[] = [
-  {
-    title: "ClockLog",
-    category: "SaaS / Management",
-    tagline: "A comprehensive time-tracking and productivity management platform for modern teams.",
-    image: "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=800&auto=format&fit=crop",
-    metrics: "+40% Efficiency",
-    tags: ["React", "Dashboard", "Auth"],
-    link: "https://clocklog-fe-app.vercel.app/login"
-  },
-  {
-    title: "EventForce",
-    category: "Event Management",
-    tagline: "Professional event coordination platform specializing in Saudi Arabian large-scale events.",
-    image: "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=800&auto=format&fit=crop",
-    metrics: "Top Rated",
-    tags: ["EventTech", "Planning", "Logistics"],
-    link: "https://eventforce.sa.com/"
-  },
-  {
-    title: "Student Help Squad",
-    category: "Education Support",
-    tagline: "A UK-based dedicated platform providing academic and personal assistance to students.",
-    image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&auto=format&fit=crop",
-    metrics: "10K+ Students",
-    tags: ["EdTech", "UK", "Community"],
-    link: "https://studenthelpsquad.co.uk/"
-  },
-  {
-    title: "ShareMyDine",
-    category: "Food & Social",
-    tagline: "Innovative dining experience platform connecting food enthusiasts across the UK.",
-    image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&auto=format&fit=crop",
-    metrics: "Social Growth",
-    tags: ["Marketplace", "Food", "Social"],
-    link: "https://sharemydine.co.uk/"
-  },
-  {
-    title: "BuzzHR",
-    category: "Human Resources",
-    tagline: "Streamlined HR management solution focusing on employee engagement and payroll.",
-    image: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=800&auto=format&fit=crop",
-    metrics: "Enterprise Grade",
-    tags: ["HRMS", "Management", "Saas"],
-    link: "https://www.buzzhr.co.uk/"
-  },
-  {
-    title: "Peoples Creed AI",
-    category: "Artificial Intelligence",
-    tagline: "AI-driven platform focused on ethical human resources and workforce intelligence.",
-    image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop",
-    metrics: "AI Integrated",
-    tags: ["AI", "Innovation", "Web3"],
-    link: "https://peoplescreed.ai/"
-  },
-  {
-    title: "HealthPulse Interpreter",
-    category: "Mobile App / AI",
-    tagline: "Diagnostic interpretation app using AI/ML for health metrics analysis.",
-    image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&auto=format&fit=crop",
-    metrics: "50K+ Downloads",
-    tags: ["Android", "AI/ML", "Health"],
-    link: "https://play.google.com/store/apps/details?id=org.auderenow.healthpulse.dxa.interpreter&hl=en"
-  },
-  {
-    title: "Agentic Creed",
-    category: "Next-Gen AI",
-    tagline: "Autonomous AI agency platform for managing complex digital workflows.",
-    image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&auto=format&fit=crop",
-    metrics: "Future Tech",
-    tags: ["Agentic AI", "Automation", "Home"],
-    link: "https://agenticcreed.ai/home"
-  },
-  {
-    title: "Vogue Scents",
-    category: "E-Commerce",
-    tagline: "Luxury fragrance marketplace offering premium scents with a seamless experience.",
-    image: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=800&auto=format&fit=crop",
-    metrics: "High Conversion",
-    tags: ["E-com", "Luxury", "Design"],
-    link: "http://voguescents.com/"
-  },
-];
+const INITIAL_VISIBLE = 4;
 
-export const PortfolioSection: React.FC = () => {
-  const [index, setIndex] = useState(0);
-  const [isGridOpen, setIsGridOpen] = useState(false);
-
-  const nextSlide = () => setIndex((prev) => (prev + 1) % projects.length);
-  const prevSlide = () => setIndex((prev) => (prev - 1 + projects.length) % projects.length);
-
-  const onDragEnd = (e: any, info: any) => {
-    if (info.offset.x < -50) nextSlide();
-    if (info.offset.x > 50) prevSlide();
-  };
+function CaseStudyRow({ study, index }: { study: CaseStudy; index: number }) {
+  const Icon = ICON_MAP[study.icon];
+  const reverse = index % 2 === 1;
 
   return (
-    <section id="portfolio" className="relative py-32 overflow-hidden bg-[#050505]">
-      {/* Background Decor */}
-      <div className="absolute inset-0 grid-pattern opacity-10" />
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px]" />
-
-      <div className="max-w-7xl mx-auto px-6 relative z-10 flex flex-col lg:flex-row items-center gap-16">
-        
-        {/* Left Side: Info Content */}
-        <div className="w-full lg:w-1/2 text-left">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <span className="text-secondary font-semibold text-sm uppercase tracking-widest mb-4 block">
-              Portfolio
-            </span>
-            <h2 className="font-display text-4xl md:text-5xl lg:text-7xl font-bold mb-10 text-white">
-              Success <span className="text-gradient">Stories</span>
-            </h2>
-          </motion.div>
-
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              transition={{ duration: 0.5 }}
-              className="space-y-6"
-            >
-              <div className="flex items-center gap-3">
-                <span className="px-3 py-1 text-xs font-bold tracking-widest uppercase bg-secondary/10 text-secondary rounded-full border border-secondary/20">
-                  {projects[index].category}
-                </span>
-                <div className="flex items-center gap-2 text-primary font-bold text-sm">
-                  <TrendingUp size={16} />
-                  {projects[index].metrics}
-                </div>
-              </div>
-
-              <h3 className="text-white font-display text-4xl md:text-5xl font-extrabold tracking-tight">
-                {projects[index].title}
-              </h3>
-              
-              <p className="text-muted-foreground text-lg leading-relaxed max-w-md">
-                {projects[index].tagline}
+    <article className="rounded-2xl border border-border/60 bg-card/30 overflow-hidden">
+      <div className="grid lg:grid-cols-12">
+        {/* Identity panel */}
+        <div
+          className={`lg:col-span-4 relative flex flex-col justify-between p-8 md:p-10 bg-muted/25 ${
+            reverse
+              ? "lg:order-2 lg:border-l border-border/50"
+              : "lg:order-1 lg:border-r border-border/50"
+          }`}
+        >
+          <div>
+            <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-6">
+              <Icon className="w-6 h-6 text-primary" />
+            </div>
+            {study.category && (
+              <span className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground font-medium">
+                {study.category}
+              </span>
+            )}
+            <h3 className="font-display text-2xl md:text-3xl font-bold text-foreground mt-2 mb-4">
+              {study.name}
+            </h3>
+            {study.technology && (
+              <p className="text-sm text-muted-foreground">
+                <span className="text-foreground/70 font-medium">Technology · </span>
+                {study.technology}
               </p>
+            )}
+          </div>
 
-              {/* Slider Navigation */}
-              <div className="flex items-center gap-6 py-8">
-                <div className="flex gap-3">
-                  <button onClick={prevSlide} className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all">
-                    <ChevronLeft size={20} />
-                  </button>
-                  <button onClick={nextSlide} className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all">
-                    <ChevronRight size={20} />
-                  </button>
-                </div>
-                <span className="font-mono text-white/20 text-xl tracking-widest">
-                  {String(index + 1).padStart(2, '0')} / {String(projects.length).padStart(2, '0')}
-                </span>
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-8 items-start sm:items-center">
-                <motion.a 
-                  href={projects[index].link} 
-                  target="_blank" 
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-2 text-white font-bold border-b-2 border-secondary pb-1 group transition-all"
-                >
-                  Launch Project <ArrowUpRight className="text-secondary group-hover:rotate-45 transition-transform" />
-                </motion.a>
-
-                <button 
-                  onClick={() => setIsGridOpen(true)}
-                  className="flex items-center gap-2 text-white/50 hover:text-white transition-colors text-sm font-medium uppercase tracking-widest group"
-                >
-                  <LayoutGrid size={18} className="text-primary group-hover:rotate-90 transition-transform" />
-                  View All Work
-                </button>
-              </div>
-            </motion.div>
-          </AnimatePresence>
+          <div className="mt-8 flex flex-col sm:flex-row lg:flex-col gap-3">
+            {study.link && (
+              <a
+                href={study.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 text-sm font-semibold text-foreground hover:text-primary transition-colors min-h-[44px] px-4 rounded-xl border border-border/60 hover:border-primary/30"
+                onClick={() =>
+                  trackEvent("case_study_click", {
+                    cta: "view_project",
+                    project: study.name,
+                  })
+                }
+              >
+                View project
+                <ArrowUpRight className="w-4 h-4" />
+              </a>
+            )}
+            <SimilarProjectCta
+              variant="outline"
+              eventParams={{ project: study.name }}
+              className="px-4 py-2.5 text-sm w-full sm:w-auto lg:w-full"
+            />
+          </div>
         </div>
 
-        {/* Right Side: 3D Visual Swipe Card */}
-        <div className="w-full lg:w-1/2 perspective-[1500px] flex justify-center py-10 lg:py-0">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={index}
-              drag="x"
-              dragConstraints={{ left: 0, right: 0 }}
-              onDragEnd={onDragEnd}
-              initial={{ opacity: 0, rotateY: 30, scale: 0.9, x: 50 }}
-              animate={{ opacity: 1, rotateY: -15, scale: 1, x: 0 }}
-              exit={{ opacity: 0, rotateY: -45, scale: 0.8, x: -50 }}
-              transition={{ duration: 0.8, type: "spring", bounce: 0.3 }}
-              whileHover={{ rotateY: -5, scale: 1.05 }}
-              style={{
-                backgroundImage: `url(${projects[index].image})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-              }}
-              className="relative w-full max-w-[500px] h-[450px] md:h-[600px] rounded-[40px] shadow-[0_50px_100px_rgba(0,0,0,0.8)] border border-white/10 cursor-grab active:cursor-grabbing overflow-hidden"
-            >
-              <div className="absolute inset-0 bg-gradient-to-tr from-black/60 via-transparent to-white/5" />
-            </motion.div>
-          </AnimatePresence>
+        {/* Narrative panel */}
+        <div
+          className={`lg:col-span-8 p-8 md:p-10 space-y-7 ${
+            reverse ? "lg:order-1" : "lg:order-2"
+          }`}
+        >
+          <div className="grid md:grid-cols-2 gap-6 md:gap-8">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-primary/90 mb-2">
+                Problem
+              </p>
+              <p className="text-muted-foreground text-sm md:text-[15px] leading-relaxed">
+                {study.problem}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-primary/90 mb-2">
+                Solution
+              </p>
+              <p className="text-muted-foreground text-sm md:text-[15px] leading-relaxed">
+                {study.solution}
+              </p>
+            </div>
+          </div>
+
+          <div className="h-px bg-border/50" />
+
+          <div className="grid md:grid-cols-2 gap-6 md:gap-8">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-primary/90 mb-3">
+                Key features
+              </p>
+              <ul className="space-y-2">
+                {study.features.map((feature) => (
+                  <li
+                    key={feature}
+                    className="text-sm text-muted-foreground flex gap-2.5 leading-relaxed"
+                  >
+                    <span className="mt-2 h-1 w-1 rounded-full bg-primary shrink-0" />
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-primary/90 mb-2">
+                Outcome
+              </p>
+              <p className="text-muted-foreground text-sm md:text-[15px] leading-relaxed">
+                {study.outcome}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
+    </article>
+  );
+}
 
-      {/* --- Full Portfolio Grid Modal --- */}
-      <AnimatePresence>
-        {isGridOpen && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[999] bg-[#050505] overflow-y-auto px-6 py-20"
-          >
-            <div className="max-w-7xl mx-auto">
-              <div className="flex justify-between items-center mb-16">
-                <div>
-                  <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-2">
-                    Full <span className="text-gradient">Portfolio</span>
-                  </h2>
-                  <p className="text-muted-foreground">Exploring our complete collection of digital solutions.</p>
-                </div>
-                <button 
-                  onClick={() => setIsGridOpen(false)}
-                  className="w-14 h-14 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-secondary transition-colors"
-                >
-                  <X size={24} />
-                </button>
-              </div>
+export const PortfolioSection = () => {
+  const [showAll, setShowAll] = useState(false);
+  const visible: CaseStudy[] = showAll
+    ? caseStudies
+    : caseStudies.slice(0, INITIAL_VISIBLE);
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                {projects.map((project, i) => (
-                  <motion.a
-                    key={i}
-                    href={project.link}
-                    target="_blank"
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                    className="group block"
-                  >
-                    <div className="relative aspect-[4/3] rounded-3xl overflow-hidden mb-6 border border-white/10">
-                      <img 
-                        src={project.image} 
-                        alt={project.title} 
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
-                      />
-                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-6 text-center">
-                        <p className="text-white text-sm mb-4 line-clamp-3">{project.tagline}</p>
-                        <ArrowUpRight className="text-secondary w-8 h-8" />
-                      </div>
-                    </div>
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h4 className="text-white font-bold text-xl mb-1">{project.title}</h4>
-                        <p className="text-primary text-xs font-semibold tracking-widest uppercase">{project.category}</p>
-                      </div>
-                      <span className="text-white/20 font-mono text-sm">#{i + 1}</span>
-                    </div>
-                  </motion.a>
-                ))}
-              </div>
-            </div>
-          </motion.div>
+  return (
+    <section id="work" className="relative py-24 md:py-32 overflow-hidden">
+      <div className="absolute inset-0 grid-pattern opacity-10" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-muted/10 to-transparent pointer-events-none" />
+
+      <div className="section-container relative z-10">
+        <AnimatedSection className="text-center mb-14 md:mb-16 max-w-3xl mx-auto">
+          <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-4 block">
+            Work
+          </span>
+          <h2 className="font-display text-3xl md:text-5xl lg:text-6xl font-bold mb-6">
+            Selected Case Studies
+          </h2>
+          <p className="text-muted-foreground text-base md:text-lg">
+            Real projects described by the problem, what we delivered, and how it works —
+            without invented metrics.
+          </p>
+        </AnimatedSection>
+
+        <div className="space-y-6 md:space-y-8 max-w-6xl mx-auto">
+          {visible.map((study, index) => (
+            <AnimatedSection
+              key={study.name}
+              delay={(index % 4) * 0.05}
+              direction={index % 2 === 0 ? "left" : "right"}
+            >
+              <CaseStudyRow study={study} index={index} />
+            </AnimatedSection>
+          ))}
+        </div>
+
+        {!showAll && caseStudies.length > INITIAL_VISIBLE && (
+          <div className="text-center mt-10">
+            <button
+              type="button"
+              onClick={() => setShowAll(true)}
+              className="btn-outline-glow px-6 py-3 rounded-xl text-foreground font-medium min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            >
+              View all case studies
+            </button>
+          </div>
         )}
-      </AnimatePresence>
+
+        <AnimatedSection className="mt-14 md:mt-16">
+          <div className="max-w-3xl mx-auto text-center rounded-2xl border border-border/60 bg-card/40 px-6 py-10 md:px-10 md:py-12">
+            <h3 className="font-display text-xl md:text-2xl font-bold text-foreground mb-3">
+              Building something in a similar space?
+            </h3>
+            <p className="text-muted-foreground text-sm md:text-base mb-7 max-w-xl mx-auto">
+              Tell us about the problem you need solved — we&apos;ll map a practical path from
+              your current workflow to a shipped solution.
+            </p>
+            <SimilarProjectCta
+              showArrow
+              className="px-8 py-4 w-full sm:w-auto"
+            />
+          </div>
+        </AnimatedSection>
+      </div>
     </section>
   );
 };

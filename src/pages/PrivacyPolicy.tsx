@@ -1,12 +1,9 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Eye, ArrowLeft } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { usePageTitle } from '@/hooks/use-page-title';
+import { motion } from "framer-motion";
+import { Eye, ArrowLeft } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Seo } from "@/components/Seo";
 
 const PrivacyPolicy = () => {
-  usePageTitle('Privacy Policy | Techverge Solution');
-
   const policies = [
     { title: "1. Information Collection", text: "We collect personal data such as names, email addresses, and phone numbers when voluntarily submitted through contact forms." },
     { title: "2. Automatic Data Collection", text: "Our servers automatically record log data, including IP addresses, browser types, and pages visited." },
@@ -28,46 +25,56 @@ const PrivacyPolicy = () => {
     { title: "18. GDPR Compliance", text: "For EU residents, we comply with the General Data Protection Regulation." },
     { title: "19. CCPA Rights", text: "California residents have specific rights regarding personal information access." },
     { title: "20. Policy Updates", text: "We reserve the right to update our Privacy Policy. Changes will be posted on this page." },
-    { title: "21. Contact Information", text: "For questions regarding privacy, contact us at TechVergesoltions@gmail.com." }
+    { title: "21. Contact Information", text: "For questions regarding privacy, contact us at TechVergesoltions@gmail.com." },
   ];
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white py-24 px-6 relative">
-       <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -z-10" />
+    <>
+      <Seo
+        title="Privacy Policy | TechVerge"
+        description="How TechVerge Solutions collects, uses, and protects personal information when you use our website and services."
+        path="/privacy"
+      />
+      <main className="min-h-screen bg-[#050505] text-white py-24 px-6 relative">
+        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -z-10" />
 
-      <div className="max-w-6xl mx-auto">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-16"
-        >
-          <Link to="/" className="inline-flex items-center gap-2 text-primary hover:gap-3 transition-all font-bold mb-8">
-            <ArrowLeft size={20} /> Return to Home
-          </Link>
-          <h1 className="text-5xl md:text-7xl font-display font-bold mb-4">
-            Privacy <span className="text-gradient">Policy</span>
-          </h1>
-          <p className="text-muted-foreground">Effective Date: January 1, 2026</p>
-        </motion.div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {policies.map((p, i) => (
-            <motion.div 
-              key={i}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.05 }}
-              className="p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] transition-all"
+        <div className="max-w-6xl mx-auto">
+          <motion.header
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-16"
+          >
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 text-primary hover:gap-3 transition-all font-bold mb-8"
             >
-              <Eye className="text-primary mb-4 w-5 h-5" />
-              <h3 className="text-lg font-bold mb-2 text-white/90">{p.title}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">{p.text}</p>
-            </motion.div>
-          ))}
+              <ArrowLeft size={20} /> Return to Home
+            </Link>
+            <h1 className="text-5xl md:text-7xl font-display font-bold mb-4">
+              Privacy <span className="text-gradient">Policy</span>
+            </h1>
+            <p className="text-muted-foreground">Effective Date: January 1, 2026</p>
+          </motion.header>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {policies.map((p, i) => (
+              <motion.article
+                key={p.title}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.05 }}
+                className="p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] transition-all"
+              >
+                <Eye className="text-primary mb-4 w-5 h-5" aria-hidden="true" />
+                <h2 className="text-lg font-bold mb-2 text-white/90">{p.title}</h2>
+                <p className="text-sm text-muted-foreground leading-relaxed">{p.text}</p>
+              </motion.article>
+            ))}
+          </div>
         </div>
-      </div>
-    </div>
+      </main>
+    </>
   );
 };
 
