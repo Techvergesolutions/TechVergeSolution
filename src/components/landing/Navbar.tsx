@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { BookingCta } from "@/components/cta/BookingCta";
+import { cn } from "@/lib/utils";
 
 const navLinks = [
   { name: "Home", href: "/" },
@@ -12,7 +13,17 @@ const navLinks = [
   { name: "Contact", href: "/contact" },
 ];
 
+/** Active matching: Home exact `/` only; Services includes `/services/:slug`; others exact path. */
+function isNavLinkActive(pathname: string, href: string) {
+  if (href === "/") return pathname === "/";
+  if (href === "/services") {
+    return pathname === "/services" || pathname.startsWith("/services/");
+  }
+  return pathname === href;
+}
+
 export const Navbar = () => {
+  const { pathname } = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -63,17 +74,31 @@ export const Navbar = () => {
         </motion.div>
 
         <div className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <motion.div key={link.name} whileHover={{ y: -2 }}>
-              <Link
-                to={link.href}
-                className="text-muted-foreground hover:text-foreground transition-colors relative group"
-              >
-                {link.name}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-secondary group-hover:w-full transition-all duration-300" />
-              </Link>
-            </motion.div>
-          ))}
+          {navLinks.map((link) => {
+            const active = isNavLinkActive(pathname, link.href);
+            return (
+              <motion.div key={link.name} whileHover={{ y: -2 }}>
+                <Link
+                  to={link.href}
+                  aria-current={active ? "page" : undefined}
+                  className={cn(
+                    "transition-colors relative group",
+                    active
+                      ? "text-primary font-medium"
+                      : "text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  {link.name}
+                  <span
+                    className={cn(
+                      "absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-primary to-secondary transition-all duration-300",
+                      active ? "w-full" : "w-0 group-hover:w-full",
+                    )}
+                  />
+                </Link>
+              </motion.div>
+            );
+          })}
           <BookingCta className="px-5 py-2.5 rounded-lg text-primary-foreground font-medium text-sm whitespace-nowrap" />
         </div>
 
@@ -110,22 +135,31 @@ export const Navbar = () => {
             >
               <div className="glass-card rounded-2xl border border-border/50 shadow-2xl overflow-hidden bg-background/95">
                 <div className="p-6 flex flex-col gap-2">
-                  {navLinks.map((link, i) => (
-                    <motion.div
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.05 }}
-                      key={link.name}
-                    >
-                      <Link
-                        to={link.href}
-                        className="block text-lg font-medium text-muted-foreground hover:text-primary transition-colors py-3 border-b border-border/10"
-                        onClick={() => setIsMobileMenuOpen(false)}
+                  {navLinks.map((link, i) => {
+                    const active = isNavLinkActive(pathname, link.href);
+                    return (
+                      <motion.div
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: i * 0.05 }}
+                        key={link.name}
                       >
-                        {link.name}
-                      </Link>
-                    </motion.div>
-                  ))}
+                        <Link
+                          to={link.href}
+                          aria-current={active ? "page" : undefined}
+                          className={cn(
+                            "block text-lg py-3 border-b border-border/10 transition-colors",
+                            active
+                              ? "text-primary font-semibold"
+                              : "text-muted-foreground font-medium hover:text-primary",
+                          )}
+                          onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                          {link.name}
+                        </Link>
+                      </motion.div>
+                    );
+                  })}
                   <BookingCta
                     className="w-full py-4 rounded-xl text-primary-foreground font-bold text-center mt-4"
                     onNavigate={() => setIsMobileMenuOpen(false)}
