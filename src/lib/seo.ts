@@ -61,6 +61,12 @@ export const pageSeo = {
       "Terms and conditions for using TechVerge Solutions websites and custom AI automation, voice agent, and software development services.",
     path: "/terms-of-service",
   },
+  blog: {
+    title: formatPageTitle("Blog"),
+    description:
+      "Practical guides from TechVerge Solutions on AI voice agents, lead follow-up automation, and business workflows for US small and service businesses.",
+    path: "/blog",
+  },
   notFound: {
     title: formatPageTitle("Page Not Found"),
     description:
@@ -224,5 +230,60 @@ export function faqPageJsonLd(faq: { question: string; answer: string }[]) {
         text: item.answer,
       },
     })),
+  };
+}
+
+export function blogPostingJsonLd(input: {
+  title: string;
+  description: string;
+  path: string;
+  datePublished: string;
+  dateModified: string;
+  imagePath: string;
+  imageAlt?: string;
+}) {
+  const url = absoluteUrl(input.path);
+  const imageUrl = absoluteUrl(input.imagePath);
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: input.title,
+    description: input.description,
+    image: {
+      "@type": "ImageObject",
+      url: imageUrl,
+      ...(input.imageAlt ? { caption: input.imageAlt } : {}),
+    },
+    datePublished: input.datePublished,
+    dateModified: input.dateModified,
+    author: {
+      "@type": "Organization",
+      "@id": `${SITE_URL}/#organization`,
+      name: SITE_NAME,
+      url: `${SITE_URL}/`,
+    },
+    publisher: {
+      "@type": "Organization",
+      "@id": `${SITE_URL}/#organization`,
+      name: SITE_NAME,
+      url: `${SITE_URL}/`,
+      logo: {
+        "@type": "ImageObject",
+        url: `${SITE_URL}/Logo.svg`,
+      },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": url,
+    },
+    url,
+    inLanguage: "en-US",
+    isPartOf: {
+      "@type": "Blog",
+      "@id": absoluteUrl("/blog"),
+      name: `${SITE_NAME} Blog`,
+      publisher: { "@id": `${SITE_URL}/#organization` },
+    },
   };
 }

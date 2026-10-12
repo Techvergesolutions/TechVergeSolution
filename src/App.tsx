@@ -14,6 +14,8 @@ import NotFound from "./pages/NotFound";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import ServicePage from "./pages/ServicePage";
+import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
 
 // Components
 import { CookieConsent } from "./components/ui/CookieConsent";
@@ -41,6 +43,8 @@ const App = () => {
             <Route path="/services" element={<Services />} />
             <Route path="/services/:slug" element={<ServicePage />} />
             <Route path="/portfolio" element={<Portfolio />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-of-service" element={<TermsAndConditions />} />

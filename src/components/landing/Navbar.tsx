@@ -9,15 +9,19 @@ const navLinks = [
   { name: "Home", href: "/" },
   { name: "Services", href: "/services" },
   { name: "Portfolio", href: "/portfolio" },
+  { name: "Blog", href: "/blog" },
   { name: "About Us", href: "/about" },
   { name: "Contact", href: "/contact" },
 ];
 
-/** Active matching: Home exact `/` only; Services includes `/services/:slug`; others exact path. */
+/** Active matching: Home exact `/` only; Services/Blog include nested paths; others exact path. */
 function isNavLinkActive(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
   if (href === "/services") {
     return pathname === "/services" || pathname.startsWith("/services/");
+  }
+  if (href === "/blog") {
+    return pathname === "/blog" || pathname.startsWith("/blog/");
   }
   return pathname === href;
 }

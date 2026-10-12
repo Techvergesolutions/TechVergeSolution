@@ -12,6 +12,7 @@ import {
   DEFAULT_OG_IMAGE_ALT,
   EXPECTED_ROUTE_COUNT,
   absoluteUrl,
+  blogPostingJsonLd,
   faqPageJsonLd,
   organizationJsonLd,
   prerenderRoutes,
@@ -108,11 +109,31 @@ function buildJsonLdBlock(route) {
     }
     return blocks.map((b) => `    ${jsonLdScript(b)}`).join("\n");
   }
+  if (route.article) {
+    const blocks = [
+      blogPostingJsonLd({
+        title: route.article.title,
+        description: route.description,
+        path: route.path,
+        datePublished: route.article.datePublished,
+        dateModified: route.article.dateModified,
+        imagePath: route.article.imagePath,
+        imageAlt: route.article.imageAlt,
+      }),
+    ];
+    if (route.article.faq?.length) {
+      blocks.push(faqPageJsonLd(route.article.faq));
+    }
+    return blocks.map((b) => `    ${jsonLdScript(b)}`).join("\n");
+  }
   return "";
 }
 
 function applyRouteMeta(templateHtml, route) {
   const canonical = absoluteUrl(route.path);
+  const ogImage = route.ogImage || DEFAULT_OG_IMAGE;
+  const ogImageAlt = route.ogImageAlt || DEFAULT_OG_IMAGE_ALT;
+  const ogType = route.ogType || "website";
   let html = templateHtml;
 
   html = upsertTitle(html, route.title);
@@ -152,9 +173,23 @@ function applyRouteMeta(templateHtml, route) {
   html = upsertTag(html, {
     tag: "meta",
     attr: "property",
-    attrValue: "og:image",
-    attrs: { property: "og:image", content: DEFAULT_OG_IMAGE },
+    attrValue: "og:type",
+    attrs: { property: "og:type", content: ogType },
   });
+  html = upsertTag(html, {
+    tag: "meta",
+    attr: "property",
+    attrValue: "og:image",
+    attrs: { property: "og:image", content: ogImage },
+  });
+  if (/property\s*=\s*["']og:image:alt["']/i.test(html)) {
+    html = upsertTag(html, {
+      tag: "meta",
+      attr: "property",
+      attrValue: "og:image:alt",
+      attrs: { property: "og:image:alt", content: ogImageAlt },
+    });
+  }
 
   // Twitter tags — update only if already present in the template
   if (/name\s*=\s*["']twitter:title["']/i.test(html)) {
@@ -178,7 +213,7 @@ function applyRouteMeta(templateHtml, route) {
       tag: "meta",
       attr: "name",
       attrValue: "twitter:image",
-      attrs: { name: "twitter:image", content: DEFAULT_OG_IMAGE },
+      attrs: { name: "twitter:image", content: ogImage },
     });
   }
   if (/name\s*=\s*["']twitter:image:alt["']/i.test(html)) {
@@ -186,7 +221,7 @@ function applyRouteMeta(templateHtml, route) {
       tag: "meta",
       attr: "name",
       attrValue: "twitter:image:alt",
-      attrs: { name: "twitter:image:alt", content: DEFAULT_OG_IMAGE_ALT },
+      attrs: { name: "twitter:image:alt", content: ogImageAlt },
     });
   }
 
@@ -259,6 +294,7 @@ function validateHtml(html, route) {
     /"@graph"/i.test(html);
   const hasService = /"@type"\s*:\s*"Service"/i.test(html);
   const hasFaq = /"@type"\s*:\s*"FAQPage"/i.test(html);
+  const hasBlogPosting = /"@type"\s*:\s*"BlogPosting"/i.test(html);
 
   if (route.path === "/") {
     if (!hasOrg) fail(`Route /: missing Organization JSON-LD graph`);
@@ -285,6 +321,17 @@ function validateHtml(html, route) {
     }
   } else if (route.path !== "/" && hasService) {
     fail(`Route ${route.path}: unexpected Service JSON-LD`);
+  }
+
+  if (route.article) {
+    if (!hasBlogPosting) {
+      fail(`Route ${route.path}: missing BlogPosting JSON-LD`);
+    }
+    if (route.article.faq?.length && !hasFaq) {
+      fail(`Route ${route.path}: missing FAQPage JSON-LD`);
+    }
+  } else if (hasBlogPosting) {
+    fail(`Route ${route.path}: unexpected BlogPosting JSON-LD`);
   }
 }
 
@@ -324,6 +371,8 @@ function main() {
     "/services/business-automation",
     "/services/ai-saas-development",
     "/portfolio",
+    "/blog",
+    "/blog/ai-voice-agents-for-small-business-2026",
     "/contact",
     "/privacy-policy",
     "/terms-of-service",

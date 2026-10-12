@@ -26,6 +26,12 @@ const staticEntries: Omit<SitemapEntry, "loc" | "lastmod">[] = [
   { path: "/about", changefreq: "monthly", priority: 0.8 },
   { path: "/services", changefreq: "weekly", priority: 0.8 },
   { path: "/portfolio", changefreq: "monthly", priority: 0.8 },
+  { path: "/blog", changefreq: "weekly", priority: 0.7 },
+  {
+    path: "/blog/ai-voice-agents-for-small-business-2026",
+    changefreq: "monthly",
+    priority: 0.7,
+  },
   { path: "/contact", changefreq: "monthly", priority: 0.8 },
   { path: "/privacy-policy", changefreq: "yearly", priority: 0.3 },
   { path: "/terms-of-service", changefreq: "yearly", priority: 0.3 },
@@ -46,9 +52,9 @@ export function getSitemapEntries(lastmod = SITEMAP_LASTMOD): SitemapEntry[] {
     priority: 0.8,
   }));
 
-  // Preserve public/sitemap.xml order: home → about → services → service slugs → rest
-  const [home, about, services, ...rest] = staticRoutes;
-  return [home, about, services, ...serviceRoutes, ...rest];
+  // Preserve public/sitemap.xml order: home → about → services → service slugs → portfolio → blog → rest
+  const [home, about, services, portfolio, ...rest] = staticRoutes;
+  return [home, about, services, ...serviceRoutes, portfolio, ...rest];
 }
 
 export const SITEMAP_XML_URL = `${SITE_URL}/sitemap.xml`;

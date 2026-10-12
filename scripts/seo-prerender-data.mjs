@@ -1,7 +1,7 @@
 /**
- * Keep in sync with src/lib/seo.ts and src/data/services.ts.
+ * Keep in sync with src/lib/seo.ts, src/data/services.ts, and src/data/blog.ts.
  * Copied for Node post-build (no TS import / no new deps).
- * Expected route count: 11.
+ * Expected route count: 13.
  */
 
 export const SITE_URL = "https://www.techvergesolution.com";
@@ -162,7 +162,54 @@ export function faqPageJsonLd(faq) {
   };
 }
 
-/** Exactly 11 routes — titles/descriptions from pageSeo + servicesConfig. */
+export function blogPostingJsonLd(input) {
+  const url = absoluteUrl(input.path);
+  const imageUrl = absoluteUrl(input.imagePath);
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: input.title,
+    description: input.description,
+    image: {
+      "@type": "ImageObject",
+      url: imageUrl,
+      ...(input.imageAlt ? { caption: input.imageAlt } : {}),
+    },
+    datePublished: input.datePublished,
+    dateModified: input.dateModified,
+    author: {
+      "@type": "Organization",
+      "@id": `${SITE_URL}/#organization`,
+      name: SITE_NAME,
+      url: `${SITE_URL}/`,
+    },
+    publisher: {
+      "@type": "Organization",
+      "@id": `${SITE_URL}/#organization`,
+      name: SITE_NAME,
+      url: `${SITE_URL}/`,
+      logo: {
+        "@type": "ImageObject",
+        url: `${SITE_URL}/Logo.svg`,
+      },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": url,
+    },
+    url,
+    inLanguage: "en-US",
+    isPartOf: {
+      "@type": "Blog",
+      "@id": absoluteUrl("/blog"),
+      name: `${SITE_NAME} Blog`,
+      publisher: { "@id": `${SITE_URL}/#organization` },
+    },
+  };
+}
+
+/** Exactly 13 routes — titles/descriptions from pageSeo + servicesConfig + blog. */
 export const prerenderRoutes = [
   {
     path: "/",
@@ -354,6 +401,63 @@ export const prerenderRoutes = [
       "Selected TechVerge case studies — real automation and software projects described by problem, solution, and outcome, without invented metrics.",
   },
   {
+    path: "/blog",
+    title: "Blog | TechVerge Solutions",
+    description:
+      "Practical guides from TechVerge Solutions on AI voice agents, lead follow-up automation, and business workflows for US small and service businesses.",
+  },
+  {
+    path: "/blog/ai-voice-agents-for-small-business-2026",
+    title:
+      "AI Voice Agents for Small Businesses in 2026: Use Cases, Costs, and Limitations | TechVerge Solutions",
+    description:
+      "A practical guide for US small and appointment-based businesses on AI voice agents in 2026 — suitable use cases, cost drivers, limitations, privacy basics, and when human handoff matters.",
+    ogImage: `${SITE_URL}/images/blog/ai-voice-agents-hero.webp`,
+    ogImageAlt:
+      "AI voice agents for small businesses — headset workstation illustration",
+    ogType: "article",
+    article: {
+      title:
+        "AI Voice Agents for Small Businesses in 2026: Use Cases, Costs, and Limitations",
+      datePublished: "2026-10-12",
+      dateModified: "2026-10-12",
+      imagePath: "/images/blog/ai-voice-agents-hero.webp",
+      imageAlt:
+        "AI voice agents for small businesses — headset workstation illustration",
+      faq: [
+        {
+          question:
+            "Will callers know they are talking to an AI voice agent?",
+          answer:
+            "That depends on your disclosure policy. Many US small businesses choose clear, professional transparency plus an easy path to a human. Build the wording into the opening script rather than leaving it to chance.",
+        },
+        {
+          question:
+            "Can an AI voice agent replace our receptionist entirely?",
+          answer:
+            "Usually not as a full replacement. Most successful setups cover a defined set of call types — after-hours intake, FAQs, booking — and escalate exceptions. Think coverage and consistency, not a one-for-one headcount swap.",
+        },
+        {
+          question:
+            "How long does a focused inbound pilot usually take?",
+          answer:
+            "A narrow use case can often reach a pilot in a few weeks once calendar or CRM access, scripts, and escalation rules are ready. Broader multi-intent rollouts take longer because edge-case testing matters.",
+        },
+        {
+          question: "What do we need before we start?",
+          answer:
+            "Examples of real calls or scripts, hours of operation, booking rules, FAQs, a list of what the agent must never say or do, and a stakeholder who can approve tone and handoffs. Messy processes are normal — documenting them is part of discovery.",
+        },
+        {
+          question:
+            "Do we have to change our phone carrier or CRM?",
+          answer:
+            "Not always. Many builds connect to the tools you already use. The right answer depends on call routing, recording requirements, and how your team works today — discovery should map that before anyone promises a stack switch.",
+        },
+      ],
+    },
+  },
+  {
     path: "/contact",
     title: "Contact | TechVerge Solutions",
     description:
@@ -373,4 +477,4 @@ export const prerenderRoutes = [
   },
 ];
 
-export const EXPECTED_ROUTE_COUNT = 11;
+export const EXPECTED_ROUTE_COUNT = 13;
