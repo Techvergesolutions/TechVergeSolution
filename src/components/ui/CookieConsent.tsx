@@ -2,43 +2,47 @@ import { useEffect } from "react";
 import { toast } from "sonner";
 import { Cookie, ShieldCheck } from "lucide-react";
 
+const CONSENT_KEY = "cookie-consent";
+
 export const CookieConsent = () => {
   const showBanner = () => {
     toast.custom((t) => (
-      <div className="glass-card p-6 rounded-2xl border border-white/10 bg-[#0A0A0A]/95 backdrop-blur-xl max-w-sm shadow-2xl">
+      <div className="p-5 rounded-xl border border-slate-700/80 bg-slate-950/95 backdrop-blur-md max-w-sm shadow-lg">
         <div className="flex flex-col gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary/20 rounded-lg text-primary">
-              <Cookie size={20} />
+            <div className="p-2 rounded-lg bg-slate-800 text-slate-300">
+              <Cookie size={18} />
             </div>
-            <h4 className="text-white font-bold flex items-center gap-2">
-              Cookie Policy <ShieldCheck size={14} className="text-secondary" />
+            <h4 className="text-slate-100 font-semibold text-sm flex items-center gap-2">
+              Cookie Policy <ShieldCheck size={14} className="text-slate-400" />
             </h4>
           </div>
-          
-          <p className="text-muted-foreground text-xs leading-relaxed">
-            We use cookies to enhance your experience and analyze our traffic. 
-            By clicking "Accept", you agree to our digital policy.
+
+          <p className="text-slate-400 text-xs leading-relaxed">
+            We use cookies to enhance your experience and analyze our traffic.
+            By clicking &quot;Accept&quot;, you agree to our digital policy.
           </p>
-          
+
           <div className="flex gap-2">
             <button
+              type="button"
               onClick={() => {
-                localStorage.setItem("cookie-consent", "accepted");
+                localStorage.setItem(CONSENT_KEY, "accepted");
                 window.dispatchEvent(new Event("cookie-consent-updated"));
                 toast.dismiss(t);
               }}
-              className="flex-1 px-4 py-2 bg-primary text-primary-foreground text-[10px] uppercase tracking-widest font-bold rounded-md hover:opacity-90 transition-all"
+              className="flex-1 px-4 py-2 bg-slate-100 text-slate-900 text-[10px] uppercase tracking-widest font-semibold rounded-md hover:bg-white transition-colors"
             >
               Accept All
             </button>
             <button
+              type="button"
               onClick={() => {
-                localStorage.setItem("cookie-consent", "declined");
+                localStorage.setItem(CONSENT_KEY, "declined");
                 window.dispatchEvent(new Event("cookie-consent-updated"));
                 toast.dismiss(t);
               }}
-              className="flex-1 px-4 py-2 bg-white/5 text-white text-[10px] uppercase tracking-widest font-bold rounded-md hover:bg-white/10 transition-colors"
+              className="flex-1 px-4 py-2 border border-slate-700 bg-transparent text-slate-300 text-[10px] uppercase tracking-widest font-semibold rounded-md hover:bg-slate-800/60 hover:text-slate-100 transition-colors"
             >
               Decline
             </button>
@@ -52,14 +56,14 @@ export const CookieConsent = () => {
   };
 
   useEffect(() => {
-    const consent = localStorage.getItem("cookie-consent");
-    
-    // Immediate check: If no consent or previously declined, show right away
-    if (!consent || consent === "declined") {
+    const consent = localStorage.getItem(CONSENT_KEY);
+
+    // Only auto-show when the user has never chosen (missing / null)
+    if (!consent) {
       showBanner();
     }
 
-    // Listener for manual footer trigger
+    // Footer "Cookies" link can reopen settings manually
     const handleManualTrigger = () => {
       toast.dismiss();
       showBanner();

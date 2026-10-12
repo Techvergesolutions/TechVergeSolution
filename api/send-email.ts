@@ -77,20 +77,26 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       subject: `New Project Inquiry: ${subjectName}`,
       replyTo: reply_to,
       html: `
-        <div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
-          <h2 style="color: #00cfef;">New Project Inquiry</h2>
-          <p><strong>Name:</strong> ${safeName}</p>
-          <p><strong>Email:</strong> ${safeEmail}</p>
-          <p><strong>Company:</strong> ${safeCompany}</p>
-          <p><strong>Website:</strong> ${safeWebsite}</p>
-          <p><strong>What to automate:</strong> ${safeAutomate}</p>
-          <p><strong>Monthly volume:</strong> ${safeVolume}</p>
-          <p><strong>Current tools / CRM:</strong> ${safeTools}</p>
-          <p><strong>Estimated budget:</strong> ${safeBudget}</p>
-          <hr />
-          <p><strong>Additional details:</strong></p>
-          <p style="white-space: pre-wrap;">${safeMessage}</p>
-        </div>`,
+        <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; border-collapse: collapse; border: 1px solid #e5e7eb; border-radius: 8px;">
+          <tr>
+            <td style="padding: 24px; color: #334155;">
+              <h2 style="margin: 0 0 20px; color: #0f172a; font-size: 20px; font-weight: 600;">New Project Inquiry</h2>
+              <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; font-size: 14px; line-height: 1.5;">
+                <tr><td style="padding: 6px 0; color: #64748b; width: 160px; vertical-align: top;"><strong style="color: #0f172a;">Name</strong></td><td style="padding: 6px 0;">${safeName}</td></tr>
+                <tr><td style="padding: 6px 0; color: #64748b; vertical-align: top;"><strong style="color: #0f172a;">Email</strong></td><td style="padding: 6px 0;"><a href="mailto:${safeEmail}" style="color: #2563eb; text-decoration: none;">${safeEmail}</a></td></tr>
+                <tr><td style="padding: 6px 0; color: #64748b; vertical-align: top;"><strong style="color: #0f172a;">Company</strong></td><td style="padding: 6px 0;">${safeCompany}</td></tr>
+                <tr><td style="padding: 6px 0; color: #64748b; vertical-align: top;"><strong style="color: #0f172a;">Website</strong></td><td style="padding: 6px 0;">${safeWebsite}</td></tr>
+                <tr><td style="padding: 6px 0; color: #64748b; vertical-align: top;"><strong style="color: #0f172a;">What to automate</strong></td><td style="padding: 6px 0;">${safeAutomate}</td></tr>
+                <tr><td style="padding: 6px 0; color: #64748b; vertical-align: top;"><strong style="color: #0f172a;">Monthly volume</strong></td><td style="padding: 6px 0;">${safeVolume}</td></tr>
+                <tr><td style="padding: 6px 0; color: #64748b; vertical-align: top;"><strong style="color: #0f172a;">Current tools / CRM</strong></td><td style="padding: 6px 0;">${safeTools}</td></tr>
+                <tr><td style="padding: 6px 0; color: #64748b; vertical-align: top;"><strong style="color: #0f172a;">Estimated budget</strong></td><td style="padding: 6px 0;">${safeBudget}</td></tr>
+              </table>
+              <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;" />
+              <p style="margin: 0 0 8px;"><strong style="color: #0f172a;">Additional details</strong></p>
+              <p style="margin: 0; white-space: pre-wrap; color: #334155;">${safeMessage}</p>
+            </td>
+          </tr>
+        </table>`,
     });
 
     if (notify.error) {
@@ -104,19 +110,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       to: reply_to,
       subject: 'Message Received - Techverge Solution',
       html: `
-        <div style="font-family: sans-serif; max-width: 600px; color: #333;">
-          <h2 style="color: #00cfef;">Hello ${safeName},</h2>
-          <p>Thank you for reaching out to <strong>Techverge Solution</strong>!</p>
-          <p>We've received your project inquiry${
-            company_name ? ` for <strong>${safeCompany}</strong>` : ''
-          }. Our team will review your workflow and get back to you within 24 hours.</p>
-          <br />
-          <p>Best Regards,</p>
-          <p><strong>The Techverge Team</strong></p>
-          <footer style="margin-top: 20px; font-size: 11px; color: #999; border-top: 1px solid #eee; padding-top: 10px;">
-            Techverge Solution | Serving Worldwide
-          </footer>
-        </div>`,
+        <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; border-collapse: collapse;">
+          <tr>
+            <td style="padding: 24px; color: #334155;">
+              <h2 style="margin: 0 0 16px; color: #0f172a; font-size: 20px; font-weight: 600;">Hello ${safeName},</h2>
+              <p style="margin: 0 0 12px; font-size: 14px; line-height: 1.6;">Thank you for reaching out to <strong style="color: #0f172a;">Techverge Solution</strong>!</p>
+              <p style="margin: 0 0 24px; font-size: 14px; line-height: 1.6;">We've received your project inquiry${
+                company_name ? ` for <strong style="color: #0f172a;">${safeCompany}</strong>` : ''
+              }. Our team will review your workflow and get back to you within 24 hours.</p>
+              <p style="margin: 0 0 4px; font-size: 14px;">Best Regards,</p>
+              <p style="margin: 0; font-size: 14px;"><strong style="color: #0f172a;">The Techverge Team</strong></p>
+              <p style="margin: 24px 0 0; padding-top: 12px; border-top: 1px solid #e5e7eb; font-size: 11px; color: #94a3b8;">
+                Techverge Solution | Serving Worldwide
+              </p>
+            </td>
+          </tr>
+        </table>`,
     });
 
     if (autoReply.error) {
