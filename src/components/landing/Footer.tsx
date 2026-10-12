@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Linkedin } from "lucide-react";
+import { Facebook, Github, Instagram, Linkedin, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { BookingCta } from "@/components/cta/BookingCta";
 import { trackEvent } from "@/lib/analytics";
@@ -10,6 +10,38 @@ const serviceLinks = [
   { name: "AI Voice Agents", to: servicePath("ai-voice-agents") },
   { name: "Business Automation", to: servicePath("business-automation") },
   { name: "AI SaaS Development", to: servicePath("ai-saas-development") },
+];
+
+const WHATSAPP_HREF =
+  "https://wa.me/15055231081?text=" +
+  encodeURIComponent("Hi TechVerge, I'd like to discuss a project");
+
+const socialLinks = [
+  {
+    name: "LinkedIn",
+    href: "https://www.linkedin.com/company/techverg-solution/",
+    Icon: Linkedin,
+  },
+  {
+    name: "Instagram",
+    href: "https://www.instagram.com/techvergsolutions/",
+    Icon: Instagram,
+  },
+  {
+    name: "Facebook",
+    href: "https://www.facebook.com/profile.php?id=61579426794497",
+    Icon: Facebook,
+  },
+  {
+    name: "GitHub",
+    href: "https://github.com/solutiontechverge-hub",
+    Icon: Github,
+  },
+  {
+    name: "WhatsApp",
+    href: WHATSAPP_HREF,
+    Icon: MessageCircle,
+  },
 ];
 
 export const Footer = () => {
@@ -56,16 +88,19 @@ export const Footer = () => {
               >
                 info@techvergesolution.com
               </a>
-              <a
-                href="https://www.linkedin.com/company/techverg-solution/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
-                aria-label="LinkedIn"
-              >
-                <Linkedin className="w-4 h-4" />
-                LinkedIn
-              </a>
+              {socialLinks.map(({ name, href, Icon }) => (
+                <a
+                  key={name}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
+                  aria-label={name}
+                >
+                  <Icon className="w-4 h-4" />
+                  {name}
+                </a>
+              ))}
             </div>
           </div>
 

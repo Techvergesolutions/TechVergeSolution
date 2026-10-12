@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { AnimatedSection } from "../ui/AnimatedSection";
-import { Send, MapPin, Mail, Phone, CheckCircle, Loader2, Calendar } from "lucide-react";
+import { Send, MapPin, Mail, Phone, CheckCircle, Loader2, Calendar, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import {
   BOOKING_CTA_LABEL,
@@ -53,6 +53,9 @@ const BLOCKED_DOMAINS = [
 ];
 
 const CONTACT_EMAIL = "info@techvergesolution.com";
+const WHATSAPP_HREF =
+  "https://wa.me/15055231081?text=" +
+  encodeURIComponent("Hi TechVerge, I'd like to discuss a project");
 
 type FormData = {
   name: string;
@@ -622,6 +625,25 @@ export const ContactSection = ({ hidePageHeader = false }: ContactSectionProps) 
                     onClick={() => trackEvent("phone_click", { placement: "contact" })}
                   >
                     +1 (505) 523-1081
+                  </a>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <MessageCircle className="text-primary" size={20} />
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">WhatsApp</p>
+                  <a
+                    href={WHATSAPP_HREF}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-medium hover:text-primary transition-colors"
+                    aria-label="WhatsApp"
+                    onClick={() => trackEvent("whatsapp_click", { placement: "contact" })}
+                  >
+                    Message us on WhatsApp
                   </a>
                 </div>
               </div>

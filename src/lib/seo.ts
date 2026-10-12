@@ -112,6 +112,8 @@ export function organizationJsonLd() {
         sameAs: [
           "https://www.linkedin.com/company/techverg-solution/",
           "https://www.instagram.com/techvergsolutions/",
+          "https://www.facebook.com/profile.php?id=61579426794497",
+          "https://github.com/solutiontechverge-hub",
         ],
       },
       {
