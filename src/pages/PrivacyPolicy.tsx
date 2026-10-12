@@ -2,8 +2,10 @@ import { motion } from "framer-motion";
 import { Eye, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Seo } from "@/components/Seo";
+import { pageSeo } from "@/lib/seo";
 
 const PrivacyPolicy = () => {
+  const seo = pageSeo.privacyPolicy;
   const policies = [
     { title: "1. Information Collection", text: "We collect personal data such as names, email addresses, and phone numbers when voluntarily submitted through contact forms." },
     { title: "2. Automatic Data Collection", text: "Our servers automatically record log data, including IP addresses, browser types, and pages visited." },
@@ -30,11 +32,7 @@ const PrivacyPolicy = () => {
 
   return (
     <>
-      <Seo
-        title="Privacy Policy | TechVerge"
-        description="How TechVerge Solutions collects, uses, and protects personal information when you use our website and services."
-        path="/privacy"
-      />
+      <Seo title={seo.title} description={seo.description} path={seo.path} />
       <main className="min-h-screen bg-[#050505] text-white py-24 px-6 relative">
         <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -z-10" />
 

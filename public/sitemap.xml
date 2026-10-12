@@ -7,37 +7,61 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://www.techvergesolution.com/ai-automation</loc>
+    <loc>https://www.techvergesolution.com/about</loc>
     <lastmod>2026-10-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.techvergesolution.com/ai-voice-agents</loc>
+    <loc>https://www.techvergesolution.com/services</loc>
+    <lastmod>2026-10-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.techvergesolution.com/services/ai-automation</loc>
     <lastmod>2026-10-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.techvergesolution.com/business-automation</loc>
+    <loc>https://www.techvergesolution.com/services/ai-voice-agents</loc>
     <lastmod>2026-10-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.techvergesolution.com/ai-saas-development</loc>
+    <loc>https://www.techvergesolution.com/services/business-automation</loc>
     <lastmod>2026-10-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.techvergesolution.com/privacy</loc>
+    <loc>https://www.techvergesolution.com/services/ai-saas-development</loc>
+    <lastmod>2026-10-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.techvergesolution.com/portfolio</loc>
+    <lastmod>2026-10-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.techvergesolution.com/contact</loc>
+    <lastmod>2026-10-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.techvergesolution.com/privacy-policy</loc>
     <lastmod>2026-10-12</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://www.techvergesolution.com/terms</loc>
+    <loc>https://www.techvergesolution.com/terms-of-service</loc>
     <lastmod>2026-10-12</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>

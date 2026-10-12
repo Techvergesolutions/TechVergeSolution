@@ -17,7 +17,7 @@ export function ServiceHero({ service }: ServiceHeroProps) {
       <div className="section-container relative z-10">
         <AnimatedSection className="max-w-3xl">
           <Link
-            to="/#solutions"
+            to="/services"
             className="inline-flex items-center text-sm text-muted-foreground hover:text-primary transition-colors mb-6"
           >
             ← All solutions
@@ -35,12 +35,12 @@ export function ServiceHero({ service }: ServiceHeroProps) {
             <BookingCta
               showArrow
               eventName="service_cta_click"
-              eventParams={{ service: service.slug, placement: "hero" }}
+              eventParams={{ service: service.slug, placement: "hero", cta: "strategy" }}
               className="px-7 py-3.5 rounded-xl text-primary-foreground font-semibold"
             />
             <WorkflowAuditCta
               eventName="service_cta_click"
-              eventParams={{ service: service.slug, placement: "hero" }}
+              eventParams={{ service: service.slug, placement: "hero", cta: "audit" }}
               className="px-7 py-3.5 rounded-xl text-foreground font-semibold"
             />
           </div>

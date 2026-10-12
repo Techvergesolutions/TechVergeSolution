@@ -62,6 +62,16 @@ export interface ServiceConfig {
     description: string;
     items: string[];
   };
+  deliverables: {
+    title: string;
+    description: string;
+    items: string[];
+  };
+  limitations: {
+    title: string;
+    description: string;
+    items: string[];
+  };
   faq: ServiceFaqItem[];
   cta: {
     title: string;
@@ -222,6 +232,31 @@ export const servicesConfig: Record<ServiceSlug, ServiceConfig> = {
         "Service businesses that receive form and chat enquiries daily",
         "B2B companies that need cleaner demo and discovery routing",
         "Operators who want automation without buying a rigid packaged product",
+      ],
+    },
+    deliverables: {
+      title: "What You Walk Away With",
+      description:
+        "Concrete artifacts and working systems — not a slide deck that leaves your team guessing.",
+      items: [
+        "Documented lead sources, qualification rules, and escalation map",
+        "Working follow-up workflows connected to your CRM and messaging channels",
+        "Approved reply scripts / prompt guardrails your team can edit",
+        "Owner routing, tags, and field updates tested with real sample leads",
+        "Handoff playbook: when automation stops and a person takes over",
+        "Brief runbook so your team knows how to monitor and adjust",
+      ],
+    },
+    limitations: {
+      title: "Where Automation Stops",
+      description:
+        "We design honest boundaries so leads and customers are not trapped in a bot loop.",
+      items: [
+        "Pricing negotiations, custom proposals, and relationship closes stay with humans",
+        "We do not promise specific conversion-rate lifts — outcomes depend on your offer, traffic, and follow-through",
+        "Channels we cannot access (restricted inboxes, unsupported CRMs) stay out of scope until connected",
+        "Complex legal, medical, or regulated advice is excluded from automated replies by design",
+        "If qualification rules are unclear, we pause automation expansion until you approve them",
       ],
     },
     faq: [
@@ -410,6 +445,31 @@ export const servicesConfig: Record<ServiceSlug, ServiceConfig> = {
         "Teams that need human escalation for complex or sensitive calls",
       ],
     },
+    deliverables: {
+      title: "What You Walk Away With",
+      description:
+        "A production-ready inbound voice path scoped to the call types you approved — with documentation your team can operate.",
+      items: [
+        "Call intent map: automate vs escalate vs message-only",
+        "Conversation scripts, disclosures, and guardrails you signed off on",
+        "Telephony / number routing connected to calendars and CRM where in scope",
+        "Booking or callback flows tested against your real availability rules",
+        "Transfer and fallback paths to live staff or voicemail",
+        "Post-call summary and logging format your team can review",
+      ],
+    },
+    limitations: {
+      title: "Where The Voice Agent Hand Offs",
+      description:
+        "Voice automation works for repeatable intake — not for every sensitive or high-stakes conversation.",
+      items: [
+        "Medical diagnosis, legal advice, and payment-card capture can be excluded or handed to humans by design",
+        "We do not claim the agent will sound indistinguishable from a trained receptionist in every edge case",
+        "Carrier, SIP, or legacy PBX constraints may limit how cleanly we can integrate your existing number",
+        "Background noise, heavy accents, and overlapping speakers can reduce accuracy — we plan fallbacks",
+        "Live close-the-sale or clinical counseling calls stay with people unless you explicitly expand scope after a successful pilot",
+      ],
+    },
     faq: [
       {
         question: "Is this a seat-based voice product?",
@@ -594,6 +654,31 @@ export const servicesConfig: Record<ServiceSlug, ServiceConfig> = {
         "Agencies and service businesses with repetitive onboarding steps",
         "Ops leaders who want reliable handoffs between departments",
         "Companies that need custom glue between tools — not another packaged platform",
+      ],
+    },
+    deliverables: {
+      title: "What You Walk Away With",
+      description:
+        "Stable automations for the workflow we scoped — plus the maps and alerts your ops owner needs.",
+      items: [
+        "Process map of the target workflow before and after automation",
+        "Field mapping and trigger definitions between your connected tools",
+        "Working integrations for the agreed happy path and critical exceptions",
+        "Error alerts / retry behavior documented for the ops owner",
+        "Training notes so the people living with the workflow can spot failures",
+        "Prioritized backlog of the next processes worth automating",
+      ],
+    },
+    limitations: {
+      title: "What We Will Not Automate Blindly",
+      description:
+        "Automation without ownership and failure handling creates silent risk — we scope conservatively.",
+      items: [
+        "We do not rip-and-replace your entire stack in phase one unless that is the explicit project",
+        "Broken source data stays broken until naming and hygiene are addressed",
+        "Approvals that require judgment (discounts, exceptions, compliance sign-off) stay human",
+        "Tools without usable APIs may need manual steps or a different approach — we say so early",
+        "We do not invent ROI percentages; time saved depends on volume and how consistently the team uses the new path",
       ],
     },
     faq: [
@@ -782,6 +867,31 @@ export const servicesConfig: Record<ServiceSlug, ServiceConfig> = {
         "Operators who need custom software, not another subscription to a generic platform",
       ],
     },
+    deliverables: {
+      title: "What You Walk Away With",
+      description:
+        "Client-owned software milestones you can demo — plus the architecture and handoff materials to keep building.",
+      items: [
+        "Scoped product brief: users, workflows, and AI feature boundaries",
+        "UX flows and data model for the agreed MVP or module",
+        "Working application increments you can review in staging",
+        "Auth, roles, and audit trails suited to the security needs we agreed",
+        "AI features with review paths where outputs need a human",
+        "Repository access, environment notes, and runbooks for ownership",
+      ],
+    },
+    limitations: {
+      title: "Scope Boundaries We Keep Explicit",
+      description:
+        "Custom software succeeds when AI is a capability inside a product — not an unbounded promise.",
+      items: [
+        "We do not sell seats to a TechVerge packaged SaaS — this is build work for your product or internal tool",
+        "Model outputs can be wrong; critical actions need human review unless you accept that risk in writing",
+        "Timeline expands with compliance, SSO, migrations, and poorly documented legacy systems",
+        "We will not claim user-count or revenue outcomes we have not verified",
+        "Ongoing hosting, model costs, and maintenance need an owner — us or your team — defined before launch",
+      ],
+    },
     faq: [
       {
         question: "Is this TechVerge's SaaS product?",
@@ -823,6 +933,10 @@ export const servicesConfig: Record<ServiceSlug, ServiceConfig> = {
     },
   },
 };
+
+export function servicePath(slug: ServiceSlug | string): string {
+  return `/services/${slug}`;
+}
 
 export function getServiceBySlug(slug: string): ServiceConfig | undefined {
   if (slug in servicesConfig) {

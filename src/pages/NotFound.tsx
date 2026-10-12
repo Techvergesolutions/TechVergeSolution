@@ -2,9 +2,11 @@ import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Seo } from "@/components/Seo";
+import { pageSeo } from "@/lib/seo";
 
 const NotFound = () => {
   const location = useLocation();
+  const seo = pageSeo.notFound;
 
   useEffect(() => {
     console.error("404 Error: User attempted to access non-existent route:", location.pathname);
@@ -13,8 +15,8 @@ const NotFound = () => {
   return (
     <>
       <Seo
-        title="Page Not Found | TechVerge"
-        description="The page you requested could not be found on TechVerge Solutions."
+        title={seo.title}
+        description={seo.description}
         path={location.pathname}
         noindex
       />

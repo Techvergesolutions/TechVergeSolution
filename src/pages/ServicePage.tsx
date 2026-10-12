@@ -1,23 +1,25 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { ServicePageLayout } from "@/components/services/ServicePageLayout";
 import { Seo } from "@/components/Seo";
-import { getServiceBySlug, type ServiceSlug } from "@/data/services";
+import { getServiceBySlug, servicePath, type ServiceSlug } from "@/data/services";
 import { faqPageJsonLd, serviceJsonLd } from "@/lib/seo";
 
 interface ServicePageProps {
-  slug: ServiceSlug;
+  slug?: ServiceSlug;
 }
 
-export default function ServicePage({ slug }: ServicePageProps) {
-  const service = getServiceBySlug(slug);
+export default function ServicePage({ slug: slugProp }: ServicePageProps) {
+  const { slug: slugParam } = useParams<{ slug: string }>();
+  const slug = slugProp ?? slugParam;
+  const service = slug ? getServiceBySlug(slug) : undefined;
 
   if (!service) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/services" replace />;
   }
 
-  const path = `/${service.slug}`;
+  const path = servicePath(service.slug);
   const jsonLd = [
     serviceJsonLd({
       name: service.eyebrow,

@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { AnimatedSection } from "../ui/AnimatedSection";
 import { BookingCta } from "@/components/cta/BookingCta";
 import { WorkflowAuditCta } from "@/components/cta/WorkflowAuditCta";
+import { servicePath } from "@/data/services";
 import { MessageSquareReply, PhoneCall, Network, AppWindow, ArrowRight } from "lucide-react";
 
 const solutions = [
@@ -10,28 +11,28 @@ const solutions = [
     title: "AI Lead Follow-Up Automation",
     description:
       "Respond to new enquiries quickly and automate qualification and follow-up so leads don't sit unanswered.",
-    href: "/ai-automation",
+    href: servicePath("ai-automation"),
   },
   {
     icon: PhoneCall,
     title: "AI Voice Agents",
     description:
       "Handle common inbound calls, qualify callers, and help schedule appointments with clear human handoffs.",
-    href: "/ai-voice-agents",
+    href: servicePath("ai-voice-agents"),
   },
   {
     icon: Network,
     title: "Business Process Automation",
     description:
       "Connect forms, CRM, email, calendars, and internal systems so work moves without copy-paste.",
-    href: "/business-automation",
+    href: servicePath("business-automation"),
   },
   {
     icon: AppWindow,
     title: "AI SaaS & Custom Software",
     description:
       "Build custom AI-powered applications and internal business tools around your exact workflows.",
-    href: "/ai-saas-development",
+    href: servicePath("ai-saas-development"),
   },
 ];
 

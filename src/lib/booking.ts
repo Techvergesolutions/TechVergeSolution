@@ -4,9 +4,9 @@ export const SIMILAR_PROJECT_CTA_LABEL = "Discuss a Similar Project";
 
 export type ContactIntent = "strategy" | "audit" | "similar";
 
-export const CONTACT_STRATEGY_PATH = "/#contact?intent=strategy";
-export const CONTACT_AUDIT_PATH = "/#contact?intent=audit";
-export const CONTACT_SIMILAR_PATH = "/#contact?intent=similar";
+export const CONTACT_STRATEGY_PATH = "/contact?intent=strategy";
+export const CONTACT_AUDIT_PATH = "/contact?intent=audit";
+export const CONTACT_SIMILAR_PATH = "/contact?intent=similar";
 
 /** Resolve external booking URL from env. Never invents a fake calendar link. */
 export function getBookingUrl(): string | null {
@@ -20,17 +20,16 @@ export function isHttpUrl(url: string): boolean {
   return /^https?:\/\//i.test(url);
 }
 
-/** Same-page contact scroll + intent prefill when already on the home page. */
+/** Same-page contact scroll + intent prefill when already on the contact page. */
 export function goToContactIntent(intent: ContactIntent): void {
-  const hash = `#contact?intent=${intent}`;
-  window.history.replaceState(null, "", hash);
+  const path = `/contact?intent=${intent}`;
+  window.history.replaceState(null, "", path);
   window.dispatchEvent(
     new CustomEvent("contact-intent", { detail: { intent } })
   );
   document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
 }
 
-export function isOnHomePage(): boolean {
-  const path = window.location.pathname;
-  return path === "/" || path === "";
+export function isOnContactPage(): boolean {
+  return window.location.pathname === "/contact";
 }

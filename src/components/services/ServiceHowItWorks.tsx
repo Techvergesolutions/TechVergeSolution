@@ -22,7 +22,7 @@ export function ServiceHowItWorks({ howItWorks }: ServiceHowItWorksProps) {
           </p>
         </AnimatedSection>
 
-        <div className="grid sm:grid-cols-2 gap-5 md:gap-6 max-w-5xl mb-12">
+        <div className="grid sm:grid-cols-2 gap-5 md:gap-6 max-w-5xl">
           {howItWorks.steps.map((step, index) => (
             <AnimatedSection key={step.title} delay={index * 0.06}>
               <div className="h-full rounded-2xl border border-border/60 bg-card/40 p-6 md:p-7">
@@ -39,29 +39,6 @@ export function ServiceHowItWorks({ howItWorks }: ServiceHowItWorksProps) {
             </AnimatedSection>
           ))}
         </div>
-
-        {howItWorks.technicalCapabilities && howItWorks.technicalCapabilities.length > 0 && (
-          <AnimatedSection delay={0.15}>
-            <div className="max-w-5xl rounded-2xl border border-border/40 bg-background/40 p-6 md:p-8">
-              <h3 className="font-display text-lg font-bold text-foreground mb-4">
-                Technical capabilities
-              </h3>
-              <ul className="grid sm:grid-cols-2 gap-3">
-                {howItWorks.technicalCapabilities.map((cap) => (
-                  <li
-                    key={cap}
-                    className="text-sm text-muted-foreground leading-relaxed flex gap-2"
-                  >
-                    <span className="text-primary/70 shrink-0" aria-hidden>
-                      ·
-                    </span>
-                    {cap}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </AnimatedSection>
-        )}
       </div>
     </section>
   );

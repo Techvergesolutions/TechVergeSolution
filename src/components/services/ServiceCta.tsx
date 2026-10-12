@@ -9,7 +9,10 @@ interface ServiceCtaProps {
 }
 
 export function ServiceCta({ cta, serviceSlug }: ServiceCtaProps) {
-  const eventParams = { service: serviceSlug, placement: "footer_cta" };
+  const eventParams = {
+    service: serviceSlug,
+    placement: "footer_cta",
+  };
 
   return (
     <section className="relative py-20 md:py-28 overflow-hidden">
@@ -27,13 +30,13 @@ export function ServiceCta({ cta, serviceSlug }: ServiceCtaProps) {
               <BookingCta
                 showArrow
                 eventName="service_cta_click"
-                eventParams={eventParams}
+                eventParams={{ ...eventParams, cta: "strategy" }}
                 className="px-8 py-4 rounded-xl text-primary-foreground font-semibold w-full sm:w-auto"
               />
               {cta.secondaryLabel && (
                 <WorkflowAuditCta
                   eventName="service_cta_click"
-                  eventParams={eventParams}
+                  eventParams={{ ...eventParams, cta: "audit" }}
                   className="px-8 py-4 rounded-xl text-foreground font-semibold w-full sm:w-auto"
                 />
               )}

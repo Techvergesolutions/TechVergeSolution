@@ -3,12 +3,13 @@ import { Linkedin } from "lucide-react";
 import { Link } from "react-router-dom";
 import { BookingCta } from "@/components/cta/BookingCta";
 import { trackEvent } from "@/lib/analytics";
+import { servicePath } from "@/data/services";
 
 const serviceLinks = [
-  { name: "AI Lead Follow-Up", to: "/ai-automation" },
-  { name: "AI Voice Agents", to: "/ai-voice-agents" },
-  { name: "Business Automation", to: "/business-automation" },
-  { name: "AI SaaS Development", to: "/ai-saas-development" },
+  { name: "AI Lead Follow-Up", to: servicePath("ai-automation") },
+  { name: "AI Voice Agents", to: servicePath("ai-voice-agents") },
+  { name: "Business Automation", to: servicePath("business-automation") },
+  { name: "AI SaaS Development", to: servicePath("ai-saas-development") },
 ];
 
 export const Footer = () => {
@@ -89,26 +90,42 @@ export const Footer = () => {
               <ul className="space-y-3">
                 <li>
                   <Link
-                    to="/#solutions"
+                    to="/"
                     className="text-muted-foreground hover:text-primary transition-colors text-sm"
                   >
-                    Solutions
+                    Home
                   </Link>
                 </li>
                 <li>
                   <Link
-                    to="/#work"
+                    to="/services"
                     className="text-muted-foreground hover:text-primary transition-colors text-sm"
                   >
-                    Work
+                    Services
                   </Link>
                 </li>
                 <li>
                   <Link
-                    to="/#process"
+                    to="/portfolio"
                     className="text-muted-foreground hover:text-primary transition-colors text-sm"
                   >
-                    Process
+                    Portfolio
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/about"
+                    className="text-muted-foreground hover:text-primary transition-colors text-sm"
+                  >
+                    About Us
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/contact"
+                    className="text-muted-foreground hover:text-primary transition-colors text-sm"
+                  >
+                    Contact
                   </Link>
                 </li>
                 <li>
@@ -123,12 +140,18 @@ export const Footer = () => {
               <p className="font-display font-bold text-foreground mb-4">Legal</p>
               <ul className="space-y-3">
                 <li>
-                  <Link to="/privacy" className="text-muted-foreground hover:text-primary transition-colors text-sm">
+                  <Link
+                    to="/privacy-policy"
+                    className="text-muted-foreground hover:text-primary transition-colors text-sm"
+                  >
                     Privacy Policy
                   </Link>
                 </li>
                 <li>
-                  <Link to="/terms" className="text-muted-foreground hover:text-primary transition-colors text-sm">
+                  <Link
+                    to="/terms-of-service"
+                    className="text-muted-foreground hover:text-primary transition-colors text-sm"
+                  >
                     Terms of Service
                   </Link>
                 </li>
@@ -136,7 +159,7 @@ export const Footer = () => {
                   <button
                     type="button"
                     onClick={triggerCookieBanner}
-                    className="text-muted-foreground hover:text-primary transition-colors text-sm"
+                    className="text-muted-foreground hover:text-primary transition-colors text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm"
                   >
                     Cookies
                   </button>

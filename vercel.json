@@ -1,4 +1,46 @@
 {
+  "redirects": [
+    {
+      "source": "/ai-automation",
+      "destination": "/services/ai-automation",
+      "permanent": true
+    },
+    {
+      "source": "/ai-voice-agents",
+      "destination": "/services/ai-voice-agents",
+      "permanent": true
+    },
+    {
+      "source": "/business-automation",
+      "destination": "/services/business-automation",
+      "permanent": true
+    },
+    {
+      "source": "/ai-saas-development",
+      "destination": "/services/ai-saas-development",
+      "permanent": true
+    },
+    {
+      "source": "/lead-follow-up-automation",
+      "destination": "/services/ai-automation",
+      "permanent": true
+    },
+    {
+      "source": "/services/lead-follow-up-automation",
+      "destination": "/services/ai-automation",
+      "permanent": true
+    },
+    {
+      "source": "/privacy",
+      "destination": "/privacy-policy",
+      "permanent": true
+    },
+    {
+      "source": "/terms",
+      "destination": "/terms-of-service",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/((?!api/|sitemap\\.xml|robots\\.txt|.*\\..*).*)",

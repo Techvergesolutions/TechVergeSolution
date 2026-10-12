@@ -86,7 +86,11 @@ const inputClass = (hasError?: boolean) =>
     hasError ? "border-red-500" : "border-border"
   } focus:border-primary outline-none transition-all min-h-[48px]`;
 
-export const ContactSection = () => {
+interface ContactSectionProps {
+  hidePageHeader?: boolean;
+}
+
+export const ContactSection = ({ hidePageHeader = false }: ContactSectionProps) => {
   const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState<FormData>(emptyForm);
@@ -108,7 +112,15 @@ export const ContactSection = () => {
       }));
     };
 
-    const fromHash = () => {
+    const fromUrl = () => {
+      const searchParams = new URLSearchParams(window.location.search);
+      const fromSearch = searchParams.get("intent");
+      if (fromSearch) {
+        applyIntent(fromSearch);
+        return;
+      }
+
+      // Legacy hash format: /#contact?intent=strategy
       const hash = window.location.hash;
       const queryIndex = hash.indexOf("?");
       if (queryIndex === -1) return;
@@ -116,17 +128,19 @@ export const ContactSection = () => {
       applyIntent(params.get("intent"));
     };
 
-    fromHash();
+    fromUrl();
 
     const onIntent = (e: Event) => {
       const detail = (e as CustomEvent<{ intent?: string }>).detail;
       applyIntent(detail?.intent);
     };
 
-    window.addEventListener("hashchange", fromHash);
+    window.addEventListener("popstate", fromUrl);
+    window.addEventListener("hashchange", fromUrl);
     window.addEventListener("contact-intent", onIntent as EventListener);
     return () => {
-      window.removeEventListener("hashchange", fromHash);
+      window.removeEventListener("popstate", fromUrl);
+      window.removeEventListener("hashchange", fromUrl);
       window.removeEventListener("contact-intent", onIntent as EventListener);
     };
   }, []);
@@ -250,18 +264,20 @@ export const ContactSection = () => {
     <section id="contact" className="relative py-24 md:py-32 overflow-hidden bg-background">
       <div className="absolute inset-0 grid-pattern opacity-10" />
       <div className="section-container relative z-10">
-        <AnimatedSection className="text-center mb-14 md:mb-16">
-          <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-4 block">
-            Contact
-          </span>
-          <h2 className="font-display text-3xl md:text-5xl lg:text-6xl font-bold mb-6">
-            Tell Us About Your Project
-          </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto text-base md:text-lg">
-            Share how leads, calls, and follow-ups work today. We'll review your workflow and
-            respond with next steps — no packaged product pitch.
-          </p>
-        </AnimatedSection>
+        {!hidePageHeader && (
+          <AnimatedSection className="text-center mb-14 md:mb-16">
+            <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-4 block">
+              Contact
+            </span>
+            <h2 className="font-display text-3xl md:text-5xl lg:text-6xl font-bold mb-6">
+              Tell Us About Your Project
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto text-base md:text-lg">
+              Share how leads, calls, and follow-ups work today. We'll review your workflow and
+              respond with next steps — no packaged product pitch.
+            </p>
+          </AnimatedSection>
+        )}
 
         <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
           <AnimatedSection delay={0.1}>

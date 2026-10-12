@@ -151,8 +151,16 @@ function CaseStudyRow({ study, index }: { study: CaseStudy; index: number }) {
   );
 }
 
-export const PortfolioSection = () => {
-  const [showAll, setShowAll] = useState(false);
+interface PortfolioSectionProps {
+  showAllByDefault?: boolean;
+  hidePageHeader?: boolean;
+}
+
+export const PortfolioSection = ({
+  showAllByDefault = false,
+  hidePageHeader = false,
+}: PortfolioSectionProps) => {
+  const [showAll, setShowAll] = useState(showAllByDefault);
   const visible: CaseStudy[] = showAll
     ? caseStudies
     : caseStudies.slice(0, INITIAL_VISIBLE);
@@ -163,18 +171,20 @@ export const PortfolioSection = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-muted/10 to-transparent pointer-events-none" />
 
       <div className="section-container relative z-10">
-        <AnimatedSection className="text-center mb-14 md:mb-16 max-w-3xl mx-auto">
-          <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-4 block">
-            Work
-          </span>
-          <h2 className="font-display text-3xl md:text-5xl lg:text-6xl font-bold mb-6">
-            Selected Case Studies
-          </h2>
-          <p className="text-muted-foreground text-base md:text-lg">
-            Real projects described by the problem, what we delivered, and how it works —
-            without invented metrics.
-          </p>
-        </AnimatedSection>
+        {!hidePageHeader && (
+          <AnimatedSection className="text-center mb-14 md:mb-16 max-w-3xl mx-auto">
+            <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-4 block">
+              Work
+            </span>
+            <h2 className="font-display text-3xl md:text-5xl lg:text-6xl font-bold mb-6">
+              Selected Case Studies
+            </h2>
+            <p className="text-muted-foreground text-base md:text-lg">
+              Real projects described by the problem, what we delivered, and how it works —
+              without invented metrics.
+            </p>
+          </AnimatedSection>
+        )}
 
         <div className="space-y-6 md:space-y-8 max-w-6xl mx-auto">
           {visible.map((study, index) => (

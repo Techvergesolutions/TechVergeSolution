@@ -9,7 +9,7 @@ import {
   AUDIT_CTA_LABEL,
   CONTACT_AUDIT_PATH,
   goToContactIntent,
-  isOnHomePage,
+  isOnContactPage,
 } from "@/lib/booking";
 
 const focusRing =
@@ -51,7 +51,7 @@ export function WorkflowAuditCta({
       aria-label={AUDIT_CTA_LABEL}
       onClick={(e) => {
         if (eventName) trackEvent(eventName, eventParams);
-        if (isOnHomePage()) {
+        if (isOnContactPage()) {
           e.preventDefault();
           goToContactIntent("audit");
         }

@@ -5,10 +5,11 @@ import { Menu, X } from "lucide-react";
 import { BookingCta } from "@/components/cta/BookingCta";
 
 const navLinks = [
-  { name: "Solutions", href: "/#solutions" },
-  { name: "Work", href: "/#work" },
-  { name: "Process", href: "/#process" },
-  { name: "Contact", href: "/#contact" },
+  { name: "Home", href: "/" },
+  { name: "Services", href: "/services" },
+  { name: "Portfolio", href: "/portfolio" },
+  { name: "About Us", href: "/about" },
+  { name: "Contact", href: "/contact" },
 ];
 
 export const Navbar = () => {

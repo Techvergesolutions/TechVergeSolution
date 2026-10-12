@@ -2,8 +2,10 @@ import { motion } from "framer-motion";
 import { ShieldCheck, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Seo } from "@/components/Seo";
+import { pageSeo } from "@/lib/seo";
 
 const TermsAndConditions = () => {
+  const seo = pageSeo.termsOfService;
   const terms = [
     { h: "1. Agreement to Terms", p: "By accessing our website or using our services, you agree to be bound by these Terms and Conditions." },
     { h: "2. Intellectual Property", p: "Unless otherwise stated, Techverge Solution owns the intellectual property rights for all material on the website until full payment for a project is received." },
@@ -17,11 +19,7 @@ const TermsAndConditions = () => {
 
   return (
     <>
-      <Seo
-        title="Terms & Conditions | TechVerge"
-        description="Terms and conditions for using TechVerge Solutions websites and custom AI automation, voice agent, and software development services."
-        path="/terms"
-      />
+      <Seo title={seo.title} description={seo.description} path={seo.path} />
       <main className="min-h-screen bg-[#050505] text-white py-24 px-6 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[120px] -z-10" />
 

@@ -12,7 +12,7 @@ import {
   getBookingUrl,
   goToContactIntent,
   isHttpUrl,
-  isOnHomePage,
+  isOnContactPage,
 } from "@/lib/booking";
 
 const focusRing =
@@ -88,7 +88,7 @@ export function BookingCta({
       className={cn(baseClass, showArrow && "group")}
       aria-label={BOOKING_CTA_LABEL}
       onClick={(e) => {
-        if (isOnHomePage()) {
+        if (isOnContactPage()) {
           e.preventDefault();
           goToContactIntent("strategy");
         }

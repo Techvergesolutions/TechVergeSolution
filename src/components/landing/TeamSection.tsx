@@ -10,7 +10,7 @@ const team = [
   },
   {
     name: "Rana Hamza",
-    role: "Co-Founder & Lead Software Architect",
+    role: "Lead Software Architect",
     image: "/Hamza.webp",
   },
   {

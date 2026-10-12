@@ -6,7 +6,7 @@ import {
   CONTACT_SIMILAR_PATH,
   SIMILAR_PROJECT_CTA_LABEL,
   goToContactIntent,
-  isOnHomePage,
+  isOnContactPage,
 } from "@/lib/booking";
 
 const focusRing =
@@ -56,7 +56,7 @@ export function SimilarProjectCta({
           cta: "similar_project",
           ...eventParams,
         });
-        if (isOnHomePage()) {
+        if (isOnContactPage()) {
           e.preventDefault();
           goToContactIntent("similar");
         }

@@ -22,7 +22,7 @@ export function ServiceIntegrations({ integrations }: ServiceIntegrationsProps) 
           </p>
         </AnimatedSection>
 
-        <div className="flex flex-wrap gap-3 max-w-5xl mb-10">
+        <div className="flex flex-wrap gap-3 max-w-5xl">
           {integrations.items.map((item, index) => (
             <AnimatedSection key={item} delay={index * 0.04}>
               <span className="inline-block rounded-xl border border-border/60 bg-card/40 px-4 py-2.5 text-sm text-foreground/90">
@@ -31,29 +31,6 @@ export function ServiceIntegrations({ integrations }: ServiceIntegrationsProps) 
             </AnimatedSection>
           ))}
         </div>
-
-        {integrations.technicalCapabilities && integrations.technicalCapabilities.length > 0 && (
-          <AnimatedSection delay={0.12}>
-            <div className="max-w-5xl rounded-2xl border border-border/40 bg-background/40 p-6 md:p-8">
-              <h3 className="font-display text-lg font-bold text-foreground mb-4">
-                Technical capabilities
-              </h3>
-              <ul className="space-y-2">
-                {integrations.technicalCapabilities.map((cap) => (
-                  <li
-                    key={cap}
-                    className="text-sm text-muted-foreground leading-relaxed flex gap-2"
-                  >
-                    <span className="text-primary/70 shrink-0" aria-hidden>
-                      ·
-                    </span>
-                    {cap}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </AnimatedSection>
-        )}
       </div>
     </section>
   );
