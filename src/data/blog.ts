@@ -59,3 +59,8 @@ export function blogPostPath(slug: string): string {
 }
 
 export const blogSlugs = blogPosts.map((post) => post.slug);
+
+/** Slugs with hand-authored TSX bodies in `src/content/blog/`. */
+export const staticArticleBodySlugs = new Set<string>([
+  "ai-voice-agents-for-small-business-2026",
+]);

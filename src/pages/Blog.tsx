@@ -5,7 +5,8 @@ import { Footer } from "@/components/landing/Footer";
 import { Seo } from "@/components/Seo";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { BlogFigure } from "@/components/blog/BlogFigure";
-import { blogPostPath, blogPosts } from "@/data/blog";
+import { blogPostPath } from "@/data/blog";
+import { useBlogPostList } from "@/hooks/useBlogPosts";
 import { pageSeo } from "@/lib/seo";
 
 function formatDisplayDate(isoDate: string) {
@@ -20,6 +21,7 @@ function formatDisplayDate(isoDate: string) {
 
 const Blog = () => {
   const seo = pageSeo.blog;
+  const { data: blogPosts = [] } = useBlogPostList();
   const featured = blogPosts[0];
   const remaining = blogPosts.slice(1);
 

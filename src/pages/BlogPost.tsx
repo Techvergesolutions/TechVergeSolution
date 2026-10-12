@@ -4,15 +4,18 @@ import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { Seo } from "@/components/Seo";
 import { BlogFigure } from "@/components/blog/BlogFigure";
+import { PortableTextContent } from "@/components/blog/PortableTextContent";
 import {
   AiVoiceAgentsForSmallBusiness2026,
   articleFaqs,
 } from "@/content/blog/ai-voice-agents-for-small-business-2026";
 import {
   blogPostPath,
-  getBlogPostBySlug,
+  staticArticleBodySlugs,
   type BlogPostMeta,
 } from "@/data/blog";
+import { useBlogPostDetail } from "@/hooks/useBlogPosts";
+import type { BlogFaq } from "@/lib/blogApi";
 import {
   absoluteUrl,
   blogPostingJsonLd,
@@ -39,15 +42,16 @@ function ArticleBody({ slug }: { slug: string }) {
   }
 }
 
-function faqsForSlug(slug: string) {
+function faqsForStaticSlug(slug: string): BlogFaq[] {
   if (slug === "ai-voice-agents-for-small-business-2026") return articleFaqs;
   return [];
 }
 
-function articleSeo(post: BlogPostMeta) {
+function articleSeo(post: BlogPostMeta, faqs: BlogFaq[]) {
   const path = blogPostPath(post.slug);
-  const image = post.ogImage ? absoluteUrl(post.ogImage) : undefined;
-  const faqs = faqsForSlug(post.slug);
+  const imagePath = post.ogImage ?? post.featuredImage.src;
+  const image =
+    imagePath.startsWith("http") ? imagePath : absoluteUrl(imagePath);
   const jsonLd = [
     blogPostingJsonLd({
       title: post.title,
@@ -55,7 +59,7 @@ function articleSeo(post: BlogPostMeta) {
       path,
       datePublished: post.datePublished,
       dateModified: post.dateModified,
-      imagePath: post.ogImage ?? post.featuredImage.src,
+      imagePath,
       imageAlt: post.ogImageAlt ?? post.featuredImage.alt,
     }),
     ...(faqs.length > 0 ? [faqPageJsonLd(faqs)] : []),
@@ -71,17 +75,45 @@ function articleSeo(post: BlogPostMeta) {
   };
 }
 
-const CONTENT_SLUGS = new Set(["ai-voice-agents-for-small-business-2026"]);
-
 export default function BlogPost() {
   const { slug } = useParams<{ slug: string }>();
-  const post = slug ? getBlogPostBySlug(slug) : undefined;
+  const { data: resolved, isLoading, isError } = useBlogPostDetail(slug);
 
-  if (!post || !CONTENT_SLUGS.has(post.slug)) {
+  if (!slug) {
     return <NotFound />;
   }
 
-  const seo = articleSeo(post);
+  if (isLoading && !resolved) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <main className="section-container max-w-3xl pt-40 pb-20">
+          <p className="text-muted-foreground">Loading article…</p>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (isError || !resolved) {
+    return <NotFound />;
+  }
+
+  if (
+    resolved.kind === "static" &&
+    !staticArticleBodySlugs.has(resolved.meta.slug)
+  ) {
+    return <NotFound />;
+  }
+
+  const post =
+    resolved.kind === "sanity" ? resolved.post : resolved.meta;
+  const faqs =
+    resolved.kind === "sanity"
+      ? resolved.post.faqs
+      : faqsForStaticSlug(resolved.meta.slug);
+
+  const seo = articleSeo(post, faqs);
 
   return (
     <>
@@ -140,7 +172,11 @@ export default function BlogPost() {
             </div>
 
             <div className="section-container max-w-3xl pb-20 md:pb-28">
-              <ArticleBody slug={post.slug} />
+              {resolved.kind === "sanity" ? (
+                <PortableTextContent value={resolved.post.body} />
+              ) : (
+                <ArticleBody slug={resolved.meta.slug} />
+              )}
             </div>
           </article>
         </main>
