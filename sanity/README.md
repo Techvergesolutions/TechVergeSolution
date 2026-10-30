@@ -50,6 +50,14 @@ npm run deploy
 1. Open **https://techverge-blog.sanity.studio** on phone or desktop.
 2. Sign in with your **Sanity account** in the browser (normal website login).
 3. Create/edit **Post** documents and **Publish**.
-4. The live site (Vercel) reads the same `production` dataset — new posts appear after publish (may take a short moment).
+4. The live site reads **published** documents from the same `production` dataset (CDN, no browser token).
+5. **Static HTML / sitemap update after a Vercel rebuild** — configure the publish webhook (see [`docs/SEO-SANITY-WEBHOOK.md`](../docs/SEO-SANITY-WEBHOOK.md)). Until rebuild finishes, a brand-new slug may 404 at the edge.
 
 Local dev Studio (`npm run dev`, port 3333) is optional and only for testing schema/UI changes.
+
+### Env notes
+
+- Client: `VITE_SANITY_PROJECT_ID`, `VITE_SANITY_DATASET`, `VITE_SANITY_API_VERSION` only.
+- Do **not** use `VITE_SANITY_TOKEN` (leaks into the JS bundle). Rotate any token that was ever committed or shared.
+- Optional build-only: `SANITY_API_READ_TOKEN` for private datasets.
+- CORS: allow `https://www.techvergesolution.com` and local Vite origins (see `docs/SEO-SANITY-WEBHOOK.md`).

@@ -7,7 +7,7 @@ import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { BlogFigure } from "@/components/blog/BlogFigure";
 import { blogPostPath } from "@/data/blog";
 import { useBlogPostList } from "@/hooks/useBlogPosts";
-import { pageSeo } from "@/lib/seo";
+import { blogIndexJsonLd, breadcrumbJsonLd, pageSeo } from "@/lib/seo";
 
 function formatDisplayDate(isoDate: string) {
   const [year, month, day] = isoDate.split("-").map(Number);
@@ -24,10 +24,28 @@ const Blog = () => {
   const { data: blogPosts = [] } = useBlogPostList();
   const featured = blogPosts[0];
   const remaining = blogPosts.slice(1);
+  const jsonLd = [
+    blogIndexJsonLd(
+      blogPosts.map((post) => ({
+        title: post.title,
+        path: blogPostPath(post.slug),
+        datePublished: post.datePublished,
+      })),
+    ),
+    breadcrumbJsonLd([
+      { name: "Home", path: "/" },
+      { name: "Blog", path: "/blog" },
+    ]),
+  ];
 
   return (
     <>
-      <Seo title={seo.title} description={seo.description} path={seo.path} />
+      <Seo
+        title={seo.title}
+        description={seo.description}
+        path={seo.path}
+        jsonLd={jsonLd}
+      />
       <div className="min-h-screen bg-background overflow-x-hidden">
         <Navbar />
         <main>

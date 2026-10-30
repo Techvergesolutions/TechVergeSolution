@@ -1,10 +1,11 @@
-import { Navigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { ServicePageLayout } from "@/components/services/ServicePageLayout";
 import { Seo } from "@/components/Seo";
 import { getServiceBySlug, servicePath, type ServiceSlug } from "@/data/services";
-import { faqPageJsonLd, serviceJsonLd } from "@/lib/seo";
+import { breadcrumbJsonLd, faqPageJsonLd, serviceJsonLd } from "@/lib/seo";
+import NotFound from "./NotFound";
 
 interface ServicePageProps {
   slug?: ServiceSlug;
@@ -16,7 +17,7 @@ export default function ServicePage({ slug: slugProp }: ServicePageProps) {
   const service = slug ? getServiceBySlug(slug) : undefined;
 
   if (!service) {
-    return <Navigate to="/services" replace />;
+    return <NotFound />;
   }
 
   const path = servicePath(service.slug);
@@ -27,6 +28,11 @@ export default function ServicePage({ slug: slugProp }: ServicePageProps) {
       path,
     }),
     ...(service.faq.length > 0 ? [faqPageJsonLd(service.faq)] : []),
+    breadcrumbJsonLd([
+      { name: "Home", path: "/" },
+      { name: "Services", path: "/services" },
+      { name: service.eyebrow, path },
+    ]),
   ];
 
   return (

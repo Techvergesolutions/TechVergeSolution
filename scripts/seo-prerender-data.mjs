@@ -12,6 +12,7 @@ export const DEFAULT_OG_IMAGE_ALT =
 
 export function absoluteUrl(path = "/") {
   if (!path || path === "/") return `${SITE_URL}/`;
+  if (/^https?:\/\//i.test(path)) return path;
   const normalized = path.startsWith("/") ? path : `/${path}`;
   return `${SITE_URL}${normalized}`;
 }

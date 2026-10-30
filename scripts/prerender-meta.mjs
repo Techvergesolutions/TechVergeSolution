@@ -1,23 +1,23 @@
 /**
  * Post-vite build: write route-specific initial HTML metadata into dist/.
- * Keep route strings in sync via scripts/seo-prerender-data.mjs
- * (mirrors src/lib/seo.ts + src/data/services.ts).
+ * Routes come from build-prerender-routes.mjs (static + Sanity blog).
  */
 
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import {
   DEFAULT_OG_IMAGE,
   DEFAULT_OG_IMAGE_ALT,
-  EXPECTED_ROUTE_COUNT,
+} from "./seo-prerender-data.mjs";
+import {
   absoluteUrl,
   blogPostingJsonLd,
+  buildPrerenderRoutes,
   faqPageJsonLd,
   organizationJsonLd,
-  prerenderRoutes,
   serviceJsonLd,
-} from "./seo-prerender-data.mjs";
+} from "./build-prerender-routes.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -93,24 +93,24 @@ function injectJsonLdBeforeHeadClose(html, scriptsHtml) {
 }
 
 function buildJsonLdBlock(route) {
+  const blocks = [];
   if (route.jsonLd === "organization") {
-    return `    ${jsonLdScript(organizationJsonLd())}`;
+    blocks.push(organizationJsonLd());
   }
   if (route.service) {
-    const blocks = [
+    blocks.push(
       serviceJsonLd({
         name: route.service.name,
         description: route.description,
         path: route.path,
       }),
-    ];
+    );
     if (route.service.faq?.length) {
       blocks.push(faqPageJsonLd(route.service.faq));
     }
-    return blocks.map((b) => `    ${jsonLdScript(b)}`).join("\n");
   }
   if (route.article) {
-    const blocks = [
+    blocks.push(
       blogPostingJsonLd({
         title: route.article.title,
         description: route.description,
@@ -120,13 +120,15 @@ function buildJsonLdBlock(route) {
         imagePath: route.article.imagePath,
         imageAlt: route.article.imageAlt,
       }),
-    ];
+    );
     if (route.article.faq?.length) {
       blocks.push(faqPageJsonLd(route.article.faq));
     }
-    return blocks.map((b) => `    ${jsonLdScript(b)}`).join("\n");
   }
-  return "";
+  if (Array.isArray(route.extraJsonLd)) {
+    blocks.push(...route.extraJsonLd);
+  }
+  return blocks.map((b) => `    ${jsonLdScript(b)}`).join("\n");
 }
 
 function applyRouteMeta(templateHtml, route) {
@@ -225,12 +227,33 @@ function applyRouteMeta(templateHtml, route) {
     });
   }
 
-  if (/name\s*=\s*["']robots["']/i.test(html)) {
+  html = upsertTag(html, {
+    tag: "meta",
+    attr: "name",
+    attrValue: "robots",
+    attrs: { name: "robots", content: "index, follow" },
+  });
+
+  if (route.article?.datePublished) {
     html = upsertTag(html, {
       tag: "meta",
-      attr: "name",
-      attrValue: "robots",
-      attrs: { name: "robots", content: "index, follow" },
+      attr: "property",
+      attrValue: "article:published_time",
+      attrs: {
+        property: "article:published_time",
+        content: route.article.datePublished,
+      },
+    });
+  }
+  if (route.article?.dateModified) {
+    html = upsertTag(html, {
+      tag: "meta",
+      attr: "property",
+      attrValue: "article:modified_time",
+      attrs: {
+        property: "article:modified_time",
+        content: route.article.dateModified,
+      },
     });
   }
 
@@ -286,27 +309,42 @@ function validateHtml(html, route) {
     fail(`Route ${route.path}: title mismatch`);
   }
 
-  const hasOrg =
-    /"@type"\s*:\s*"Organization"/i.test(html) &&
-    /"@id"\s*:\s*"https:\/\/www\.techvergesolution\.com\/#organization"/i.test(
-      html,
-    ) &&
-    /"@graph"/i.test(html);
-  const hasService = /"@type"\s*:\s*"Service"/i.test(html);
-  const hasFaq = /"@type"\s*:\s*"FAQPage"/i.test(html);
-  const hasBlogPosting = /"@type"\s*:\s*"BlogPosting"/i.test(html);
+  const ldScripts = [
+    ...html.matchAll(
+      /<script\b[^>]*type\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi,
+    ),
+  ].map((m) => {
+    try {
+      return JSON.parse(m[1]);
+    } catch {
+      return null;
+    }
+  });
+
+  const topTypes = new Set(
+    ldScripts.flatMap((data) => {
+      if (!data) return [];
+      if (Array.isArray(data["@graph"])) {
+        return data["@graph"].map((n) => n["@type"]).filter(Boolean);
+      }
+      return data["@type"] ? [data["@type"]] : [];
+    }),
+  );
+
+  const hasOrgGraph =
+    route.path === "/" &&
+    ldScripts.some(
+      (data) =>
+        data &&
+        Array.isArray(data["@graph"]) &&
+        data["@graph"].some((n) => n["@type"] === "Organization"),
+    );
 
   if (route.path === "/") {
-    if (!hasOrg) fail(`Route /: missing Organization JSON-LD graph`);
-  } else if (hasOrg && /"@graph"/i.test(html)) {
-    // Provider Organization on Service schema is fine; full @graph home schema is not
-    const ldScripts = [
-      ...html.matchAll(
-        /<script\b[^>]*type\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi,
-      ),
-    ];
-    for (const m of ldScripts) {
-      if (/"@graph"/i.test(m[1])) {
+    if (!hasOrgGraph) fail(`Route /: missing Organization JSON-LD graph`);
+  } else {
+    for (const data of ldScripts) {
+      if (data && Array.isArray(data["@graph"])) {
         fail(
           `Route ${route.path}: homepage Organization @graph must not remain on non-home pages`,
         );
@@ -315,38 +353,37 @@ function validateHtml(html, route) {
   }
 
   if (route.service) {
-    if (!hasService) fail(`Route ${route.path}: missing Service JSON-LD`);
-    if (route.service.faq?.length && !hasFaq) {
+    if (!topTypes.has("Service")) {
+      fail(`Route ${route.path}: missing Service JSON-LD`);
+    }
+    if (route.service.faq?.length && !topTypes.has("FAQPage")) {
       fail(`Route ${route.path}: missing FAQPage JSON-LD`);
     }
-  } else if (route.path !== "/" && hasService) {
+  } else if (route.path !== "/" && topTypes.has("Service")) {
     fail(`Route ${route.path}: unexpected Service JSON-LD`);
   }
 
   if (route.article) {
-    if (!hasBlogPosting) {
+    if (!topTypes.has("BlogPosting")) {
       fail(`Route ${route.path}: missing BlogPosting JSON-LD`);
     }
-    if (route.article.faq?.length && !hasFaq) {
+    if (route.article.faq?.length && !topTypes.has("FAQPage")) {
       fail(`Route ${route.path}: missing FAQPage JSON-LD`);
     }
-  } else if (hasBlogPosting) {
-    fail(`Route ${route.path}: unexpected BlogPosting JSON-LD`);
+  } else if (topTypes.has("BlogPosting")) {
+    fail(`Route ${route.path}: unexpected top-level BlogPosting JSON-LD`);
   }
 }
 
-function main() {
+export async function prerenderMeta() {
   if (!fs.existsSync(TEMPLATE)) {
     fail(`Missing ${TEMPLATE}. Run vite build first.`);
   }
 
-  if (!Array.isArray(prerenderRoutes)) {
-    fail("prerenderRoutes is missing or not an array");
-  }
-  if (prerenderRoutes.length !== EXPECTED_ROUTE_COUNT) {
-    fail(
-      `Expected ${EXPECTED_ROUTE_COUNT} routes, got ${prerenderRoutes.length}. Keep in sync with seo.ts / services.ts.`,
-    );
+  const { routes: prerenderRoutes } = await buildPrerenderRoutes();
+
+  if (!Array.isArray(prerenderRoutes) || prerenderRoutes.length < 12) {
+    fail(`Expected at least 12 prerender routes, got ${prerenderRoutes?.length}`);
   }
 
   const paths = new Set();
@@ -381,13 +418,26 @@ function main() {
     if (!paths.has(p)) fail(`Missing required route in prerender data: ${p}`);
   }
 
-  // Read template once before overwriting dist/index.html
-  const templateHtml = fs.readFileSync(TEMPLATE, "utf8");
-  if (!/<div\s+id=["']root["']\s*>\s*<\/div>/i.test(templateHtml)) {
-    fail("Template dist/index.html is missing #root");
+  // Prefer a clean Vite shell. After prerender-html, index.html is hydrated and
+  // may contain duplicate Helmet tags — reuse a snapshot from the last clean pass.
+  const SNAPSHOT = path.join(DIST, ".prerender-template.html");
+  let templateHtml = fs.readFileSync(TEMPLATE, "utf8");
+  const hasEmptyRoot =
+    /<div\s+[^>]*id=["']root["'][^>]*>\s*<\/div>/i.test(templateHtml);
+  if (hasEmptyRoot) {
+    fs.writeFileSync(SNAPSHOT, templateHtml, "utf8");
+  } else if (fs.existsSync(SNAPSHOT)) {
+    templateHtml = fs.readFileSync(SNAPSHOT, "utf8");
+  } else {
+    fail(
+      "dist/index.html is hydrated and no .prerender-template.html snapshot exists. Run `vite build` first.",
+    );
+  }
+  if (!/<div\s+[^>]*id=["']root["'][^>]*>\s*<\/div>/i.test(templateHtml)) {
+    fail("Prerender template is missing an empty #root");
   }
   if (!/<script\b/i.test(templateHtml)) {
-    fail("Template dist/index.html is missing script tags");
+    fail("Prerender template is missing script tags");
   }
 
   const written = [];
@@ -401,10 +451,41 @@ function main() {
     written.push(path.relative(ROOT, out).replace(/\\/g, "/"));
   }
 
+  // Dedicated 404 shell (same SPA assets; client NotFound sets noindex)
+  const notFoundRoute = {
+    path: "/404",
+    title: "Page Not Found | TechVerge Solutions",
+    description:
+      "The page you requested could not be found on TechVerge Solutions.",
+  };
+  let notFoundHtml = applyRouteMeta(templateHtml, notFoundRoute);
+  notFoundHtml = upsertTag(notFoundHtml, {
+    tag: "meta",
+    attr: "name",
+    attrValue: "robots",
+    attrs: { name: "robots", content: "noindex, nofollow" },
+  });
+  // Ensure robots meta exists even if template lacked it
+  if (!/name\s*=\s*["']robots["']/i.test(notFoundHtml)) {
+    notFoundHtml = notFoundHtml.replace(
+      /<\/head>/i,
+      `    <meta name="robots" content="noindex, nofollow" />\n  </head>`,
+    );
+  }
+  fs.writeFileSync(path.join(DIST, "404.html"), notFoundHtml, "utf8");
+  written.push("dist/404.html");
+
   console.log(
     `[prerender-meta] Wrote ${written.length} HTML files with route metadata:`,
   );
   for (const f of written) console.log(`  - ${f}`);
+
+  return { routes: prerenderRoutes, written };
 }
 
-main();
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  prerenderMeta().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}

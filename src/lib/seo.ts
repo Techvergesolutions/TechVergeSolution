@@ -80,6 +80,8 @@ export const HOME_DESCRIPTION = pageSeo.home.description;
 
 export function absoluteUrl(path = "/"): string {
   if (!path || path === "/") return `${SITE_URL}/`;
+  // Already-absolute URLs (e.g. Sanity CDN) must not be prefixed with SITE_URL.
+  if (/^https?:\/\//i.test(path)) return path;
   const normalized = path.startsWith("/") ? path : `/${path}`;
   return `${SITE_URL}${normalized}`;
 }
@@ -287,5 +289,51 @@ export function blogPostingJsonLd(input: {
       name: `${SITE_NAME} Blog`,
       publisher: { "@id": `${SITE_URL}/#organization` },
     },
+  };
+}
+
+export function blogIndexJsonLd(
+  posts: { title: string; path: string; datePublished: string }[],
+) {
+  const blogUrl = absoluteUrl("/blog");
+  return {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "@id": blogUrl,
+    name: `${SITE_NAME} Blog`,
+    description: pageSeo.blog.description,
+    url: blogUrl,
+    publisher: { "@id": `${SITE_URL}/#organization` },
+    inLanguage: "en-US",
+    blogPost: posts.map((post) => ({
+      "@type": "BlogPosting",
+      headline: post.title,
+      url: absoluteUrl(post.path),
+      datePublished: post.datePublished,
+    })),
+    mainEntity: {
+      "@type": "ItemList",
+      itemListElement: posts.map((post, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        url: absoluteUrl(post.path),
+        name: post.title,
+      })),
+    },
+  };
+}
+
+export function breadcrumbJsonLd(
+  items: { name: string; path: string }[],
+) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      item: absoluteUrl(item.path),
+    })),
   };
 }

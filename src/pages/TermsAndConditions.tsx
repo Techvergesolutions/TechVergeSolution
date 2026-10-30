@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { ShieldCheck, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Seo } from "@/components/Seo";
-import { pageSeo } from "@/lib/seo";
+import { breadcrumbJsonLd, pageSeo } from "@/lib/seo";
 
 const TermsAndConditions = () => {
   const seo = pageSeo.termsOfService;
@@ -19,7 +19,15 @@ const TermsAndConditions = () => {
 
   return (
     <>
-      <Seo title={seo.title} description={seo.description} path={seo.path} />
+      <Seo
+        title={seo.title}
+        description={seo.description}
+        path={seo.path}
+        jsonLd={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Terms of Service", path: "/terms-of-service" },
+        ])}
+      />
       <main className="min-h-screen bg-[#050505] text-white py-24 px-6 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[120px] -z-10" />
 

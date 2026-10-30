@@ -6,19 +6,22 @@ const projectId = import.meta.env.VITE_SANITY_PROJECT_ID?.trim() ?? "";
 const dataset = import.meta.env.VITE_SANITY_DATASET?.trim() || "production";
 const apiVersion =
   import.meta.env.VITE_SANITY_API_VERSION?.trim() || "2024-01-01";
-const token = import.meta.env.VITE_SANITY_TOKEN?.trim() ?? "";
 
 export function isSanityConfigured(): boolean {
   return projectId.length > 0;
 }
 
+/**
+ * Browser/client Sanity client — public CDN only.
+ * Never pass a token here (VITE_* tokens would leak into the JS bundle).
+ */
 export const sanityClient: SanityClient | null = isSanityConfigured()
   ? createClient({
       projectId,
       dataset,
       apiVersion,
-      token: token || undefined,
-      useCdn: !token,
+      useCdn: true,
+      // Public CDN returns published documents only (no token / no draft perspective).
     })
   : null;
 

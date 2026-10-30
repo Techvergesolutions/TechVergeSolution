@@ -3,13 +3,21 @@ import { Footer } from "@/components/landing/Footer";
 import { ContactSection } from "@/components/landing/ContactSection";
 import { Seo } from "@/components/Seo";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
-import { pageSeo } from "@/lib/seo";
+import { breadcrumbJsonLd, pageSeo } from "@/lib/seo";
 
 const Contact = () => {
   const seo = pageSeo.contact;
   return (
     <>
-      <Seo title={seo.title} description={seo.description} path={seo.path} />
+      <Seo
+        title={seo.title}
+        description={seo.description}
+        path={seo.path}
+        jsonLd={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Contact", path: "/contact" },
+        ])}
+      />
       <div className="min-h-screen bg-background overflow-x-hidden">
         <Navbar />
         <main>

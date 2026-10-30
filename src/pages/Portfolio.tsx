@@ -6,7 +6,7 @@ import { PortfolioSection } from "@/components/landing/PortfolioSection";
 import { FinalCtaSection } from "@/components/landing/FinalCtaSection";
 import { Seo } from "@/components/Seo";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
-import { pageSeo } from "@/lib/seo";
+import { breadcrumbJsonLd, pageSeo } from "@/lib/seo";
 import { servicePath } from "@/data/services";
 
 const serviceLinks = [
@@ -20,7 +20,15 @@ const Portfolio = () => {
   const seo = pageSeo.portfolio;
   return (
     <>
-      <Seo title={seo.title} description={seo.description} path={seo.path} />
+      <Seo
+        title={seo.title}
+        description={seo.description}
+        path={seo.path}
+        jsonLd={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Portfolio", path: "/portfolio" },
+        ])}
+      />
       <div className="min-h-screen bg-background overflow-x-hidden">
         <Navbar />
         <main>

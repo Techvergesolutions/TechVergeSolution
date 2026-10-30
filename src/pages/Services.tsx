@@ -8,7 +8,7 @@ import { WorkflowAuditCta } from "@/components/cta/WorkflowAuditCta";
 import { ServicesCoreFeatures } from "@/components/services/ServicesCoreFeatures";
 import { TechStackBadges } from "@/components/services/TechStackBadges";
 import { CaseStudiesSummary } from "@/components/services/CaseStudiesSummary";
-import { pageSeo } from "@/lib/seo";
+import { breadcrumbJsonLd, pageSeo } from "@/lib/seo";
 
 const Services = () => {
   const seo = pageSeo.services;
@@ -16,7 +16,15 @@ const Services = () => {
 
   return (
     <>
-      <Seo title={seo.title} description={seo.description} path={seo.path} />
+      <Seo
+        title={seo.title}
+        description={seo.description}
+        path={seo.path}
+        jsonLd={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Services", path: "/services" },
+        ])}
+      />
       <div className="min-h-screen bg-background overflow-x-hidden">
         <Navbar />
         <main>

@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Eye, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Seo } from "@/components/Seo";
-import { pageSeo } from "@/lib/seo";
+import { breadcrumbJsonLd, pageSeo } from "@/lib/seo";
 
 const PrivacyPolicy = () => {
   const seo = pageSeo.privacyPolicy;
@@ -32,7 +32,15 @@ const PrivacyPolicy = () => {
 
   return (
     <>
-      <Seo title={seo.title} description={seo.description} path={seo.path} />
+      <Seo
+        title={seo.title}
+        description={seo.description}
+        path={seo.path}
+        jsonLd={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Privacy Policy", path: "/privacy-policy" },
+        ])}
+      />
       <main className="min-h-screen bg-[#050505] text-white py-24 px-6 relative overflow-hidden">
         <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -z-10" />
 

@@ -15,6 +15,8 @@ export interface SeoProps {
   type?: "website" | "article";
   noindex?: boolean;
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  datePublished?: string;
+  dateModified?: string;
 }
 
 export function Seo({
@@ -26,6 +28,8 @@ export function Seo({
   type = "website",
   noindex = false,
   jsonLd,
+  datePublished,
+  dateModified,
 }: SeoProps) {
   const canonical = absoluteUrl(path);
   const graphs = jsonLd
@@ -53,6 +57,12 @@ export function Seo({
       <meta property="og:image" content={image} />
       <meta property="og:image:alt" content={imageAlt} />
       <meta property="og:locale" content="en_US" />
+      {type === "article" && datePublished ? (
+        <meta property="article:published_time" content={datePublished} />
+      ) : null}
+      {type === "article" && dateModified ? (
+        <meta property="article:modified_time" content={dateModified} />
+      ) : null}
 
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={title} />
@@ -64,7 +74,7 @@ export function Seo({
         <script
           key={index}
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(data).replace(/</g, "\\u003c") }}
         />
       ))}
     </Helmet>

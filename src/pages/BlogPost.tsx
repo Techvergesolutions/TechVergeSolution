@@ -19,6 +19,7 @@ import type { BlogFaq } from "@/lib/blogApi";
 import {
   absoluteUrl,
   blogPostingJsonLd,
+  breadcrumbJsonLd,
   faqPageJsonLd,
 } from "@/lib/seo";
 import NotFound from "./NotFound";
@@ -63,6 +64,11 @@ function articleSeo(post: BlogPostMeta, faqs: BlogFaq[]) {
       imageAlt: post.ogImageAlt ?? post.featuredImage.alt,
     }),
     ...(faqs.length > 0 ? [faqPageJsonLd(faqs)] : []),
+    breadcrumbJsonLd([
+      { name: "Home", path: "/" },
+      { name: "Blog", path: "/blog" },
+      { name: post.title, path },
+    ]),
   ];
 
   return {
@@ -125,6 +131,8 @@ export default function BlogPost() {
         imageAlt={seo.imageAlt}
         type="article"
         jsonLd={seo.jsonLd}
+        datePublished={post.datePublished}
+        dateModified={post.dateModified}
       />
       <div className="min-h-screen bg-background overflow-x-hidden">
         <Navbar />
@@ -133,6 +141,23 @@ export default function BlogPost() {
             <header className="relative pt-32 pb-8 md:pt-40 md:pb-10 overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
               <div className="section-container relative z-10 max-w-3xl">
+                <nav aria-label="Breadcrumb" className="mb-8 text-sm text-muted-foreground">
+                  <ol className="flex flex-wrap items-center gap-2">
+                    <li>
+                      <Link to="/" className="hover:text-primary transition-colors">
+                        Home
+                      </Link>
+                    </li>
+                    <li aria-hidden="true">/</li>
+                    <li>
+                      <Link to="/blog" className="hover:text-primary transition-colors">
+                        Blog
+                      </Link>
+                    </li>
+                    <li aria-hidden="true">/</li>
+                    <li className="text-foreground line-clamp-1">{post.title}</li>
+                  </ol>
+                </nav>
                 <Link
                   to="/blog"
                   className="inline-flex items-center gap-2 text-primary hover:gap-3 transition-all text-sm font-medium mb-8"
@@ -173,7 +198,29 @@ export default function BlogPost() {
 
             <div className="section-container max-w-3xl pb-20 md:pb-28">
               {resolved.kind === "sanity" ? (
-                <PortableTextContent value={resolved.post.body} />
+                <>
+                  <PortableTextContent value={resolved.post.body} />
+                  {faqs.length > 0 ? (
+                    <section className="space-y-6 pt-10" aria-labelledby="article-faq-heading">
+                      <h2
+                        id="article-faq-heading"
+                        className="font-display text-2xl md:text-3xl font-bold text-foreground"
+                      >
+                        Frequently asked questions
+                      </h2>
+                      {faqs.map((item) => (
+                        <div key={item.question}>
+                          <h3 className="font-display text-xl font-semibold text-foreground mb-2">
+                            {item.question}
+                          </h3>
+                          <p className="text-muted-foreground leading-relaxed">
+                            {item.answer}
+                          </p>
+                        </div>
+                      ))}
+                    </section>
+                  ) : null}
+                </>
               ) : (
                 <ArticleBody slug={resolved.meta.slug} />
               )}

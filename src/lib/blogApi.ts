@@ -14,7 +14,11 @@ export type SanityBlogPost = BlogPostMeta & {
   faqs: BlogFaq[];
 };
 
-const POST_LIST_QUERY = `*[_type == "post" && defined(slug.current)] | order(publishedAt desc) {
+/** Inner GROQ filters for published posts (drafts + future dates excluded). */
+export const PUBLISHED_POST_FILTER =
+  `_type == "post" && !(_id in path("drafts.**")) && defined(slug.current) && defined(publishedAt) && publishedAt <= now()`;
+
+const POST_LIST_QUERY = `*[${PUBLISHED_POST_FILTER}] | order(publishedAt desc) {
   _id,
   title,
   "slug": slug.current,
@@ -36,7 +40,7 @@ const POST_LIST_QUERY = `*[_type == "post" && defined(slug.current)] | order(pub
   }
 }`;
 
-const POST_BY_SLUG_QUERY = `*[_type == "post" && slug.current == $slug][0] {
+const POST_BY_SLUG_QUERY = `*[${PUBLISHED_POST_FILTER} && slug.current == $slug][0] {
   _id,
   title,
   "slug": slug.current,
