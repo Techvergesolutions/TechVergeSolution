@@ -1,7 +1,22 @@
+import {
+  AREA_SERVED_COUNTRIES,
+  DEFAULT_BLOG_AUTHOR,
+  ORG_ADDRESS,
+  ORG_DESCRIPTION,
+  ORG_EMAIL,
+  ORG_NAME,
+  ORG_TELEPHONE,
+  organizationSameAs,
+} from "@/data/organizationProfiles";
+
 export const SITE_URL = "https://www.techvergesolution.com";
-export const SITE_NAME = "TechVerge Solutions";
+export const SITE_NAME = ORG_NAME;
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.webp`;
 export const DEFAULT_OG_IMAGE_ALT = "TechVerge Solutions — AI automation and custom software";
+
+export const ORGANIZATION_ID = `${SITE_URL}/#organization`;
+export const WEBSITE_ID = `${SITE_URL}/#website`;
+export const PROFESSIONAL_SERVICE_ID = `${SITE_URL}/#professional-service`;
 
 /** Title pattern: `[Page Name] | TechVerge Solutions` */
 export function formatPageTitle(pageName: string): string {
@@ -20,9 +35,8 @@ export interface PageSeoConfig {
  */
 export const pageSeo = {
   home: {
-    title: formatPageTitle("AI Automation & Software Development"),
-    description:
-      "TechVerge Solutions builds custom AI automation, voice agents, business workflows and software to help businesses reduce manual work and improve lead follow-up.",
+    title: formatPageTitle("AI Automation & Voice Agents"),
+    description: ORG_DESCRIPTION,
     path: "/",
   },
   about: {
@@ -30,6 +44,12 @@ export const pageSeo = {
     description:
       "How TechVerge approaches AI automation and custom software — integration-first workflows, human + AI handoffs, and teams that ship practical systems for US businesses.",
     path: "/about",
+  },
+  aiFacts: {
+    title: formatPageTitle("AI Facts"),
+    description:
+      "Plain facts about TechVerge Solutions: what we do, who we serve, countries, services, typical timelines, how pricing works, and how to contact us.",
+    path: "/ai-facts",
   },
   services: {
     title: formatPageTitle("Services"),
@@ -62,9 +82,9 @@ export const pageSeo = {
     path: "/terms-of-service",
   },
   blog: {
-    title: formatPageTitle("Blog"),
+    title: formatPageTitle("AI Automation Guides"),
     description:
-      "Practical guides from TechVerge Solutions on AI voice agents, lead follow-up automation, and business workflows for US small and service businesses.",
+      "Practical TechVerge Solutions guides on AI voice agents, lead follow-up, and workflow automation for small and service businesses—clear and jargon-light.",
     path: "/blog",
   },
   notFound: {
@@ -78,120 +98,150 @@ export const pageSeo = {
 export const HOME_TITLE = pageSeo.home.title;
 export const HOME_DESCRIPTION = pageSeo.home.description;
 
+/** Force https://www host for same-site URLs (canonical / og:url). */
+export function toWwwSiteUrl(url: string): string {
+  try {
+    const parsed = new URL(url);
+    if (
+      parsed.hostname === "techvergesolution.com" ||
+      parsed.hostname === "www.techvergesolution.com"
+    ) {
+      parsed.protocol = "https:";
+      parsed.hostname = "www.techvergesolution.com";
+      return parsed.href;
+    }
+  } catch {
+    /* not a URL */
+  }
+  return url;
+}
+
 export function absoluteUrl(path = "/"): string {
   if (!path || path === "/") return `${SITE_URL}/`;
   // Already-absolute URLs (e.g. Sanity CDN) must not be prefixed with SITE_URL.
-  if (/^https?:\/\//i.test(path)) return path;
+  if (/^https?:\/\//i.test(path)) {
+    return toWwwSiteUrl(path);
+  }
   const normalized = path.startsWith("/") ? path : `/${path}`;
   return `${SITE_URL}${normalized}`;
 }
 
+function areaServedNodes() {
+  return AREA_SERVED_COUNTRIES.map((name) => ({
+    "@type": "Country" as const,
+    name,
+  }));
+}
+
+export function organizationNode() {
+  return {
+    "@type": "Organization",
+    "@id": ORGANIZATION_ID,
+    name: SITE_NAME,
+    alternateName: ["Techverge Solution", "TechVerge", "Techverge"],
+    url: `${SITE_URL}/`,
+    logo: {
+      "@type": "ImageObject",
+      url: `${SITE_URL}/Logo.svg`,
+    },
+    description: ORG_DESCRIPTION,
+    email: ORG_EMAIL,
+    telephone: ORG_TELEPHONE,
+    address: {
+      "@type": "PostalAddress",
+      ...ORG_ADDRESS,
+    },
+    areaServed: areaServedNodes(),
+    contactPoint: {
+      "@type": "ContactPoint",
+      telephone: ORG_TELEPHONE,
+      email: ORG_EMAIL,
+      contactType: "sales",
+      areaServed: areaServedNodes(),
+      availableLanguage: ["English"],
+    },
+    sameAs: organizationSameAs(),
+  };
+}
+
+export function webSiteNode() {
+  return {
+    "@type": "WebSite",
+    "@id": WEBSITE_ID,
+    url: `${SITE_URL}/`,
+    name: SITE_NAME,
+    description: HOME_DESCRIPTION,
+    publisher: { "@id": ORGANIZATION_ID },
+    inLanguage: "en-US",
+  };
+}
+
+export function professionalServiceNode() {
+  return {
+    "@type": "ProfessionalService",
+    "@id": PROFESSIONAL_SERVICE_ID,
+    name: SITE_NAME,
+    url: `${SITE_URL}/`,
+    image: DEFAULT_OG_IMAGE,
+    email: ORG_EMAIL,
+    telephone: ORG_TELEPHONE,
+    areaServed: areaServedNodes(),
+    provider: { "@id": ORGANIZATION_ID },
+    description: ORG_DESCRIPTION,
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: "Automation & Software Services",
+      itemListElement: [
+        {
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: "AI Lead Follow-Up Automation",
+            url: absoluteUrl("/services/ai-automation"),
+            description:
+              "Custom workflows that respond to new enquiries and automate qualification and follow-up.",
+          },
+        },
+        {
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: "AI Voice Agents",
+            url: absoluteUrl("/services/ai-voice-agents"),
+            description:
+              "Custom inbound call handling, caller qualification, and appointment scheduling support.",
+          },
+        },
+        {
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: "Business Process Automation",
+            url: absoluteUrl("/services/business-automation"),
+            description:
+              "Integration of forms, CRM, email, calendars, and internal systems.",
+          },
+        },
+        {
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: "AI SaaS & Custom Software",
+            url: absoluteUrl("/services/ai-saas-development"),
+            description:
+              "Custom AI-powered applications and internal business tools.",
+          },
+        },
+      ],
+    },
+  };
+}
+
+/** Organization + WebSite (+ ProfessionalService catalog) for every page. */
 export function organizationJsonLd() {
   return {
     "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "Organization",
-        "@id": `${SITE_URL}/#organization`,
-        name: SITE_NAME,
-        alternateName: ["Techverge Solution", "TechVerge", "Techverge"],
-        url: `${SITE_URL}/`,
-        logo: `${SITE_URL}/Logo.svg`,
-        email: "info@techvergesolution.com",
-        telephone: "+1-505-523-1081",
-        address: {
-          "@type": "PostalAddress",
-          addressLocality: "Albuquerque",
-          addressRegion: "NM",
-          addressCountry: "US",
-        },
-        areaServed: [
-          { "@type": "Country", name: "United States" },
-          { "@type": "Country", name: "United Kingdom" },
-          { "@type": "Country", name: "United Arab Emirates" },
-          { "@type": "Country", name: "Saudi Arabia" },
-        ],
-        sameAs: [
-          "https://www.linkedin.com/company/techverg-solution/",
-          "https://www.instagram.com/techvergsolutions/",
-          "https://www.facebook.com/profile.php?id=61579426794497",
-          "https://github.com/solutiontechverge-hub",
-        ],
-      },
-      {
-        "@type": "WebSite",
-        "@id": `${SITE_URL}/#website`,
-        url: `${SITE_URL}/`,
-        name: SITE_NAME,
-        description: HOME_DESCRIPTION,
-        publisher: { "@id": `${SITE_URL}/#organization` },
-        inLanguage: "en-US",
-      },
-      {
-        "@type": "ProfessionalService",
-        "@id": `${SITE_URL}/#professional-service`,
-        name: SITE_NAME,
-        url: `${SITE_URL}/`,
-        image: DEFAULT_OG_IMAGE,
-        email: "info@techvergesolution.com",
-        telephone: "+1-505-523-1081",
-        areaServed: [
-          { "@type": "Country", name: "United States" },
-          { "@type": "Country", name: "United Kingdom" },
-          { "@type": "Country", name: "United Arab Emirates" },
-          { "@type": "Country", name: "Saudi Arabia" },
-        ],
-        provider: { "@id": `${SITE_URL}/#organization` },
-        description:
-          "Custom AI automation, voice agents, business process automation, and software development. Primary market: US businesses; also serves UK, UAE, and Saudi Arabia remotely.",
-        hasOfferCatalog: {
-          "@type": "OfferCatalog",
-          name: "Automation & Software Services",
-          itemListElement: [
-            {
-              "@type": "Offer",
-              itemOffered: {
-                "@type": "Service",
-                name: "AI Lead Follow-Up Automation",
-                url: absoluteUrl("/services/ai-automation"),
-                description:
-                  "Custom workflows that respond to new enquiries and automate qualification and follow-up.",
-              },
-            },
-            {
-              "@type": "Offer",
-              itemOffered: {
-                "@type": "Service",
-                name: "AI Voice Agents",
-                url: absoluteUrl("/services/ai-voice-agents"),
-                description:
-                  "Custom inbound call handling, caller qualification, and appointment scheduling support.",
-              },
-            },
-            {
-              "@type": "Offer",
-              itemOffered: {
-                "@type": "Service",
-                name: "Business Process Automation",
-                url: absoluteUrl("/services/business-automation"),
-                description:
-                  "Integration of forms, CRM, email, calendars, and internal systems.",
-              },
-            },
-            {
-              "@type": "Offer",
-              itemOffered: {
-                "@type": "Service",
-                name: "AI SaaS & Custom Software",
-                url: absoluteUrl("/services/ai-saas-development"),
-                description:
-                  "Custom AI-powered applications and internal business tools.",
-              },
-            },
-          ],
-        },
-      },
-    ],
+    "@graph": [organizationNode(), webSiteNode(), professionalServiceNode()],
   };
 }
 
@@ -199,6 +249,7 @@ export function serviceJsonLd(input: {
   name: string;
   description: string;
   path: string;
+  serviceType?: string;
 }) {
   return {
     "@context": "https://schema.org",
@@ -208,21 +259,17 @@ export function serviceJsonLd(input: {
     url: absoluteUrl(input.path),
     provider: {
       "@type": "Organization",
-      "@id": `${SITE_URL}/#organization`,
+      "@id": ORGANIZATION_ID,
       name: SITE_NAME,
       url: `${SITE_URL}/`,
     },
-    areaServed: [
-      { "@type": "Country", name: "United States" },
-      { "@type": "Country", name: "United Kingdom" },
-      { "@type": "Country", name: "United Arab Emirates" },
-      { "@type": "Country", name: "Saudi Arabia" },
-    ],
-    serviceType: input.name,
+    areaServed: areaServedNodes(),
+    serviceType: input.serviceType ?? input.name,
   };
 }
 
 export function faqPageJsonLd(faq: { question: string; answer: string }[]) {
+  if (!faq.length) return null;
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -245,9 +292,13 @@ export function blogPostingJsonLd(input: {
   dateModified: string;
   imagePath: string;
   imageAlt?: string;
+  authorName?: string;
+  authorPath?: string;
 }) {
   const url = absoluteUrl(input.path);
   const imageUrl = absoluteUrl(input.imagePath);
+  const authorName = input.authorName?.trim() || DEFAULT_BLOG_AUTHOR.name;
+  const authorUrl = absoluteUrl(input.authorPath || DEFAULT_BLOG_AUTHOR.path);
 
   return {
     "@context": "https://schema.org",
@@ -262,14 +313,13 @@ export function blogPostingJsonLd(input: {
     datePublished: input.datePublished,
     dateModified: input.dateModified,
     author: {
-      "@type": "Organization",
-      "@id": `${SITE_URL}/#organization`,
-      name: SITE_NAME,
-      url: `${SITE_URL}/`,
+      "@type": "Person",
+      name: authorName,
+      url: authorUrl,
     },
     publisher: {
       "@type": "Organization",
-      "@id": `${SITE_URL}/#organization`,
+      "@id": ORGANIZATION_ID,
       name: SITE_NAME,
       url: `${SITE_URL}/`,
       logo: {
@@ -287,7 +337,7 @@ export function blogPostingJsonLd(input: {
       "@type": "Blog",
       "@id": absoluteUrl("/blog"),
       name: `${SITE_NAME} Blog`,
-      publisher: { "@id": `${SITE_URL}/#organization` },
+      publisher: { "@id": ORGANIZATION_ID },
     },
   };
 }
@@ -303,7 +353,7 @@ export function blogIndexJsonLd(
     name: `${SITE_NAME} Blog`,
     description: pageSeo.blog.description,
     url: blogUrl,
-    publisher: { "@id": `${SITE_URL}/#organization` },
+    publisher: { "@id": ORGANIZATION_ID },
     inLanguage: "en-US",
     blogPost: posts.map((post) => ({
       "@type": "BlogPosting",
@@ -323,9 +373,7 @@ export function blogIndexJsonLd(
   };
 }
 
-export function breadcrumbJsonLd(
-  items: { name: string; path: string }[],
-) {
+export function breadcrumbJsonLd(items: { name: string; path: string }[]) {
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -336,4 +384,14 @@ export function breadcrumbJsonLd(
       item: absoluteUrl(item.path),
     })),
   };
+}
+
+/** Flatten page-specific graphs, dropping null/empty FAQ blocks. */
+export function composeJsonLd(
+  ...blocks: Array<Record<string, unknown> | null | undefined | false>
+): Record<string, unknown>[] {
+  return blocks.filter(
+    (block): block is Record<string, unknown> =>
+      Boolean(block) && typeof block === "object",
+  );
 }

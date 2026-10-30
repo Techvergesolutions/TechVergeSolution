@@ -34,7 +34,7 @@ function blogIndexJsonLd(posts) {
     "@id": blogUrl,
     name: `${SITE_NAME} Blog`,
     description:
-      "Practical guides from TechVerge Solutions on AI voice agents, lead follow-up automation, and business workflows for US small and service businesses.",
+      "Practical TechVerge Solutions guides on AI voice agents, lead follow-up, and workflow automation for small and service businesses—clear and jargon-light.",
     url: blogUrl,
     publisher: { "@id": `${SITE_URL}/#organization` },
     inLanguage: "en-US",
@@ -61,6 +61,10 @@ const BREADCRUMBS = {
   "/about": [
     { name: "Home", path: "/" },
     { name: "About", path: "/about" },
+  ],
+  "/ai-facts": [
+    { name: "Home", path: "/" },
+    { name: "AI Facts", path: "/ai-facts" },
   ],
   "/services": [
     { name: "Home", path: "/" },
@@ -118,9 +122,9 @@ export async function buildPrerenderRoutes() {
 
   const blogIndex = {
     path: "/blog",
-    title: "Blog | TechVerge Solutions",
+    title: "AI Automation Guides | TechVerge Solutions",
     description:
-      "Practical guides from TechVerge Solutions on AI voice agents, lead follow-up automation, and business workflows for US small and service businesses.",
+      "Practical TechVerge Solutions guides on AI voice agents, lead follow-up, and workflow automation for small and service businesses—clear and jargon-light.",
     extraJsonLd: [blogIndexJsonLd(posts)],
   };
 
@@ -142,6 +146,8 @@ export async function buildPrerenderRoutes() {
         dateModified: post.dateModified,
         imagePath: post.imagePath,
         imageAlt: post.imageAlt,
+        authorName: post.author || SITE_NAME,
+        authorPath: "/about",
         faq: post.faq || [],
       },
       extraJsonLd: [

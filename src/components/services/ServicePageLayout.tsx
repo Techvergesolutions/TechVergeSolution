@@ -14,6 +14,8 @@ import { ServiceLimitations } from "./ServiceLimitations";
 import { ServiceFaq } from "./ServiceFaq";
 import { RelatedServices } from "./RelatedServices";
 import { ServiceCta } from "./ServiceCta";
+import { RelatedGuidesSection } from "@/components/blog/RelatedGuidesSection";
+import { SERVICE_GUIDE_LINKS } from "@/data/internalLinks";
 
 interface ServicePageLayoutProps {
   service: ServiceConfig;
@@ -62,7 +64,14 @@ export function ServicePageLayout({ service }: ServicePageLayoutProps) {
       <ServiceWhoFor whoFor={service.whoFor} />
       <ServiceLimitations limitations={service.limitations} />
       <ServiceFaq faq={service.faq} />
+      <RelatedGuidesSection
+        title="Related guides"
+        description="Read the practical write-ups that sit behind this service — written for operators, not for keyword stuffing."
+        links={SERVICE_GUIDE_LINKS[service.slug] ?? []}
+        muted
+      />
       <RelatedServices currentSlug={service.slug} />
-      <ServiceCta cta={service.cta} serviceSlug={service.slug} />    </>
+      <ServiceCta cta={service.cta} serviceSlug={service.slug} />
+    </>
   );
 }

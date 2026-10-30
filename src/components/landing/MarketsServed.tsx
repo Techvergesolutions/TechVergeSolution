@@ -13,7 +13,7 @@ export function MarketsServed({ compact = false }: MarketsServedProps) {
     return (
       <p className="text-muted-foreground text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
         <span className="text-foreground/90 font-medium">Markets we serve: </span>
-        United States (primary), United Kingdom, UAE, and Saudi Arabia — remotely,
+        United States (primary), United Kingdom, and United Arab Emirates — remotely,
         without claiming local offices in those markets.
       </p>
     );
@@ -28,7 +28,7 @@ export function MarketsServed({ compact = false }: MarketsServedProps) {
           </h2>
           <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
             We primarily work with US businesses and also support clients in the United
-            Kingdom, UAE, and Saudi Arabia. Engagements are delivered remotely — we do not
+            Kingdom and United Arab Emirates. Engagements are delivered remotely — we do not
             claim brick-and-mortar offices in those markets.
           </p>
         </AnimatedSection>

@@ -1,7 +1,7 @@
 /**
- * Keep in sync with src/lib/seo.ts, src/data/services.ts, and src/data/blog.ts.
+ * Keep in sync with src/lib/seo.ts, src/data/organizationProfiles.ts,
+ * src/data/services.ts, and src/data/blog.ts.
  * Copied for Node post-build (no TS import / no new deps).
- * Expected route count: 13.
  */
 
 export const SITE_URL = "https://www.techvergesolution.com";
@@ -10,6 +10,29 @@ export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.webp`;
 export const DEFAULT_OG_IMAGE_ALT =
   "TechVerge Solutions — AI automation and custom software";
 
+export const ORG_DESCRIPTION =
+  "Custom AI automation and voice agents for small businesses in the US, UK, and UAE—built by TechVerge Solutions to cut manual work and catch more leads.";
+
+export const AREA_SERVED_COUNTRIES = [
+  "United States",
+  "United Kingdom",
+  "United Arab Emirates",
+];
+
+/** Replace PLACEHOLDER_* URLs with live Clutch / Trustpilot profiles. */
+export const SOCIAL_PROFILES = [
+  "https://www.linkedin.com/company/techverg-solution/",
+  "https://www.instagram.com/techvergsolutions/",
+  "https://www.facebook.com/profile.php?id=61579426794497",
+  "https://github.com/solutiontechverge-hub",
+  "https://www.trustpilot.com/users/6ae4b71dd0b152fb750a51f5",
+];
+
+export const DEFAULT_BLOG_AUTHOR = {
+  name: SITE_NAME,
+  path: "/about",
+};
+
 export function absoluteUrl(path = "/") {
   if (!path || path === "/") return `${SITE_URL}/`;
   if (/^https?:\/\//i.test(path)) return path;
@@ -17,113 +40,123 @@ export function absoluteUrl(path = "/") {
   return `${SITE_URL}${normalized}`;
 }
 
+function areaServedNodes() {
+  return AREA_SERVED_COUNTRIES.map((name) => ({
+    "@type": "Country",
+    name,
+  }));
+}
+
+function organizationNode() {
+  return {
+    "@type": "Organization",
+    "@id": `${SITE_URL}/#organization`,
+    name: SITE_NAME,
+    alternateName: ["Techverge Solution", "TechVerge", "Techverge"],
+    url: `${SITE_URL}/`,
+    logo: {
+      "@type": "ImageObject",
+      url: `${SITE_URL}/Logo.svg`,
+    },
+    description: ORG_DESCRIPTION,
+    email: "info@techvergesolution.com",
+    telephone: "+1-505-523-1081",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Albuquerque",
+      addressRegion: "NM",
+      addressCountry: "US",
+    },
+    areaServed: areaServedNodes(),
+    contactPoint: {
+      "@type": "ContactPoint",
+      telephone: "+1-505-523-1081",
+      email: "info@techvergesolution.com",
+      contactType: "sales",
+      areaServed: areaServedNodes(),
+      availableLanguage: ["English"],
+    },
+    sameAs: SOCIAL_PROFILES,
+  };
+}
+
+function webSiteNode() {
+  return {
+    "@type": "WebSite",
+    "@id": `${SITE_URL}/#website`,
+    url: `${SITE_URL}/`,
+    name: SITE_NAME,
+    description: ORG_DESCRIPTION,
+    publisher: { "@id": `${SITE_URL}/#organization` },
+    inLanguage: "en-US",
+  };
+}
+
+function professionalServiceNode() {
+  return {
+    "@type": "ProfessionalService",
+    "@id": `${SITE_URL}/#professional-service`,
+    name: SITE_NAME,
+    url: `${SITE_URL}/`,
+    image: DEFAULT_OG_IMAGE,
+    email: "info@techvergesolution.com",
+    telephone: "+1-505-523-1081",
+    areaServed: areaServedNodes(),
+    provider: { "@id": `${SITE_URL}/#organization` },
+    description: ORG_DESCRIPTION,
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: "Automation & Software Services",
+      itemListElement: [
+        {
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: "AI Lead Follow-Up Automation",
+            url: absoluteUrl("/services/ai-automation"),
+            description:
+              "Custom workflows that respond to new enquiries and automate qualification and follow-up.",
+          },
+        },
+        {
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: "AI Voice Agents",
+            url: absoluteUrl("/services/ai-voice-agents"),
+            description:
+              "Custom inbound call handling, caller qualification, and appointment scheduling support.",
+          },
+        },
+        {
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: "Business Process Automation",
+            url: absoluteUrl("/services/business-automation"),
+            description:
+              "Integration of forms, CRM, email, calendars, and internal systems.",
+          },
+        },
+        {
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: "AI SaaS & Custom Software",
+            url: absoluteUrl("/services/ai-saas-development"),
+            description:
+              "Custom AI-powered applications and internal business tools.",
+          },
+        },
+      ],
+    },
+  };
+}
+
 export function organizationJsonLd() {
   return {
     "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "Organization",
-        "@id": `${SITE_URL}/#organization`,
-        name: SITE_NAME,
-        alternateName: ["Techverge Solution", "TechVerge", "Techverge"],
-        url: `${SITE_URL}/`,
-        logo: `${SITE_URL}/Logo.svg`,
-        email: "info@techvergesolution.com",
-        telephone: "+1-505-523-1081",
-        address: {
-          "@type": "PostalAddress",
-          addressLocality: "Albuquerque",
-          addressRegion: "NM",
-          addressCountry: "US",
-        },
-        areaServed: [
-          { "@type": "Country", name: "United States" },
-          { "@type": "Country", name: "United Kingdom" },
-          { "@type": "Country", name: "United Arab Emirates" },
-          { "@type": "Country", name: "Saudi Arabia" },
-        ],
-        sameAs: [
-          "https://www.linkedin.com/company/techverg-solution/",
-          "https://www.instagram.com/techvergsolutions/",
-          "https://www.facebook.com/profile.php?id=61579426794497",
-          "https://github.com/solutiontechverge-hub",
-        ],
-      },
-      {
-        "@type": "WebSite",
-        "@id": `${SITE_URL}/#website`,
-        url: `${SITE_URL}/`,
-        name: SITE_NAME,
-        description:
-          "TechVerge Solutions builds custom AI automation, voice agents, business workflows and software to help businesses reduce manual work and improve lead follow-up.",
-        publisher: { "@id": `${SITE_URL}/#organization` },
-        inLanguage: "en-US",
-      },
-      {
-        "@type": "ProfessionalService",
-        "@id": `${SITE_URL}/#professional-service`,
-        name: SITE_NAME,
-        url: `${SITE_URL}/`,
-        image: DEFAULT_OG_IMAGE,
-        email: "info@techvergesolution.com",
-        telephone: "+1-505-523-1081",
-        areaServed: [
-          { "@type": "Country", name: "United States" },
-          { "@type": "Country", name: "United Kingdom" },
-          { "@type": "Country", name: "United Arab Emirates" },
-          { "@type": "Country", name: "Saudi Arabia" },
-        ],
-        provider: { "@id": `${SITE_URL}/#organization` },
-        description:
-          "Custom AI automation, voice agents, business process automation, and software development. Primary market: US businesses; also serves UK, UAE, and Saudi Arabia remotely.",
-        hasOfferCatalog: {
-          "@type": "OfferCatalog",
-          name: "Automation & Software Services",
-          itemListElement: [
-            {
-              "@type": "Offer",
-              itemOffered: {
-                "@type": "Service",
-                name: "AI Lead Follow-Up Automation",
-                url: absoluteUrl("/services/ai-automation"),
-                description:
-                  "Custom workflows that respond to new enquiries and automate qualification and follow-up.",
-              },
-            },
-            {
-              "@type": "Offer",
-              itemOffered: {
-                "@type": "Service",
-                name: "AI Voice Agents",
-                url: absoluteUrl("/services/ai-voice-agents"),
-                description:
-                  "Custom inbound call handling, caller qualification, and appointment scheduling support.",
-              },
-            },
-            {
-              "@type": "Offer",
-              itemOffered: {
-                "@type": "Service",
-                name: "Business Process Automation",
-                url: absoluteUrl("/services/business-automation"),
-                description:
-                  "Integration of forms, CRM, email, calendars, and internal systems.",
-              },
-            },
-            {
-              "@type": "Offer",
-              itemOffered: {
-                "@type": "Service",
-                name: "AI SaaS & Custom Software",
-                url: absoluteUrl("/services/ai-saas-development"),
-                description:
-                  "Custom AI-powered applications and internal business tools.",
-              },
-            },
-          ],
-        },
-      },
-    ],
+    "@graph": [organizationNode(), webSiteNode(), professionalServiceNode()],
   };
 }
 
@@ -140,17 +173,13 @@ export function serviceJsonLd(input) {
       name: SITE_NAME,
       url: `${SITE_URL}/`,
     },
-    areaServed: [
-      { "@type": "Country", name: "United States" },
-      { "@type": "Country", name: "United Kingdom" },
-      { "@type": "Country", name: "United Arab Emirates" },
-      { "@type": "Country", name: "Saudi Arabia" },
-    ],
-    serviceType: input.name,
+    areaServed: areaServedNodes(),
+    serviceType: input.serviceType || input.name,
   };
 }
 
 export function faqPageJsonLd(faq) {
+  if (!faq?.length) return null;
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -168,6 +197,8 @@ export function faqPageJsonLd(faq) {
 export function blogPostingJsonLd(input) {
   const url = absoluteUrl(input.path);
   const imageUrl = absoluteUrl(input.imagePath);
+  const authorName = input.authorName || DEFAULT_BLOG_AUTHOR.name;
+  const authorUrl = absoluteUrl(input.authorPath || DEFAULT_BLOG_AUTHOR.path);
 
   return {
     "@context": "https://schema.org",
@@ -182,10 +213,9 @@ export function blogPostingJsonLd(input) {
     datePublished: input.datePublished,
     dateModified: input.dateModified,
     author: {
-      "@type": "Organization",
-      "@id": `${SITE_URL}/#organization`,
-      name: SITE_NAME,
-      url: `${SITE_URL}/`,
+      "@type": "Person",
+      name: authorName,
+      url: authorUrl,
     },
     publisher: {
       "@type": "Organization",
@@ -212,20 +242,24 @@ export function blogPostingJsonLd(input) {
   };
 }
 
-/** Exactly 13 routes — titles/descriptions from pageSeo + servicesConfig + blog. */
+/** Exactly 13+ routes — titles/descriptions from pageSeo + servicesConfig + blog. */
 export const prerenderRoutes = [
   {
     path: "/",
-    title: "AI Automation & Software Development | TechVerge Solutions",
-    description:
-      "TechVerge Solutions builds custom AI automation, voice agents, business workflows and software to help businesses reduce manual work and improve lead follow-up.",
-    jsonLd: "organization",
+    title: "AI Automation & Voice Agents | TechVerge Solutions",
+    description: ORG_DESCRIPTION,
   },
   {
     path: "/about",
     title: "About | TechVerge Solutions",
     description:
       "How TechVerge approaches AI automation and custom software — integration-first workflows, human + AI handoffs, and teams that ship practical systems for US businesses.",
+  },
+  {
+    path: "/ai-facts",
+    title: "AI Facts | TechVerge Solutions",
+    description:
+      "Plain facts about TechVerge Solutions: what we do, who we serve, countries, services, typical timelines, how pricing works, and how to contact us.",
   },
   {
     path: "/services",
@@ -237,9 +271,10 @@ export const prerenderRoutes = [
     path: "/services/ai-automation",
     title: "AI Lead Follow-Up Automation | TechVerge Solutions",
     description:
-      "We design and implement custom AI lead follow-up automation for US businesses — faster response, qualification, and routing to your team.",
+      "TechVerge Solutions designs AI automation for lead follow-up and back-office tasks so new enquiries get answered fast and routine work stops piling up.",
     service: {
-      name: "AI Lead Follow-Up Automation",
+      name: "AI Automation for Lead Follow-Up and Back-Office Work",
+      serviceType: "AI Lead Follow-Up Automation",
       faq: [
         {
           question: "Is this a product we buy seats for?",
@@ -276,11 +311,12 @@ export const prerenderRoutes = [
   },
   {
     path: "/services/ai-voice-agents",
-    title: "Custom AI Voice Agents | TechVerge Solutions",
+    title: "AI Voice Agents 24/7 | TechVerge Solutions",
     description:
-      "We design and implement custom inbound AI voice agents that handle common calls, qualify callers, and help schedule — with clear human handoffs.",
+      "TechVerge Solutions builds AI voice agents that answer inbound calls, qualify callers, and book jobs around the clock—with clear handoffs to your team.",
     service: {
-      name: "AI Voice Agents",
+      name: "AI Voice Agents That Answer Calls and Book Jobs 24/7",
+      serviceType: "AI Voice Agents",
       faq: [
         {
           question: "Is this a seat-based voice product?",
@@ -319,9 +355,10 @@ export const prerenderRoutes = [
     path: "/services/business-automation",
     title: "Business Process Automation | TechVerge Solutions",
     description:
-      "We design and implement custom business automation that connects forms, CRM, email, calendars, and internal systems — reducing repetitive admin.",
+      "TechVerge Solutions connects forms, CRM, email, and calendars with business process automation built for service businesses that outgrow manual admin.",
     service: {
-      name: "Business Process Automation",
+      name: "Business Process Automation for Service Businesses",
+      serviceType: "Business Process Automation",
       faq: [
         {
           question: "Do we have to move to your software?",
@@ -362,7 +399,8 @@ export const prerenderRoutes = [
     description:
       "We design and build custom AI-powered applications and internal tools for your workflows — not a TechVerge SaaS product you subscribe to.",
     service: {
-      name: "AI SaaS & Custom Software",
+      name: "Custom AI-Powered Apps Built Around Your Workflows",
+      serviceType: "AI SaaS & Custom Software",
       faq: [
         {
           question: "Is this TechVerge's SaaS product?",
@@ -405,9 +443,9 @@ export const prerenderRoutes = [
   },
   {
     path: "/blog",
-    title: "Blog | TechVerge Solutions",
+    title: "AI Automation Guides | TechVerge Solutions",
     description:
-      "Practical guides from TechVerge Solutions on AI voice agents, lead follow-up automation, and business workflows for US small and service businesses.",
+      "Practical TechVerge Solutions guides on AI voice agents, lead follow-up, and workflow automation for small and service businesses—clear and jargon-light.",
   },
   {
     path: "/blog/ai-voice-agents-for-small-business-2026",
@@ -427,6 +465,8 @@ export const prerenderRoutes = [
       imagePath: "/images/blog/ai-voice-agents-hero.webp",
       imageAlt:
         "AI voice agents for small businesses — headset workstation illustration",
+      authorName: SITE_NAME,
+      authorPath: "/about",
       faq: [
         {
           question:
@@ -480,4 +520,4 @@ export const prerenderRoutes = [
   },
 ];
 
-export const EXPECTED_ROUTE_COUNT = 13;
+export const EXPECTED_ROUTE_COUNT = 14;

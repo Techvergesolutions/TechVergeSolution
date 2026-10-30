@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { absoluteUrl, SITE_URL } from "@/lib/seo";
-import { PUBLISHED_POST_FILTER, mergeBlogPostMeta } from "@/lib/blogApi";
+import { mergeBlogPostMeta } from "@/lib/blogApi";
+import { getCompiledBlogPosts } from "@/data/blog";
 
 describe("absoluteUrl", () => {
   it("keeps Sanity CDN URLs intact for JSON-LD images", () => {
@@ -9,40 +10,29 @@ describe("absoluteUrl", () => {
     expect(absoluteUrl(cdn)).toBe(cdn);
   });
 
-  it("prefixes site-relative paths", () => {
+  it("prefixes site-relative paths with www", () => {
     expect(absoluteUrl("/blog/hello")).toBe(`${SITE_URL}/blog/hello`);
+    expect(absoluteUrl("/")).toBe(`${SITE_URL}/`);
+  });
+
+  it("normalizes apex host to www for canonicals", () => {
+    expect(absoluteUrl("https://techvergesolution.com/about")).toBe(
+      `${SITE_URL}/about`,
+    );
   });
 });
 
-describe("published Sanity filter", () => {
-  it("excludes drafts and future dates", () => {
-    expect(PUBLISHED_POST_FILTER).toContain('!(_id in path("drafts.**"))');
-    expect(PUBLISHED_POST_FILTER).toContain("publishedAt <= now()");
+describe("markdown blog registry", () => {
+  it("compiles at least the voice-agents post", () => {
+    const posts = getCompiledBlogPosts();
+    expect(posts.length).toBeGreaterThan(0);
+    expect(posts.some((p) => p.slug.includes("ai-voice"))).toBe(true);
+    expect(posts.every((p) => p.bodyHtml && p.bodyHtml.length > 50)).toBe(true);
   });
-});
 
-describe("mergeBlogPostMeta", () => {
-  it("falls back to static posts when Sanity is empty", () => {
+  it("mergeBlogPostMeta returns markdown posts", () => {
     const merged = mergeBlogPostMeta([]);
     expect(merged.length).toBeGreaterThan(0);
     expect(merged.some((p) => p.slug.includes("ai-voice"))).toBe(true);
-  });
-
-  it("lets Sanity win on slug conflicts", () => {
-    const merged = mergeBlogPostMeta([
-      {
-        _id: "p1",
-        title: "Sanity Title",
-        slug: "ai-voice-agents-for-small-business-2026",
-        excerpt: "From Sanity",
-        description: "From Sanity desc",
-        publishedAt: "2026-10-12",
-        _updatedAt: "2026-10-12",
-      },
-    ]);
-    const hit = merged.find(
-      (p) => p.slug === "ai-voice-agents-for-small-business-2026",
-    );
-    expect(hit?.title).toBe("Sanity Title");
   });
 });

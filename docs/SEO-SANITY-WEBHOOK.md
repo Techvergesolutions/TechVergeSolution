@@ -65,14 +65,30 @@ Production builds prerender Sanity posts by proxying CDN requests inside Playwri
 
 Public datasets: the site reads **published** documents via the CDN with no token.
 
-## 6. Verify
+## 6. IndexNow (Bing URL notify on publish)
+
+`/api/sanity-rebuild` also pings [IndexNow](https://www.indexnow.org/) when the webhook body includes a post `slug` (string or `{ current }`).
+
+1. Key file (committed): `public/d52e645fe0119e9f67683e0c748a48c2.txt` → live at  
+   `https://www.techvergesolution.com/d52e645fe0119e9f67683e0c748a48c2.txt`
+2. Optional Vercel env: `INDEXNOW_KEY` (must match the filename / file body), `SITE_URL`, `INDEXNOW_HOST`.
+3. In the Sanity webhook, include a projection that sends the slug, e.g.  
+   `{ "slug": slug.current }`  
+   so IndexNow receives `/blog/<slug>` immediately on publish.
+4. After each **Vercel production build**, `seo-build` also pings IndexNow for all blog URLs when `VERCEL=1` (so Bing sees URLs after they are actually live).
+5. Manual: `npm run indexnow:ping -- --slug your-slug` or `npm run indexnow:ping:all`.
+
+Standalone endpoint (same secret): `POST /api/indexnow` with `{ "slug": "…" }` or `{ "urls": ["https://…"] }`.
+
+## 7. Verify
 
 1. Publish a test post in Studio.
 2. Confirm Vercel starts a deployment within a minute.
 3. After deploy: `/blog/<slug>` returns **200** with HTML body; slug appears in `/sitemap.xml`.
 4. Unpublish/delete the post and wait for rebuild: URL should return **HTTP 404** (not the homepage).
+5. Confirm IndexNow key URL returns 200 and Bing Webmaster shows the submission (see `docs/SEARCH-CONSOLE-BING-CHECKLIST.md`).
 
-## 7. Local / CI notes
+## 8. Local / CI notes
 
 - Production build runs Playwright Chromium prerender and **fails** if `#root` is empty.
 - After `npm run build`, run `npm run test:seo` for dist validation + local filesystem→404 routing checks.

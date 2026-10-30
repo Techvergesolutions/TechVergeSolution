@@ -1,59 +1,43 @@
-import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, Clock } from "lucide-react";
+import { useParams } from "react-router-dom";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { Seo } from "@/components/Seo";
+import { useBlogFaqs } from "@/hooks/useBlogPosts";
+import { useBlogScrollDepth } from "@/hooks/useBlogScrollDepth";
 import { BlogFigure } from "@/components/blog/BlogFigure";
-import { PortableTextContent } from "@/components/blog/PortableTextContent";
-import {
-  AiVoiceAgentsForSmallBusiness2026,
-  articleFaqs,
-} from "@/content/blog/ai-voice-agents-for-small-business-2026";
+import { BlogFaq } from "@/components/blog/BlogFaq";
+import { BlogBreadcrumbs } from "@/components/blog/BlogBreadcrumbs";
+import { BlogQuickAnswer } from "@/components/blog/BlogQuickAnswer";
+import { BlogAuthorCard } from "@/components/blog/BlogAuthorCard";
+import { BlogTableOfContents } from "@/components/blog/BlogTableOfContents";
+import { BlogShareRow } from "@/components/blog/BlogShareRow";
+import { BlogRelatedGuides } from "@/components/blog/BlogRelatedGuides";
+import { BlogServiceCta } from "@/components/blog/BlogServiceCta";
+import { MarkdownArticle } from "@/components/blog/MarkdownArticle";
 import {
   blogPostPath,
-  staticArticleBodySlugs,
+  getCompiledBlogPostBySlug,
+  getRelatedPosts,
   type BlogPostMeta,
 } from "@/data/blog";
-import { useBlogPostDetail } from "@/hooks/useBlogPosts";
-import type { BlogFaq } from "@/lib/blogApi";
+import type { BlogFaq as BlogFaqItem } from "@/data/blog";
+import { resolveBlogAuthor } from "@/data/blogAuthors";
 import {
   absoluteUrl,
   blogPostingJsonLd,
   breadcrumbJsonLd,
+  composeJsonLd,
   faqPageJsonLd,
 } from "@/lib/seo";
 import NotFound from "./NotFound";
 
-function formatDisplayDate(isoDate: string) {
-  const [year, month, day] = isoDate.split("-").map(Number);
-  return new Date(Date.UTC(year, month - 1, day)).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    timeZone: "UTC",
-  });
-}
-
-function ArticleBody({ slug }: { slug: string }) {
-  switch (slug) {
-    case "ai-voice-agents-for-small-business-2026":
-      return <AiVoiceAgentsForSmallBusiness2026 />;
-    default:
-      return null;
-  }
-}
-
-function faqsForStaticSlug(slug: string): BlogFaq[] {
-  if (slug === "ai-voice-agents-for-small-business-2026") return articleFaqs;
-  return [];
-}
-
-function articleSeo(post: BlogPostMeta, faqs: BlogFaq[]) {
+function articleSeo(post: BlogPostMeta, faqs: BlogFaqItem[]) {
   const path = blogPostPath(post.slug);
   const imagePath = post.ogImage ?? post.featuredImage.src;
   const image =
     imagePath.startsWith("http") ? imagePath : absoluteUrl(imagePath);
-  const jsonLd = [
+  const author = resolveBlogAuthor(post.author);
+  const jsonLd = composeJsonLd(
     blogPostingJsonLd({
       title: post.title,
       description: post.description,
@@ -62,14 +46,16 @@ function articleSeo(post: BlogPostMeta, faqs: BlogFaq[]) {
       dateModified: post.dateModified,
       imagePath,
       imageAlt: post.ogImageAlt ?? post.featuredImage.alt,
+      authorName: author.name,
+      authorPath: author.path,
     }),
-    ...(faqs.length > 0 ? [faqPageJsonLd(faqs)] : []),
+    faqPageJsonLd(faqs),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
       { name: "Blog", path: "/blog" },
       { name: post.title, path },
     ]),
-  ];
+  );
 
   return {
     title: `${post.title} | TechVerge Solutions`,
@@ -77,49 +63,30 @@ function articleSeo(post: BlogPostMeta, faqs: BlogFaq[]) {
     path,
     image,
     imageAlt: post.ogImageAlt ?? post.featuredImage.alt,
+    author,
     jsonLd,
   };
 }
 
 export default function BlogPost() {
   const { slug } = useParams<{ slug: string }>();
-  const { data: resolved, isLoading, isError } = useBlogPostDetail(slug);
+  const post = slug ? getCompiledBlogPostBySlug(slug) : undefined;
+  const { faqs } = useBlogFaqs(slug, post?.faq);
+  useBlogScrollDepth(post?.slug);
 
-  if (!slug) {
+  if (!post) {
     return <NotFound />;
   }
-
-  if (isLoading && !resolved) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
-        <main className="section-container max-w-3xl pt-40 pb-20">
-          <p className="text-muted-foreground">Loading article…</p>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
-  if (isError || !resolved) {
-    return <NotFound />;
-  }
-
-  if (
-    resolved.kind === "static" &&
-    !staticArticleBodySlugs.has(resolved.meta.slug)
-  ) {
-    return <NotFound />;
-  }
-
-  const post =
-    resolved.kind === "sanity" ? resolved.post : resolved.meta;
-  const faqs =
-    resolved.kind === "sanity"
-      ? resolved.post.faqs
-      : faqsForStaticSlug(resolved.meta.slug);
 
   const seo = articleSeo(post, faqs);
+  const related = getRelatedPosts(post.slug, post.relatedSlugs, 3);
+  const quickAnswer = post.quickAnswer || post.excerpt;
+  const cta = post.cta ?? {
+    label: "Explore our services",
+    path: "/services",
+    description:
+      "See how TechVerge designs AI voice agents, lead follow-up, and business automation for service teams.",
+  };
 
   return (
     <>
@@ -130,57 +97,57 @@ export default function BlogPost() {
         image={seo.image}
         imageAlt={seo.imageAlt}
         type="article"
-        jsonLd={seo.jsonLd}
         datePublished={post.datePublished}
         dateModified={post.dateModified}
+        jsonLd={seo.jsonLd}
+        preloadImage={
+          post.featuredImage.src.startsWith("http")
+            ? post.featuredImage.src
+            : absoluteUrl(post.featuredImage.src)
+        }
       />
       <div className="min-h-screen bg-background overflow-x-hidden">
         <Navbar />
         <main>
           <article>
-            <header className="relative pt-32 pb-8 md:pt-40 md:pb-10 overflow-hidden">
+            <header className="relative pt-28 pb-8 md:pt-36 md:pb-10 overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
               <div className="section-container relative z-10 max-w-3xl">
-                <nav aria-label="Breadcrumb" className="mb-8 text-sm text-muted-foreground">
-                  <ol className="flex flex-wrap items-center gap-2">
-                    <li>
-                      <Link to="/" className="hover:text-primary transition-colors">
-                        Home
-                      </Link>
-                    </li>
-                    <li aria-hidden="true">/</li>
-                    <li>
-                      <Link to="/blog" className="hover:text-primary transition-colors">
-                        Blog
-                      </Link>
-                    </li>
-                    <li aria-hidden="true">/</li>
-                    <li className="text-foreground line-clamp-1">{post.title}</li>
-                  </ol>
-                </nav>
-                <Link
-                  to="/blog"
-                  className="inline-flex items-center gap-2 text-primary hover:gap-3 transition-all text-sm font-medium mb-8"
-                >
-                  <ArrowLeft className="w-4 h-4" aria-hidden="true" />
-                  Back to Blog
-                </Link>
-                <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground mb-5">
-                  <time dateTime={post.datePublished}>
-                    {formatDisplayDate(post.datePublished)}
-                  </time>
-                  <span aria-hidden="true">·</span>
-                  <span className="inline-flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5" aria-hidden="true" />
-                    {post.readingTimeMinutes} min read
+                <BlogBreadcrumbs
+                  items={[
+                    { name: "Home", path: "/" },
+                    { name: "Blog", path: "/blog" },
+                    ...(post.category
+                      ? [{ name: post.category, path: `/blog?category=${encodeURIComponent(post.category)}` }]
+                      : []),
+                    { name: post.title },
+                  ]}
+                />
+
+                {post.category ? (
+                  <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-4 block">
+                    {post.category}
                   </span>
-                </div>
-                <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6 leading-tight">
+                ) : null}
+
+                <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground leading-tight">
                   {post.title}
                 </h1>
-                <p className="text-muted-foreground text-base md:text-lg leading-relaxed">
-                  {post.excerpt}
-                </p>
+
+                <BlogQuickAnswer text={quickAnswer} />
+
+                <div className="mt-8">
+                  <BlogAuthorCard
+                    author={seo.author}
+                    datePublished={post.datePublished}
+                    dateModified={post.dateModified}
+                    readingTimeMinutes={post.readingTimeMinutes}
+                  />
+                </div>
+
+                <div className="mt-6">
+                  <BlogShareRow title={post.title} path={seo.path} />
+                </div>
               </div>
             </header>
 
@@ -193,37 +160,16 @@ export default function BlogPost() {
                 lazy={false}
                 priority
                 className="my-0"
+                sizes="(max-width: 768px) 100vw, 768px"
               />
             </div>
 
-            <div className="section-container max-w-3xl pb-20 md:pb-28">
-              {resolved.kind === "sanity" ? (
-                <>
-                  <PortableTextContent value={resolved.post.body} />
-                  {faqs.length > 0 ? (
-                    <section className="space-y-6 pt-10" aria-labelledby="article-faq-heading">
-                      <h2
-                        id="article-faq-heading"
-                        className="font-display text-2xl md:text-3xl font-bold text-foreground"
-                      >
-                        Frequently asked questions
-                      </h2>
-                      {faqs.map((item) => (
-                        <div key={item.question}>
-                          <h3 className="font-display text-xl font-semibold text-foreground mb-2">
-                            {item.question}
-                          </h3>
-                          <p className="text-muted-foreground leading-relaxed">
-                            {item.answer}
-                          </p>
-                        </div>
-                      ))}
-                    </section>
-                  ) : null}
-                </>
-              ) : (
-                <ArticleBody slug={resolved.meta.slug} />
-              )}
+            <div className="section-container max-w-3xl pb-20 md:pb-28 space-y-10">
+              <BlogTableOfContents items={post.toc ?? []} />
+              <MarkdownArticle html={post.bodyHtml} />
+              <BlogFaq faq={faqs} />
+              <BlogRelatedGuides posts={related} />
+              <BlogServiceCta cta={cta} />
             </div>
           </article>
         </main>

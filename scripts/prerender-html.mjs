@@ -123,6 +123,11 @@ export async function prerenderHtml() {
   }
 
   const context = await browser.newContext();
+  // Skip analytics / tag managers so they cannot keep the network busy.
+  await context.route(
+    /googletagmanager|google-analytics|googleadservices|doubleclick|hotjar|clarity\.ms|facebook\.net|linkedin\.com\/px/i,
+    (route) => route.abort(),
+  );
   // Sanity CORS often omits ephemeral http://127.0.0.1:<port> origins used by
   // this prerender server. Fulfill Sanity API calls from Node (no CORS).
   await context.route(
@@ -180,7 +185,9 @@ export async function prerenderHtml() {
       };
       page.on("response", onResponse);
       try {
-        await page.goto(url, { waitUntil: "networkidle", timeout: 90000 });
+        // Prefer "load" over "networkidle": image srcsets / lazy media can keep
+        // the network active long enough to time out on blog routes.
+        await page.goto(url, { waitUntil: "load", timeout: 90000 });
         await waitForContent(page);
         await assertCapturedPage(page, route.path);
       } catch (error) {

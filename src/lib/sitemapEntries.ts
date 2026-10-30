@@ -21,14 +21,19 @@ export interface SitemapEntry {
 
 /**
  * Client/helper mirror of `scripts/generate-sitemap.mjs`.
- * Build-time sitemap is authoritative (includes Sanity posts + real lastmod).
+ * privacy-policy and terms-of-service are excluded from sitemap priority.
  */
 export function getSitemapEntries(
   lastmodFallback = new Date().toISOString().slice(0, 10),
 ): SitemapEntry[] {
+  const newestPost =
+    blogPosts.map((p) => p.dateModified || p.datePublished).sort().at(-1) ||
+    lastmodFallback;
+
   const staticEntries: Omit<SitemapEntry, "loc">[] = [
     { path: "/", lastmod: "2026-10-12", changefreq: "weekly", priority: 1.0 },
     { path: "/about", lastmod: "2026-10-12", changefreq: "monthly", priority: 0.8 },
+    { path: "/ai-facts", lastmod: "2026-10-30", changefreq: "monthly", priority: 0.6 },
     { path: "/services", lastmod: "2026-10-12", changefreq: "weekly", priority: 0.8 },
     ...serviceSlugs.map((slug) => ({
       path: `/services/${slug}`,
@@ -39,10 +44,9 @@ export function getSitemapEntries(
     { path: "/portfolio", lastmod: "2026-10-12", changefreq: "monthly", priority: 0.8 },
     {
       path: "/blog",
-      lastmod:
-        blogPosts.map((p) => p.dateModified).sort().at(-1) || lastmodFallback,
+      lastmod: newestPost,
       changefreq: "weekly",
-      priority: 0.7,
+      priority: 0.8,
     },
     ...blogPosts.map((post) => ({
       path: `/blog/${post.slug}`,
@@ -51,18 +55,6 @@ export function getSitemapEntries(
       priority: 0.7,
     })),
     { path: "/contact", lastmod: "2026-10-12", changefreq: "monthly", priority: 0.8 },
-    {
-      path: "/privacy-policy",
-      lastmod: "2026-10-12",
-      changefreq: "yearly",
-      priority: 0.3,
-    },
-    {
-      path: "/terms-of-service",
-      lastmod: "2026-10-12",
-      changefreq: "yearly",
-      priority: 0.3,
-    },
   ];
 
   return staticEntries.map((entry) => ({

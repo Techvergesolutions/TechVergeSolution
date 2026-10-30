@@ -1,24 +1,29 @@
 import { useQuery } from "@tanstack/react-query";
-import { blogPosts as staticBlogPosts } from "@/data/blog";
 import {
-  getBlogPostList,
-  resolveBlogPost,
-  type SanityBlogPost,
+  getCompiledBlogPostBySlug,
+  getCompiledBlogPosts,
+  type BlogFaq,
+  type BlogPostMeta,
+} from "@/data/blog";
+import {
+  fetchSanityFaqs,
+  resolveFaqs,
 } from "@/lib/blogApi";
-import type { BlogPostMeta } from "@/data/blog";
+import { isSanityConfigured } from "@/lib/sanity";
 
 export function useBlogPostList() {
   return useQuery({
     queryKey: ["blog", "list"],
-    queryFn: getBlogPostList,
-    placeholderData: staticBlogPosts,
-    staleTime: 1000 * 60 * 5,
+    queryFn: async () => getCompiledBlogPosts(),
+    initialData: getCompiledBlogPosts(),
+    staleTime: Infinity,
   });
 }
 
-export type ResolvedBlogPost =
-  | { kind: "static"; meta: BlogPostMeta }
-  | { kind: "sanity"; post: SanityBlogPost };
+export type ResolvedBlogPost = {
+  kind: "static";
+  meta: BlogPostMeta & { bodyHtml?: string };
+};
 
 export function useBlogPostDetail(slug: string | undefined) {
   return useQuery({
@@ -26,8 +31,40 @@ export function useBlogPostDetail(slug: string | undefined) {
     enabled: Boolean(slug),
     queryFn: async (): Promise<ResolvedBlogPost | null> => {
       if (!slug) return null;
-      return resolveBlogPost(slug);
+      const post = getCompiledBlogPostBySlug(slug);
+      if (!post) return null;
+      return { kind: "static", meta: post };
     },
-    staleTime: 1000 * 60 * 5,
+    initialData: () => {
+      if (!slug) return undefined;
+      const post = getCompiledBlogPostBySlug(slug);
+      return post ? { kind: "static" as const, meta: post } : undefined;
+    },
+    staleTime: Infinity,
   });
+}
+
+/**
+ * FAQs for a blog post: markdown fallback immediately, then Sanity overlay when configured.
+ */
+export function useBlogFaqs(
+  slug: string | undefined,
+  markdownFaqs: BlogFaq[] | undefined,
+) {
+  const fallback = (markdownFaqs ?? []).slice(0, 12);
+
+  const query = useQuery({
+    queryKey: ["blog", "faqs", slug],
+    enabled: Boolean(slug) && isSanityConfigured(),
+    queryFn: () => fetchSanityFaqs(slug!),
+    staleTime: 60_000,
+  });
+
+  const faqs = resolveFaqs(query.data, fallback);
+
+  return {
+    faqs,
+    isLoading: query.isLoading && fallback.length === 0,
+    source: query.data && query.data.length > 0 ? ("sanity" as const) : ("markdown" as const),
+  };
 }

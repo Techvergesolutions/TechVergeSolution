@@ -4,7 +4,12 @@ import { Footer } from "@/components/landing/Footer";
 import { ServicePageLayout } from "@/components/services/ServicePageLayout";
 import { Seo } from "@/components/Seo";
 import { getServiceBySlug, servicePath, type ServiceSlug } from "@/data/services";
-import { breadcrumbJsonLd, faqPageJsonLd, serviceJsonLd } from "@/lib/seo";
+import {
+  breadcrumbJsonLd,
+  composeJsonLd,
+  faqPageJsonLd,
+  serviceJsonLd,
+} from "@/lib/seo";
 import NotFound from "./NotFound";
 
 interface ServicePageProps {
@@ -21,19 +26,21 @@ export default function ServicePage({ slug: slugProp }: ServicePageProps) {
   }
 
   const path = servicePath(service.slug);
-  const jsonLd = [
+  // Service.name matches the visible H1 (headline); serviceType uses the shorter eyebrow.
+  const jsonLd = composeJsonLd(
     serviceJsonLd({
-      name: service.eyebrow,
+      name: service.headline,
       description: service.metaDescription,
       path,
+      serviceType: service.eyebrow,
     }),
-    ...(service.faq.length > 0 ? [faqPageJsonLd(service.faq)] : []),
+    faqPageJsonLd(service.faq),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
       { name: "Services", path: "/services" },
       { name: service.eyebrow, path },
     ]),
-  ];
+  );
 
   return (
     <>

@@ -8,15 +8,16 @@ import { SolutionsSection } from "@/components/landing/SolutionsSection";
 import { ProcessSection } from "@/components/landing/ProcessSection";
 import { FinalCtaSection } from "@/components/landing/FinalCtaSection";
 import { Footer } from "@/components/landing/Footer";
+import { RelatedGuidesSection } from "@/components/blog/RelatedGuidesSection";
 import { Seo } from "@/components/Seo";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
+import { HOMEPAGE_GUIDE_LINKS } from "@/data/internalLinks";
 import { pageSeo } from "@/lib/seo";
 
 const Index = () => {
   const seo = pageSeo.home;
   return (
     <>
-      {/* Organization / WebSite JSON-LD ships in index.html for the static shell */}
       <Seo title={seo.title} description={seo.description} path={seo.path} />
       <div className="min-h-screen bg-background overflow-x-hidden">
         <Navbar />
@@ -43,9 +44,10 @@ const Index = () => {
                     to: "/portfolio",
                   },
                   {
-                    title: "Get in touch",
-                    description: "Book a strategy call or tell us what you want to automate.",
-                    to: "/contact",
+                    title: "Automation guides",
+                    description:
+                      "Practical writing on AI voice agents, lead follow-up, and n8n workflows.",
+                    to: "/blog",
                   },
                 ].map((item, index) => (
                   <AnimatedSection key={item.to} delay={index * 0.06}>
@@ -70,6 +72,12 @@ const Index = () => {
             </div>
           </section>
 
+          <RelatedGuidesSection
+            title="From the TechVerge blog"
+            description="Descriptive guides that match what we build — voice agents, lead follow-up automation, and n8n workflows for service businesses."
+            links={HOMEPAGE_GUIDE_LINKS}
+            muted
+          />
           <FinalCtaSection />
         </main>
         <Footer />

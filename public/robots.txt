@@ -1,16 +1,36 @@
+# Allow all crawlable assets (HTML, CSS, JS, images). Do not Disallow static files.
+
 User-agent: Googlebot
 Allow: /
 
 User-agent: Bingbot
 Allow: /
 
-User-agent: Twitterbot
+User-agent: GPTBot
 Allow: /
 
-User-agent: facebookexternalhit
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
 Allow: /
 
 User-agent: *
 Allow: /
+
+# Optional LLM context file (proposed convention; not a ranking signal by itself)
+# https://www.techvergesolution.com/llms.txt
 
 Sitemap: https://www.techvergesolution.com/sitemap.xml

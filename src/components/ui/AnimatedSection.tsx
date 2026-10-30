@@ -1,5 +1,5 @@
-import { motion, useInView } from "framer-motion";
-import { useRef, ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode, type CSSProperties } from "react";
+import { cn } from "@/lib/utils";
 
 interface AnimatedSectionProps {
   children: ReactNode;
@@ -8,31 +8,62 @@ interface AnimatedSectionProps {
   direction?: "up" | "down" | "left" | "right";
 }
 
+const OFFSET: Record<NonNullable<AnimatedSectionProps["direction"]>, string> = {
+  up: "translate3d(0, 1.5rem, 0)",
+  down: "translate3d(0, -1.5rem, 0)",
+  left: "translate3d(1.5rem, 0, 0)",
+  right: "translate3d(-1.5rem, 0, 0)",
+};
+
+/** Lightweight scroll reveal — no framer-motion on the critical path. */
 export const AnimatedSection = ({
   children,
   className = "",
   delay = 0,
   direction = "up",
 }: AnimatedSectionProps) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
 
-  const directions = {
-    up: { y: 60, x: 0 },
-    down: { y: -60, x: 0 },
-    left: { y: 0, x: 60 },
-    right: { y: 0, x: -60 },
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    if (typeof IntersectionObserver === "undefined") {
+      setVisible(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "0px 0px -80px 0px", threshold: 0.08 },
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const style: CSSProperties = {
+    transitionDelay: visible ? `${Math.round(delay * 1000)}ms` : "0ms",
+    transform: visible ? "translate3d(0, 0, 0)" : OFFSET[direction],
   };
 
   return (
-    <motion.div
+    <div
       ref={ref}
-      initial={{ opacity: 0, ...directions[direction] }}
-      animate={isInView ? { opacity: 1, y: 0, x: 0 } : { opacity: 0, ...directions[direction] }}
-      transition={{ duration: 0.7, delay, ease: [0.25, 0.4, 0.25, 1] }}
-      className={className}
+      className={cn(
+        "transition-[opacity,transform] duration-700 ease-[cubic-bezier(0.25,0.4,0.25,1)] motion-reduce:transition-none motion-reduce:opacity-100 motion-reduce:transform-none",
+        visible ? "opacity-100" : "opacity-0",
+        className,
+      )}
+      style={style}
     >
       {children}
-    </motion.div>
+    </div>
   );
 };

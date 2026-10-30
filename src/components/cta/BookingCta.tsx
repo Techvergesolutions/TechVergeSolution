@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
-  trackEvent,
+  trackCtaClick,
   type AnalyticsEventName,
   type AnalyticsParams,
 } from "@/lib/analytics";
@@ -41,7 +41,10 @@ export function BookingCta({
   const bookingUrl = getBookingUrl();
 
   const handleClick = () => {
-    trackEvent(eventName, eventParams);
+    trackCtaClick(eventName, {
+      cta_label: BOOKING_CTA_LABEL,
+      ...eventParams,
+    });
     onNavigate?.();
   };
 

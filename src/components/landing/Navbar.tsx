@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { BookingCta } from "@/components/cta/BookingCta";
 import { cn } from "@/lib/utils";
@@ -35,7 +34,7 @@ export const Navbar = () => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -47,42 +46,52 @@ export const Navbar = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  useEffect(() => {
+    if (!isMobileMenuOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsMobileMenuOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isMobileMenuOpen]);
+
   return (
-    <motion.header
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+    <header
+      className={cn(
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 animate-nav-in",
         isScrolled || isMobileMenuOpen
           ? "glass-card py-4 bg-background/80 backdrop-blur-md"
-          : "py-6 bg-transparent"
-      }`}
+          : "py-6 bg-transparent",
+      )}
     >
       <nav className="contents" aria-label="Primary">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 flex items-center justify-between">
-        <motion.div whileHover={{ scale: 1.02 }}>
-          <Link to="/" className="flex items-center gap-2 group relative z-[60]">
-            <div className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center bg-muted">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 flex items-center justify-between">
+          <Link
+            to="/"
+            className="flex items-center gap-2 group relative z-[60] transition-transform hover:scale-[1.02]"
+          >
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg overflow-hidden flex items-center justify-center bg-muted shrink-0">
               <img
                 src="/Logo.svg"
                 alt="TechVerge Solutions logo"
                 width={40}
                 height={40}
+                decoding="async"
+                fetchPriority="high"
                 className="w-full h-full object-cover"
               />
             </div>
-            <span className="font-display font-bold text-xl text-foreground whitespace-nowrap">
+            <span className="font-display font-bold text-base sm:text-xl text-foreground whitespace-nowrap max-[360px]:sr-only">
               TechVerge<span className="text-gradient"> Solutions</span>
             </span>
           </Link>
-        </motion.div>
 
-        <div className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => {
-            const active = isNavLinkActive(pathname, link.href);
-            return (
-              <motion.div key={link.name} whileHover={{ y: -2 }}>
+          <div className="hidden md:flex items-center gap-8">
+            {navLinks.map((link) => {
+              const active = isNavLinkActive(pathname, link.href);
+              return (
                 <Link
+                  key={link.name}
                   to={link.href}
                   aria-current={active ? "page" : undefined}
                   className={cn(
@@ -100,68 +109,55 @@ export const Navbar = () => {
                     )}
                   />
                 </Link>
-              </motion.div>
-            );
-          })}
-          <BookingCta className="px-5 py-2.5 rounded-lg text-primary-foreground font-medium text-sm whitespace-nowrap" />
+              );
+            })}
+            <BookingCta className="px-5 py-2.5 rounded-lg text-primary-foreground font-medium text-sm whitespace-nowrap" />
+          </div>
+
+          <button
+            type="button"
+            className="md:hidden text-foreground p-2 relative z-[60] active:scale-95 transition-transform"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="mobile-primary-nav"
+          >
+            {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+          </button>
         </div>
 
-        <motion.button
-          type="button"
-          className="md:hidden text-foreground p-2 relative z-[60]"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          whileTap={{ scale: 0.95 }}
-          aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
-          aria-expanded={isMobileMenuOpen}
-          aria-controls="mobile-primary-nav"
-        >
-          {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
-        </motion.button>
-      </div>
-
-      <AnimatePresence>
         {isMobileMenuOpen && (
           <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-background/60 backdrop-blur-sm z-[40] md:hidden"
+            <button
+              type="button"
+              className="fixed inset-0 bg-background/60 backdrop-blur-sm z-[40] md:hidden border-0 p-0 cursor-default"
+              aria-label="Close menu overlay"
               onClick={() => setIsMobileMenuOpen(false)}
             />
 
-            <motion.div
+            <div
               id="mobile-primary-nav"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="absolute top-full left-0 right-0 z-[50] md:hidden px-4 pt-2 pb-6"
+              className="absolute top-full left-0 right-0 z-[50] md:hidden px-4 pt-2 pb-6 animate-menu-in"
             >
               <div className="glass-card rounded-2xl border border-border/50 shadow-2xl overflow-hidden bg-background/95">
                 <div className="p-6 flex flex-col gap-2">
-                  {navLinks.map((link, i) => {
+                  {navLinks.map((link) => {
                     const active = isNavLinkActive(pathname, link.href);
                     return (
-                      <motion.div
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: i * 0.05 }}
+                      <Link
                         key={link.name}
+                        to={link.href}
+                        aria-current={active ? "page" : undefined}
+                        className={cn(
+                          "block text-lg py-3 border-b border-border/10 transition-colors",
+                          active
+                            ? "text-primary font-semibold"
+                            : "text-muted-foreground font-medium hover:text-primary",
+                        )}
+                        onClick={() => setIsMobileMenuOpen(false)}
                       >
-                        <Link
-                          to={link.href}
-                          aria-current={active ? "page" : undefined}
-                          className={cn(
-                            "block text-lg py-3 border-b border-border/10 transition-colors",
-                            active
-                              ? "text-primary font-semibold"
-                              : "text-muted-foreground font-medium hover:text-primary",
-                          )}
-                          onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                          {link.name}
-                        </Link>
-                      </motion.div>
+                        {link.name}
+                      </Link>
                     );
                   })}
                   <BookingCta
@@ -170,11 +166,10 @@ export const Navbar = () => {
                   />
                 </div>
               </div>
-            </motion.div>
+            </div>
           </>
         )}
-      </AnimatePresence>
       </nav>
-    </motion.header>
+    </header>
   );
 };

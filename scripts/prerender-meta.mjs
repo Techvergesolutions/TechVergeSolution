@@ -94,20 +94,19 @@ function injectJsonLdBeforeHeadClose(html, scriptsHtml) {
 
 function buildJsonLdBlock(route) {
   const blocks = [];
-  if (route.jsonLd === "organization") {
-    blocks.push(organizationJsonLd());
-  }
+  // Organization + WebSite on every page (matches client Seo includeSiteGraph).
+  blocks.push(organizationJsonLd());
   if (route.service) {
     blocks.push(
       serviceJsonLd({
         name: route.service.name,
         description: route.description,
         path: route.path,
+        serviceType: route.service.serviceType,
       }),
     );
-    if (route.service.faq?.length) {
-      blocks.push(faqPageJsonLd(route.service.faq));
-    }
+    const faq = faqPageJsonLd(route.service.faq);
+    if (faq) blocks.push(faq);
   }
   if (route.article) {
     blocks.push(
@@ -119,14 +118,15 @@ function buildJsonLdBlock(route) {
         dateModified: route.article.dateModified,
         imagePath: route.article.imagePath,
         imageAlt: route.article.imageAlt,
+        authorName: route.article.authorName,
+        authorPath: route.article.authorPath,
       }),
     );
-    if (route.article.faq?.length) {
-      blocks.push(faqPageJsonLd(route.article.faq));
-    }
+    const faq = faqPageJsonLd(route.article.faq);
+    if (faq) blocks.push(faq);
   }
   if (Array.isArray(route.extraJsonLd)) {
-    blocks.push(...route.extraJsonLd);
+    blocks.push(...route.extraJsonLd.filter(Boolean));
   }
   return blocks.map((b) => `    ${jsonLdScript(b)}`).join("\n");
 }
@@ -331,25 +331,24 @@ function validateHtml(html, route) {
     }),
   );
 
-  const hasOrgGraph =
-    route.path === "/" &&
-    ldScripts.some(
-      (data) =>
-        data &&
-        Array.isArray(data["@graph"]) &&
-        data["@graph"].some((n) => n["@type"] === "Organization"),
-    );
+  const hasOrgGraph = ldScripts.some(
+    (data) =>
+      data &&
+      Array.isArray(data["@graph"]) &&
+      data["@graph"].some((n) => n["@type"] === "Organization") &&
+      data["@graph"].some((n) => n["@type"] === "WebSite"),
+  );
 
-  if (route.path === "/") {
-    if (!hasOrgGraph) fail(`Route /: missing Organization JSON-LD graph`);
-  } else {
-    for (const data of ldScripts) {
-      if (data && Array.isArray(data["@graph"])) {
-        fail(
-          `Route ${route.path}: homepage Organization @graph must not remain on non-home pages`,
-        );
-      }
-    }
+  if (!hasOrgGraph) {
+    fail(`Route ${route.path}: missing Organization + WebSite JSON-LD graph`);
+  }
+
+  const needsBreadcrumb =
+    route.path.startsWith("/services/") ||
+    route.path.startsWith("/blog/") ||
+    route.path === "/blog";
+  if (needsBreadcrumb && !topTypes.has("BreadcrumbList")) {
+    fail(`Route ${route.path}: missing BreadcrumbList JSON-LD`);
   }
 
   if (route.service) {

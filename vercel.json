@@ -1,53 +1,60 @@
-{
-  "framework": null,
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "cleanUrls": true,
-  "trailingSlash": false,
-  "routes": [
-    {
-      "src": "/ai-automation",
-      "status": 308,
-      "headers": { "Location": "/services/ai-automation" }
-    },
-    {
-      "src": "/ai-voice-agents",
-      "status": 308,
-      "headers": { "Location": "/services/ai-voice-agents" }
-    },
-    {
-      "src": "/business-automation",
-      "status": 308,
-      "headers": { "Location": "/services/business-automation" }
-    },
-    {
-      "src": "/ai-saas-development",
-      "status": 308,
-      "headers": { "Location": "/services/ai-saas-development" }
-    },
-    {
-      "src": "/lead-follow-up-automation",
-      "status": 308,
-      "headers": { "Location": "/services/ai-automation" }
-    },
-    {
-      "src": "/services/lead-follow-up-automation",
-      "status": 308,
-      "headers": { "Location": "/services/ai-automation" }
-    },
-    {
-      "src": "/privacy",
-      "status": 308,
-      "headers": { "Location": "/privacy-policy" }
-    },
-    {
-      "src": "/terms",
-      "status": 308,
-      "headers": { "Location": "/terms-of-service" }
-    },
-    { "handle": "filesystem" },
-    { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/(.*)", "dest": "/404.html", "status": 404 }
-  ]
-}
-
+{
+  "framework": null,
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "techvergesolution.com" }],
+      "destination": "https://www.techvergesolution.com/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/ai-automation",
+      "destination": "/services/ai-automation",
+      "permanent": true
+    },
+    {
+      "source": "/ai-voice-agents",
+      "destination": "/services/ai-voice-agents",
+      "permanent": true
+    },
+    {
+      "source": "/business-automation",
+      "destination": "/services/business-automation",
+      "permanent": true
+    },
+    {
+      "source": "/ai-saas-development",
+      "destination": "/services/ai-saas-development",
+      "permanent": true
+    },
+    {
+      "source": "/lead-follow-up-automation",
+      "destination": "/services/ai-automation",
+      "permanent": true
+    },
+    {
+      "source": "/services/lead-follow-up-automation",
+      "destination": "/services/ai-automation",
+      "permanent": true
+    },
+    {
+      "source": "/privacy",
+      "destination": "/privacy-policy",
+      "permanent": true
+    },
+    {
+      "source": "/terms",
+      "destination": "/terms-of-service",
+      "permanent": true
+    }
+  ],
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/(.*)", "dest": "/404.html", "status": 404 }
+  ]
+}

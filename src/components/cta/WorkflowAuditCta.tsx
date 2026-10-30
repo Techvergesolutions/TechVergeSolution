@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import {
-  trackEvent,
+  trackCtaClick,
   type AnalyticsEventName,
   type AnalyticsParams,
 } from "@/lib/analytics";
@@ -28,7 +28,7 @@ export function WorkflowAuditCta({
   className,
   onNavigate,
   variant = "button",
-  eventName,
+  eventName = "audit_cta_click",
   eventParams,
 }: WorkflowAuditCtaProps) {
   const baseClass =
@@ -50,7 +50,10 @@ export function WorkflowAuditCta({
       className={baseClass}
       aria-label={AUDIT_CTA_LABEL}
       onClick={(e) => {
-        if (eventName) trackEvent(eventName, eventParams);
+        trackCtaClick(eventName, {
+          cta_label: AUDIT_CTA_LABEL,
+          ...eventParams,
+        });
         if (isOnContactPage()) {
           e.preventDefault();
           goToContactIntent("audit");

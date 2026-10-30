@@ -6,8 +6,12 @@ import { TeamSection } from "@/components/landing/TeamSection";
 import { ProcessSection } from "@/components/landing/ProcessSection";
 import { FinalCtaSection } from "@/components/landing/FinalCtaSection";
 import { MarketsServed } from "@/components/landing/MarketsServed";
+import { AboutWhoWeAre } from "@/components/about/AboutWhoWeAre";
+import { AboutToolsTimeline } from "@/components/about/AboutToolsTimeline";
+import { RelatedGuidesSection } from "@/components/blog/RelatedGuidesSection";
 import { Seo } from "@/components/Seo";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
+import { HOMEPAGE_GUIDE_LINKS } from "@/data/internalLinks";
 import { breadcrumbJsonLd, pageSeo } from "@/lib/seo";
 
 const About = () => {
@@ -43,11 +47,19 @@ const About = () => {
               </AnimatedSection>
             </div>
           </section>
+          <AboutWhoWeAre />
           <MarketsServed />
           <WhySection />
+          <AboutToolsTimeline />
           <IndustriesSection />
           <ProcessSection />
           <TeamSection />
+          <RelatedGuidesSection
+            title="Guides from our team"
+            description="Descriptive write-ups on voice agents, lead follow-up, and n8n automation — the same topics we implement for clients."
+            links={HOMEPAGE_GUIDE_LINKS}
+            muted
+          />
           <FinalCtaSection />
         </main>
         <Footer />

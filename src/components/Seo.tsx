@@ -4,6 +4,8 @@ import {
   DEFAULT_OG_IMAGE_ALT,
   SITE_NAME,
   absoluteUrl,
+  composeJsonLd,
+  organizationJsonLd,
 } from "@/lib/seo";
 
 export interface SeoProps {
@@ -14,9 +16,14 @@ export interface SeoProps {
   imageAlt?: string;
   type?: "website" | "article";
   noindex?: boolean;
-  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  /** Page-specific JSON-LD. Organization + WebSite are always prepended unless disabled. */
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[] | null;
+  /** Set false only when OrganizationJsonLd is rendered separately. Default true. */
+  includeSiteGraph?: boolean;
   datePublished?: string;
   dateModified?: string;
+  /** Preload a LCP image (absolute or site-relative). */
+  preloadImage?: string;
 }
 
 export function Seo({
@@ -28,15 +35,21 @@ export function Seo({
   type = "website",
   noindex = false,
   jsonLd,
+  includeSiteGraph = true,
   datePublished,
   dateModified,
+  preloadImage,
 }: SeoProps) {
   const canonical = absoluteUrl(path);
-  const graphs = jsonLd
+  const pageGraphs = jsonLd
     ? Array.isArray(jsonLd)
       ? jsonLd
       : [jsonLd]
     : [];
+  const graphs = composeJsonLd(
+    includeSiteGraph ? organizationJsonLd() : null,
+    ...pageGraphs,
+  );
 
   return (
     <Helmet>
@@ -70,11 +83,17 @@ export function Seo({
       <meta name="twitter:image" content={image} />
       <meta name="twitter:image:alt" content={imageAlt} />
 
+      {preloadImage ? (
+        <link rel="preload" as="image" href={preloadImage} />
+      ) : null}
+
       {graphs.map((data, index) => (
         <script
           key={index}
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(data).replace(/</g, "\\u003c") }}
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(data).replace(/</g, "\\u003c"),
+          }}
         />
       ))}
     </Helmet>

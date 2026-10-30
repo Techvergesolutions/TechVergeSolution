@@ -56,21 +56,34 @@ export const CookieConsent = () => {
   };
 
   useEffect(() => {
+    let idleId: number | undefined;
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
     const consent = localStorage.getItem(CONSENT_KEY);
 
-    // Only auto-show when the user has never chosen (missing / null)
+    // Defer banner so it does not compete with LCP / first paint.
     if (!consent) {
-      showBanner();
+      const run = () => showBanner();
+      if ("requestIdleCallback" in window) {
+        idleId = window.requestIdleCallback(run, { timeout: 3500 });
+      } else {
+        timeoutId = setTimeout(run, 2000);
+      }
     }
 
-    // Footer "Cookies" link can reopen settings manually
     const handleManualTrigger = () => {
       toast.dismiss();
       showBanner();
     };
 
     window.addEventListener("show-cookie-banner", handleManualTrigger);
-    return () => window.removeEventListener("show-cookie-banner", handleManualTrigger);
+    return () => {
+      window.removeEventListener("show-cookie-banner", handleManualTrigger);
+      if (idleId !== undefined && "cancelIdleCallback" in window) {
+        window.cancelIdleCallback(idleId);
+      }
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, []);
 
   return null;

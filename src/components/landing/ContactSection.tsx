@@ -240,7 +240,11 @@ export const ContactSection = ({ hidePageHeader = false }: ContactSectionProps) 
       });
 
       if (response.ok) {
-        trackEvent("contact_form_submit");
+        trackEvent("contact_form_submit", {
+          placement: "contact",
+          automate: formData.automate,
+          budget: formData.budget,
+        });
         setStatus("success");
         setFormData(emptyForm);
         formStartedAt.current = Date.now();
@@ -564,6 +568,11 @@ export const ContactSection = ({ hidePageHeader = false }: ContactSectionProps) 
                     aria-label={BOOKING_CTA_LABEL}
                     onClick={(e) => {
                       trackEvent("booking_cta_click", { placement: "contact" });
+                      trackEvent("cta_click", {
+                        cta_name: "booking_cta_click",
+                        placement: "contact",
+                        cta_label: BOOKING_CTA_LABEL,
+                      });
                       if (!bookingUrl && isOnContactPage()) {
                         e.preventDefault();
                         goToContactIntent("strategy");
