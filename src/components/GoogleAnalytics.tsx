@@ -6,8 +6,6 @@ import {
   utmSafePagePath,
 } from "@/lib/analytics";
 
-const GA_SCRIPT_ID = "techverge-ga-script";
-
 declare global {
   interface Window {
     dataLayer: unknown[];
@@ -15,27 +13,24 @@ declare global {
   }
 }
 
-function injectGa(measurementId: string) {
-  if (document.getElementById(GA_SCRIPT_ID)) return;
-
-  captureUtmAttribution();
-  const utm = getStoredUtmAttribution();
-
-  window.dataLayer = window.dataLayer || [];
-  window.gtag = function gtag(...args: unknown[]) {
-    window.dataLayer.push(args);
-  };
-  window.gtag("js", new Date());
-  window.gtag("config", measurementId, {
-    send_page_view: false,
-    ...utm,
+function grantAnalyticsConsent() {
+  if (typeof window.gtag !== "function") return;
+  window.gtag("consent", "update", {
+    analytics_storage: "granted",
+    ad_storage: "denied",
+    ad_user_data: "denied",
+    ad_personalization: "denied",
   });
+}
 
-  const script = document.createElement("script");
-  script.id = GA_SCRIPT_ID;
-  script.async = true;
-  script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
-  document.head.appendChild(script);
+function denyAnalyticsConsent() {
+  if (typeof window.gtag !== "function") return;
+  window.gtag("consent", "update", {
+    analytics_storage: "denied",
+    ad_storage: "denied",
+    ad_user_data: "denied",
+    ad_personalization: "denied",
+  });
 }
 
 function sendPageView(measurementId: string, pathname: string, search: string) {
@@ -43,6 +38,7 @@ function sendPageView(measurementId: string, pathname: string, search: string) {
   const pagePath = utmSafePagePath(pathname, search);
   const utm = getStoredUtmAttribution();
   window.gtag("event", "page_view", {
+    send_to: measurementId,
     page_path: pagePath,
     page_title: document.title,
     page_location: `${window.location.origin}${pagePath}`,
@@ -51,8 +47,8 @@ function sendPageView(measurementId: string, pathname: string, search: string) {
 }
 
 /**
- * Loads GA4 only after cookie consent is accepted, deferred to idle time.
- * Page views use UTM-stripped paths; campaign params stay on first-touch attribution.
+ * GA4 script lives in index.html (so Google can verify the tag).
+ * This component updates Consent Mode + SPA page_view after Accept.
  */
 export const GoogleAnalytics = () => {
   const location = useLocation();
@@ -67,37 +63,26 @@ export const GoogleAnalytics = () => {
   }, []);
 
   useEffect(() => {
-    let idleId = 0;
-    let timeoutId = 0;
-
-    const loadWhenIdle = () => {
-      if (localStorage.getItem("cookie-consent") !== "accepted") return;
-      if (document.getElementById(GA_SCRIPT_ID)) return;
-
-      const run = () => {
-        injectGa(measurementId);
+    const syncConsentAndPage = () => {
+      const consent = localStorage.getItem("cookie-consent");
+      if (consent === "accepted") {
+        grantAnalyticsConsent();
+        captureUtmAttribution();
         const { pathname, search } = locationRef.current;
         const key = utmSafePagePath(pathname, search);
-        lastPathRef.current = key;
-        sendPageView(measurementId, pathname, search);
-      };
-
-      if ("requestIdleCallback" in window) {
-        idleId = window.requestIdleCallback(run, { timeout: 4000 });
-      } else {
-        timeoutId = window.setTimeout(run, 2000);
+        if (lastPathRef.current !== key) {
+          lastPathRef.current = key;
+          sendPageView(measurementId, pathname, search);
+        }
+      } else if (consent === "declined") {
+        denyAnalyticsConsent();
       }
     };
 
-    loadWhenIdle();
-    const onConsent = () => loadWhenIdle();
-    window.addEventListener("cookie-consent-updated", onConsent);
+    syncConsentAndPage();
+    window.addEventListener("cookie-consent-updated", syncConsentAndPage);
     return () => {
-      window.removeEventListener("cookie-consent-updated", onConsent);
-      if (idleId && "cancelIdleCallback" in window) {
-        window.cancelIdleCallback(idleId);
-      }
-      if (timeoutId) window.clearTimeout(timeoutId);
+      window.removeEventListener("cookie-consent-updated", syncConsentAndPage);
     };
   }, [measurementId]);
 

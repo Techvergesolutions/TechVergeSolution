@@ -12,6 +12,22 @@
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://www.techvergesolution.com/" />
 
+    <!-- Google tag (gtag.js) — Consent Mode defaults deny until cookie Accept -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MWCBCV4CNB"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('consent', 'default', {
+        analytics_storage: 'denied',
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        wait_for_update: 500
+      });
+      gtag('config', 'G-MWCBCV4CNB', { send_page_view: false });
+    </script>
+
     <!-- Critical fonts + logo for LCP / text rendering -->
     <link
       rel="preload"
