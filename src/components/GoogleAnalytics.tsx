@@ -7,13 +7,13 @@ import {
 } from "@/lib/analytics";
 
 /**
- * Base gtag lives in index.html (G-MWCBCV4CNB) so Google can verify the stream.
+ * Base gtag lives in index.html (G-TNMS5396BB) so Google can verify the stream.
  * This component sends SPA route page_views (React Router does not reload the document).
  */
 export const GoogleAnalytics = () => {
   const location = useLocation();
   const measurementId =
-    import.meta.env.VITE_GA_MEASUREMENT_ID?.trim() || "G-MWCBCV4CNB";
+    import.meta.env.VITE_GA_MEASUREMENT_ID?.trim() || "G-TNMS5396BB";
   const lastPathRef = useRef<string>("");
   const isFirst = useRef(true);
 
