@@ -14,9 +14,10 @@ import { buildPrerenderRoutes } from "./build-prerender-routes.mjs";
 const DIST = path.join(ROOT, "dist");
 const MIN_ROOT_TEXT = 120;
 
+/** Throw so callers (seo-build) can soft-fail without killing the whole build. */
 function fail(message) {
   console.error(`\n[prerender-html] ERROR: ${message}\n`);
-  process.exit(1);
+  throw new Error(message);
 }
 
 function outputPathForRoute(routePath) {
@@ -115,65 +116,65 @@ export async function prerenderHtml() {
 
   let browser;
   try {
-    browser = await chromium.launch({ headless: true });
-  } catch (error) {
-    fail(
-      `Failed to launch Chromium (${error.message}). Run: npx playwright install chromium`,
-    );
-  }
-
-  const context = await browser.newContext();
-  // Skip analytics / tag managers so they cannot keep the network busy.
-  await context.route(
-    /googletagmanager|google-analytics|googleadservices|doubleclick|hotjar|clarity\.ms|facebook\.net|linkedin\.com\/px/i,
-    (route) => route.abort(),
-  );
-  // Sanity CORS often omits ephemeral http://127.0.0.1:<port> origins used by
-  // this prerender server. Fulfill Sanity API calls from Node (no CORS).
-  await context.route(
-    /https:\/\/[^/]+\.(apicdn|api)\.sanity\.io\//,
-    async (route) => {
-      try {
-        const request = route.request();
-        // Drop browser Origin/Referer — Sanity CORS rejects 127.0.0.1 prerender ports.
-        const headers = { ...request.headers() };
-        delete headers.origin;
-        delete headers.Origin;
-        delete headers.referer;
-        delete headers.Referer;
-        const upstream = await fetch(request.url(), {
-          method: request.method(),
-          headers,
-          body: request.postData() || undefined,
-        });
-        const buffer = Buffer.from(await upstream.arrayBuffer());
-        const outHeaders = Object.fromEntries(upstream.headers.entries());
-        outHeaders["access-control-allow-origin"] = "*";
-        await route.fulfill({
-          status: upstream.status,
-          headers: outHeaders,
-          body: buffer,
-        });
-      } catch (error) {
-        await route.abort();
-        console.warn(`[prerender-html] Sanity proxy failed: ${error.message}`);
-      }
-    },
-  );
-
-  const page = await context.newPage();
-  page.setDefaultTimeout(90000);
-  page.on("pageerror", (err) => {
-    console.warn(`[prerender-html] pageerror: ${err.message}`);
-  });
-  page.on("console", (msg) => {
-    if (msg.type() === "error" || msg.type() === "warning") {
-      console.warn(`[prerender-html] console.${msg.type()}: ${msg.text()}`);
+    try {
+      browser = await chromium.launch({ headless: true });
+    } catch (error) {
+      fail(
+        `Failed to launch Chromium (${error.message}). Run: npx playwright install chromium`,
+      );
     }
-  });
 
-  const written = [];
-  try {
+    const context = await browser.newContext();
+    // Skip analytics / tag managers so they cannot keep the network busy.
+    await context.route(
+      /googletagmanager|google-analytics|googleadservices|doubleclick|hotjar|clarity\.ms|facebook\.net|linkedin\.com\/px/i,
+      (route) => route.abort(),
+    );
+    // Sanity CORS often omits ephemeral http://127.0.0.1:<port> origins used by
+    // this prerender server. Fulfill Sanity API calls from Node (no CORS).
+    await context.route(
+      /https:\/\/[^/]+\.(apicdn|api)\.sanity\.io\//,
+      async (route) => {
+        try {
+          const request = route.request();
+          // Drop browser Origin/Referer — Sanity CORS rejects 127.0.0.1 prerender ports.
+          const headers = { ...request.headers() };
+          delete headers.origin;
+          delete headers.Origin;
+          delete headers.referer;
+          delete headers.Referer;
+          const upstream = await fetch(request.url(), {
+            method: request.method(),
+            headers,
+            body: request.postData() || undefined,
+          });
+          const buffer = Buffer.from(await upstream.arrayBuffer());
+          const outHeaders = Object.fromEntries(upstream.headers.entries());
+          outHeaders["access-control-allow-origin"] = "*";
+          await route.fulfill({
+            status: upstream.status,
+            headers: outHeaders,
+            body: buffer,
+          });
+        } catch (error) {
+          await route.abort();
+          console.warn(`[prerender-html] Sanity proxy failed: ${error.message}`);
+        }
+      },
+    );
+
+    const page = await context.newPage();
+    page.setDefaultTimeout(90000);
+    page.on("pageerror", (err) => {
+      console.warn(`[prerender-html] pageerror: ${err.message}`);
+    });
+    page.on("console", (msg) => {
+      if (msg.type() === "error" || msg.type() === "warning") {
+        console.warn(`[prerender-html] console.${msg.type()}: ${msg.text()}`);
+      }
+    });
+
+    const written = [];
     for (const route of routes) {
       const url = `${base}${route.path === "/" ? "/" : route.path}`;
       console.log(`[prerender-html] Rendering ${route.path}`);
@@ -211,13 +212,17 @@ export async function prerenderHtml() {
       fs.writeFileSync(out, html, "utf8");
       written.push(path.relative(ROOT, out).replace(/\\/g, "/"));
     }
-  } finally {
-    await browser.close();
-    server.close();
-  }
 
-  console.log(`[prerender-html] Captured ${written.length} pages with body HTML`);
-  return written;
+    console.log(
+      `[prerender-html] Captured ${written.length} pages with body HTML`,
+    );
+    return written;
+  } finally {
+    if (browser) {
+      await browser.close().catch(() => {});
+    }
+    await new Promise((resolve) => server.close(resolve));
+  }
 }
 
 const isDirectRun =

@@ -81,13 +81,25 @@ function decodeEntities(value) {
     .replace(/&quot;/g, '"');
 }
 
-export async function validateSeoDist() {
+/**
+ * @param {{ allowShellOnly?: boolean }} [options]
+ * allowShellOnly: when Playwright capture was skipped (e.g. no Chromium on Vercel),
+ * still require meta/canonical/JSON-LD but do not require hydrated #root body HTML.
+ */
+export async function validateSeoDist(options = {}) {
+  const allowShellOnly = Boolean(options.allowShellOnly);
   if (!fs.existsSync(DIST)) fail("dist/ missing — run build first");
 
   const { routes, posts } = await buildPrerenderRoutes();
   const requiredSamples = ["/", "/blog", "/services/ai-voice-agents"];
   for (const p of requiredSamples) {
     if (!routes.some((r) => r.path === p)) fail(`Missing required route ${p}`);
+  }
+
+  if (allowShellOnly) {
+    console.warn(
+      "[validate-seo-dist] allowShellOnly=true — skipping #root body/h1 checks (Playwright skipped)",
+    );
   }
 
   const canonicals = new Set();
@@ -118,8 +130,12 @@ export async function validateSeoDist() {
       );
     }
 
-    if (text.length < 120) fail(`${rel}: #root text too short (${text.length})`);
-    if (!/<h1\b/i.test(inner)) fail(`${rel}: missing <h1> in #root`);
+    if (!allowShellOnly) {
+      if (text.length < 120) {
+        fail(`${rel}: #root text too short (${text.length})`);
+      }
+      if (!/<h1\b/i.test(inner)) fail(`${rel}: missing <h1> in #root`);
+    }
 
     if (!/name=["']robots["'][^>]*content=["']index,\s*follow["']/i.test(html)) {
       fail(`${rel}: missing robots index,follow`);

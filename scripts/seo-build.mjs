@@ -20,8 +20,10 @@ async function main() {
   console.log("[seo-build] Injecting Markdown blog HTML into shells…");
   await injectBlogHtml();
   console.log("[seo-build] Capturing rendered HTML bodies…");
+  let playwrightOk = false;
   try {
     await prerenderHtml();
+    playwrightOk = true;
   } catch (error) {
     console.error(
       "[seo-build] Playwright capture failed; Markdown inject still present:",
@@ -29,7 +31,7 @@ async function main() {
     );
   }
   console.log("[seo-build] Validating dist SEO artifacts…");
-  await validateSeoDist();
+  await validateSeoDist({ allowShellOnly: !playwrightOk });
 
   // After a production Vercel build, notify IndexNow that blog URLs are live.
   if (process.env.VERCEL === "1" || process.env.INDEXNOW_PING_ON_BUILD === "1") {
