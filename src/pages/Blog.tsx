@@ -159,6 +159,7 @@ const Blog = () => {
                               priority={index === 0}
                               className="my-0 rounded-none border-0 border-b border-border/50"
                               frameClassName="rounded-none"
+                              imgClassName="object-contain"
                             />
                             <div className="p-6 flex flex-col h-[calc(100%-1px)]">
                               <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground mb-3">

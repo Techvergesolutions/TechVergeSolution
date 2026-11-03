@@ -59,7 +59,7 @@ export function BlogFigure({
         )}
         style={{ aspectRatio: `${width} / ${height}` }}
       >
-        <picture>
+        <picture className="block h-full w-full">
           {avifSrcSet ? (
             <source type="image/avif" srcSet={avifSrcSet} sizes={sizes} />
           ) : null}
