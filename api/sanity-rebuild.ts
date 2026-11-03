@@ -1,6 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import crypto from "node:crypto";
-import { submitIndexNow } from "./indexnow";
 
 /**
  * Sanity → Vercel rebuild webhook + IndexNow ping for published posts.
@@ -42,6 +41,28 @@ function extractSecret(req: VercelRequest): string {
 const SITE_URL = (
   process.env.SITE_URL || "https://www.techvergesolution.com"
 ).replace(/\/$/, "");
+
+// Keep the webhook self-contained: Vercel packages API routes as separate
+// functions, and importing another route can fail at runtime under Node ESM.
+async function submitIndexNow(urls: string[]) {
+  const key = (process.env.INDEXNOW_KEY || "d52e645fe0119e9f67683e0c748a48c2").trim();
+  const host = (process.env.INDEXNOW_HOST || "www.techvergesolution.com")
+    .replace(/^https?:\/\//, "");
+  const keyLocation = process.env.INDEXNOW_KEY_LOCATION?.trim() || `${SITE_URL}/${key}.txt`;
+  const unique = [...new Set(urls)];
+  const response = await fetch("https://api.indexnow.org/indexnow", {
+    method: "POST",
+    headers: { "Content-Type": "application/json; charset=utf-8" },
+    body: JSON.stringify({ host, key, keyLocation, urlList: unique }),
+  });
+  return {
+    ok: response.status === 200 || response.status === 202,
+    status: response.status,
+    submitted: unique.length,
+    body: await response.text().catch(() => ""),
+    urls: unique,
+  };
+}
 
 function extractBlogUrls(body: unknown): string[] {
   if (!body || typeof body !== "object") return [];
