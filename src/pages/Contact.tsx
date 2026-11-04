@@ -4,6 +4,7 @@ import { ContactSection } from "@/components/landing/ContactSection";
 import { Seo } from "@/components/Seo";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { pageSeo } from "@/lib/seo";
+import { PageBreadcrumbs } from "@/components/PageBreadcrumbs";
 
 const Contact = () => {
   const seo = pageSeo.contact;
@@ -16,6 +17,7 @@ const Contact = () => {
           <section className="relative pt-32 pb-4 md:pt-40 md:pb-6 overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
             <div className="section-container relative z-10">
+              <PageBreadcrumbs section="contact" />
               <AnimatedSection className="max-w-3xl mx-auto text-center">
                 <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-4 block">
                   Contact

@@ -12,6 +12,7 @@ import {
   isOnContactPage,
 } from "@/lib/booking";
 import { trackEvent } from "@/lib/analytics";
+import { useContactSettings } from "@/hooks/useContactSettings";
 
 const INTENT_PRESETS: Record<string, string> = {
   strategy:
@@ -56,9 +57,6 @@ const BLOCKED_DOMAINS = [
 ];
 
 const CONTACT_EMAIL = "info@techvergesolution.com";
-const WHATSAPP_HREF =
-  "https://wa.me/15055231081?text=" +
-  encodeURIComponent("Hi TechVerge, I'd like to discuss a project");
 
 type FormData = {
   name: string;
@@ -97,6 +95,7 @@ interface ContactSectionProps {
 }
 
 export const ContactSection = ({ hidePageHeader = false }: ContactSectionProps) => {
+  const { data: contactSettings } = useContactSettings();
   const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState<FormData>(emptyForm);
@@ -260,9 +259,14 @@ export const ContactSection = ({ hidePageHeader = false }: ContactSectionProps) 
     }
   };
 
-  const bookingUrl = getBookingUrl();
+  const settingsBooking = contactSettings?.bookingUrl?.trim();
+  const bookingUrl = settingsBooking && isHttpUrl(settingsBooking) ? settingsBooking : getBookingUrl();
   const bookingHref = bookingUrl ?? CONTACT_STRATEGY_PATH;
   const bookingIsExternal = Boolean(bookingUrl && isHttpUrl(bookingUrl));
+  const email = contactSettings?.email?.trim() || CONTACT_EMAIL;
+  const whatsapp = contactSettings?.whatsapp?.trim() || "";
+  const whatsappHref = /^\+?[1-9]\d{6,14}$/.test(whatsapp) ? `https://wa.me/${whatsapp.replace(/^\+/, "")}` : null;
+  const hours = (contactSettings?.availableHours ?? []).filter((item) => item.hours?.trim() && item.timezone?.trim());
 
   return (
     <section id="contact" className="relative py-24 md:py-32 overflow-hidden bg-background">
@@ -563,7 +567,7 @@ export const ContactSection = ({ hidePageHeader = false }: ContactSectionProps) 
                     className="btn-outline-glow inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-foreground font-semibold w-full sm:w-auto min-h-[48px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                     aria-label={BOOKING_CTA_LABEL}
                     onClick={(e) => {
-                      trackEvent("booking_cta_click", { placement: "contact" });
+                      trackEvent("booking_click", { placement: "contact" });
                       if (!bookingUrl && isOnContactPage()) {
                         e.preventDefault();
                         goToContactIntent("strategy");
@@ -615,11 +619,11 @@ export const ContactSection = ({ hidePageHeader = false }: ContactSectionProps) 
                 <div>
                   <p className="text-xs text-muted-foreground">Email</p>
                   <a
-                    href={`mailto:${CONTACT_EMAIL}`}
+                    href={`mailto:${email}`}
                     className="text-sm font-medium hover:text-primary transition-colors"
                     onClick={() => trackEvent("email_click", { placement: "contact" })}
                   >
-                    {CONTACT_EMAIL}
+                    {email}
                   </a>
                 </div>
               </div>
@@ -640,14 +644,14 @@ export const ContactSection = ({ hidePageHeader = false }: ContactSectionProps) 
                 </div>
               </div>
 
-              <div className="flex items-center gap-4">
+              {whatsappHref && <div className="flex items-center gap-4">
                 <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
                   <MessageCircle className="text-primary" size={20} />
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">WhatsApp</p>
                   <a
-                    href={WHATSAPP_HREF}
+                    href={whatsappHref}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-sm font-medium hover:text-primary transition-colors"
@@ -657,7 +661,10 @@ export const ContactSection = ({ hidePageHeader = false }: ContactSectionProps) 
                     Message us on WhatsApp
                   </a>
                 </div>
-              </div>
+              </div>}
+              {hours.length > 0 && <div><p className="text-xs text-muted-foreground">Available hours</p>
+                <ul className="text-sm font-medium">{hours.map((item) => <li key={item._key}>{item.hours} {item.timezone}</li>)}</ul>
+              </div>}
             </div>
           </div>
         </div>

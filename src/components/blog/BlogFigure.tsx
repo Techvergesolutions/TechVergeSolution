@@ -12,6 +12,7 @@ type BlogFigureProps = {
   frameClassName?: string;
   imgClassName?: string;
   priority?: boolean;
+  sizes?: string;
 };
 
 export function BlogFigure({
@@ -25,8 +26,32 @@ export function BlogFigure({
   frameClassName,
   imgClassName,
   priority = false,
+  sizes = "(min-width: 768px) 720px, calc(100vw - 48px)",
 }: BlogFigureProps) {
   const shouldLazy = priority ? false : lazy;
+  let srcSet: string | undefined;
+  let imageSrc = src;
+  try {
+    const url = new URL(src);
+    if (url.protocol === "https:" && url.hostname === "cdn.sanity.io" && url.pathname.startsWith("/images/")) {
+      url.searchParams.set("auto", "format");
+      url.searchParams.set("q", "75");
+      imageSrc = url.toString();
+      const widths = [320, 480, 640, 768, 960, 1200].filter((size) => size < width);
+      widths.push(width);
+      srcSet = widths.map((size) => {
+        const variant = new URL(url);
+        variant.searchParams.set("w", String(size));
+        // Preserve the requested aspect ratio when a source specifies both dimensions.
+        const originalWidth = Number(url.searchParams.get("w"));
+        const originalHeight = Number(url.searchParams.get("h"));
+        if (originalWidth > 0 && originalHeight > 0) {
+          variant.searchParams.set("h", String(Math.max(1, Math.round(originalHeight * size / originalWidth))));
+        }
+        return `${variant.toString()} ${size}w`;
+      }).join(", ");
+    }
+  } catch { /* Local images keep their original URL. */ }
 
   return (
     <figure className={cn("my-8", className)}>
@@ -38,7 +63,9 @@ export function BlogFigure({
         style={{ aspectRatio: `${width} / ${height}` }}
       >
         <img
-          src={src}
+          src={imageSrc}
+          srcSet={srcSet}
+          sizes={srcSet ? sizes : undefined}
           alt={alt}
           width={width}
           height={height}

@@ -1,3 +1,4 @@
+import { siteName, defaultOgImage } from "./seo/config";
 import type { PortableTextBlock } from "@portabletext/types";
 import {
   blogPosts as staticBlogPosts,
@@ -5,6 +6,7 @@ import {
   type BlogPostMeta,
 } from "@/data/blog";
 import { isSanityConfigured, sanityClient, urlForImage } from "@/lib/sanity";
+import { POST_BY_SLUG_QUERY, type CmsPostSummary, type CmsServiceSummary } from "@/lib/sanity/queries";
 
 export type BlogFaq = { question: string; answer: string };
 
@@ -12,6 +14,18 @@ export type SanityBlogPost = BlogPostMeta & {
   source: "sanity";
   body: PortableTextBlock[];
   faqs: BlogFaq[];
+  seoTitle?: string;
+  seoDescription?: string;
+  customOgImage?: string;
+  canonicalUrl?: string;
+  noIndex?: boolean;
+  publishedTime?: string;
+  modifiedTime?: string;
+  authors?: string[];
+  schemaImage?: string;
+  categoryIds: string[];
+  relatedPosts: CmsPostSummary[];
+  relatedService: CmsServiceSummary | null;
 };
 
 const POST_LIST_QUERY = `*[_type == "post" && defined(slug.current)] | order(publishedAt desc) {
@@ -36,29 +50,6 @@ const POST_LIST_QUERY = `*[_type == "post" && defined(slug.current)] | order(pub
   }
 }`;
 
-const POST_BY_SLUG_QUERY = `*[_type == "post" && slug.current == $slug][0] {
-  _id,
-  title,
-  "slug": slug.current,
-  excerpt,
-  description,
-  publishedAt,
-  _updatedAt,
-  readingTimeMinutes,
-  tags,
-  mainImage {
-    asset,
-    alt,
-    hotspot,
-    crop
-  },
-  body,
-  faqs[] {
-    question,
-    answer
-  }
-}`;
-
 type SanityPostRow = {
   _id: string;
   title: string;
@@ -66,6 +57,7 @@ type SanityPostRow = {
   excerpt?: string;
   description?: string;
   publishedAt?: string;
+  updatedAt?: string;
   _updatedAt?: string;
   readingTimeMinutes?: number;
   tags?: string[];
@@ -75,11 +67,23 @@ type SanityPostRow = {
   };
   body?: PortableTextBlock[];
   faqs?: BlogFaq[];
+  categories?: ({ _id: string } | null)[] | null;
+  relatedPosts?: (CmsPostSummary | null)[] | null;
+  relatedService?: CmsServiceSummary | null;
+  linkedFromServices?: CmsServiceSummary[] | null;
+  author?: { name?: string } | null;
+  seo?: {
+    seoTitle?: string | null;
+    seoDescription?: string | null;
+    ogImage?: SanityPostRow["mainImage"] | null;
+    canonicalUrl?: string | null;
+    noIndex?: boolean | null;
+  } | null;
 };
 
 const DEFAULT_FEATURED: BlogImage = {
-  src: "/og-image.webp",
-  alt: "TechVerge Solutions",
+  src: defaultOgImage,
+  alt: siteName,
   width: 1200,
   height: 630,
 };
@@ -121,11 +125,11 @@ function mapFeaturedImage(mainImage?: SanityPostRow["mainImage"]): BlogImage {
 function mapSanityRowToMeta(row: SanityPostRow): BlogPostMeta {
   const featuredImage = mapFeaturedImage(row.mainImage);
   const datePublished = isoDateOnly(row.publishedAt);
-  const dateModified = isoDateOnly(row._updatedAt ?? row.publishedAt);
+  const dateModified = isoDateOnly(row.updatedAt ?? row._updatedAt ?? row.publishedAt);
   const excerpt =
     row.excerpt?.trim() ||
     row.description?.trim() ||
-    "Read the full article on the TechVerge Solutions blog.";
+    `Read the full article on the ${siteName} blog.`;
 
   return {
     slug: row.slug,
@@ -189,9 +193,26 @@ export async function getSanityPostBySlug(
     );
     if (!row?.slug) return null;
     const meta = mapSanityRowToMeta(row);
+    const ogImage = row.seo?.ogImage?.asset ? mapFeaturedImage(row.seo.ogImage) : meta.featuredImage;
     return {
       ...meta,
       source: "sanity",
+      seoTitle: row.seo?.seoTitle?.trim() || row.title,
+      seoDescription: row.seo?.seoDescription?.trim() || row.excerpt?.trim() || row.description?.trim() || meta.description,
+      customOgImage: row.seo?.ogImage?.asset ? ogImage.src : undefined,
+      ogImage: ogImage.src,
+      ogImageAlt: ogImage.alt,
+      canonicalUrl: row.seo?.canonicalUrl || undefined,
+      noIndex: row.seo?.noIndex ?? false,
+      publishedTime: row.publishedAt || undefined,
+      modifiedTime: row.updatedAt || row.publishedAt || undefined,
+      authors: row.author?.name ? [row.author.name] : undefined,
+      schemaImage: row.mainImage?.asset ? meta.featuredImage.src : undefined,
+      categoryIds: (row.categories ?? []).flatMap((category) => category?._id ? [category._id] : []),
+      relatedPosts: (row.relatedPosts ?? []).filter((post): post is CmsPostSummary => Boolean(post)),
+      relatedService: row.relatedService?.slug && row.relatedService.title
+        ? row.relatedService
+        : (row.linkedFromServices ?? []).find((service) => service?.slug && service.title) ?? null,
       body: row.body ?? [],
       faqs: (row.faqs ?? []).filter(
         (faq) => faq.question?.trim() && faq.answer?.trim(),

@@ -15,6 +15,8 @@ type Props = {
 
 const components: PortableTextComponents = {
   block: {
+    // Keep the page title as the sole H1 even for older imported content.
+    h1: ({ children }) => <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground pt-4">{children}</h2>,
     h2: ({ children }) => (
       <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground pt-4">
         {children}

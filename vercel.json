@@ -1,5 +1,13 @@
 {
+  "trailingSlash": false,
+  "functions": { "api/blog-page.ts": { "includeFiles": "dist/index.html" } },
   "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "techvergesolution.com" }],
+      "destination": "https://www.techvergesolution.com/:path*",
+      "permanent": true
+    },
     {
       "source": "/ai-automation",
       "destination": "/services/ai-automation",
@@ -42,6 +50,15 @@
     }
   ],
   "rewrites": [
+    { "source": "/blog/:slug", "destination": "/api/blog-page?slug=:slug" },
+    {
+      "source": "/sitemap.xml",
+      "destination": "/api/sitemap"
+    },
+    {
+      "source": "/feed.xml",
+      "destination": "/api/feed"
+    },
     {
       "source": "/((?!api/|sitemap\\.xml|robots\\.txt|.*\\..*).*)",
       "destination": "/index.html"

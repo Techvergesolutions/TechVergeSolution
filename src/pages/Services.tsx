@@ -5,10 +5,11 @@ import { Seo } from "@/components/Seo";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { BookingCta } from "@/components/cta/BookingCta";
 import { WorkflowAuditCta } from "@/components/cta/WorkflowAuditCta";
-import { ServicesCoreFeatures } from "@/components/services/ServicesCoreFeatures";
+import { ServiceCards } from "@/components/services/ServiceCards";
 import { TechStackBadges } from "@/components/services/TechStackBadges";
 import { CaseStudiesSummary } from "@/components/services/CaseStudiesSummary";
 import { pageSeo } from "@/lib/seo";
+import { PageBreadcrumbs } from "@/components/PageBreadcrumbs";
 
 const Services = () => {
   const seo = pageSeo.services;
@@ -25,17 +26,17 @@ const Services = () => {
             <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
             <div className="absolute inset-0 grid-pattern opacity-20" />
             <div className="section-container relative z-10">
+              <PageBreadcrumbs section="services" />
               <AnimatedSection className="max-w-3xl mx-auto text-center">
                 <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-4 block">
                   Services
                 </span>
                 <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-                  Custom AI Automation &amp; Software for US Businesses
+                  Custom Software, Websites &amp; Automation
                 </h1>
                 <p className="text-muted-foreground text-base md:text-lg leading-relaxed mb-6 max-w-2xl mx-auto">
-                  We design and implement lead follow-up, voice agents, process automation, and
-                  custom AI software around your workflow — not a packaged platform you configure
-                  yourself.
+                  Explore custom software, websites, mobile apps, and automation services designed
+                  around your customers, team, and workflows.
                 </p>
                 <div className="mb-8">
                   <MarketsServed compact />
@@ -58,7 +59,10 @@ const Services = () => {
           </section>
 
           {/* 2. Core Features → /services/:slug */}
-          <ServicesCoreFeatures />
+          <section className="section-container py-16 md:py-20">
+            <h2 className="font-display text-3xl font-bold text-center mb-10">Our Services</h2>
+            <ServiceCards />
+          </section>
 
           {/* 3. Tech Stack badges */}
           <TechStackBadges

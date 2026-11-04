@@ -3,40 +3,48 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
+import { lazy, Suspense } from "react";
 
 // Pages
 import Index from "./pages/Index";
-import About from "./pages/About";
-import Services from "./pages/Services";
-import Portfolio from "./pages/Portfolio";
-import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
-import TermsAndConditions from "./pages/TermsAndConditions";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
-import ServicePage from "./pages/ServicePage";
-import Blog from "./pages/Blog";
-import BlogPost from "./pages/BlogPost";
+const About = lazy(() => import("./pages/About"));
+const Services = lazy(() => import("./pages/Services"));
+const Portfolio = lazy(() => import("./pages/Portfolio"));
+const Contact = lazy(() => import("./pages/Contact"));
+const TermsAndConditions = lazy(() => import("./pages/TermsAndConditions"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+const ServicePage = lazy(() => import("./pages/ServicePage"));
+const Blog = lazy(() => import("./pages/Blog"));
+const BlogPost = lazy(() => import("./pages/BlogPost"));
+const MarketPage = lazy(() => import("./pages/MarketPage"));
 
 // Components
 import { CookieConsent } from "./components/ui/CookieConsent";
 import { GoogleTagManager } from "./components/GoogleTagManager";
+import { GoogleAnalytics } from "./components/GoogleAnalytics";
 import ScrollToTop from "./components/ui/ScrollToTop";
-import { serviceSlugs } from "./data/services";
+import { SanityLiveRefresh } from "./components/SanityLiveRefresh";
+// Historical flat URLs remain redirects regardless of which services are published.
+const legacyServiceSlugs = ["ai-automation", "ai-voice-agents", "business-automation", "ai-saas-development"];
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({ defaultOptions: { queries: { refetchInterval: 30_000 } } });
 
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
+      <SanityLiveRefresh />
       <TooltipProvider>
         <Toaster />
         <Sonner theme="dark" position="bottom-right" closeButton />
 
         <CookieConsent />
         <GoogleTagManager />
+        <GoogleAnalytics />
 
         <BrowserRouter>
           <ScrollToTop />
+          <Suspense fallback={<div className="min-h-screen" aria-label="Loading page" />}>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/about" element={<About />} />
@@ -45,12 +53,13 @@ const App = () => {
             <Route path="/portfolio" element={<Portfolio />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
+            <Route path="/markets/:slug" element={<MarketPage />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-of-service" element={<TermsAndConditions />} />
 
             {/* Legacy flat service URLs → /services/:slug */}
-            {serviceSlugs.map((slug) => (
+            {legacyServiceSlugs.map((slug) => (
               <Route
                 key={slug}
                 path={`/${slug}`}
@@ -74,6 +83,7 @@ const App = () => {
 
             <Route path="*" element={<NotFound />} />
           </Routes>
+          </Suspense>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>

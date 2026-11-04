@@ -1,3 +1,5 @@
+import { siteName as SITE_NAME } from "@/lib/seo/config";
+
 export type ServiceSlug =
   | "ai-automation"
   | "ai-voice-agents"
@@ -91,7 +93,7 @@ export const serviceSlugs: ServiceSlug[] = [
 export const servicesConfig: Record<ServiceSlug, ServiceConfig> = {
   "ai-automation": {
     slug: "ai-automation",
-    pageTitle: "AI Lead Follow-Up Automation | TechVerge Solutions",
+    pageTitle: `AI Lead Follow-Up Automation | ${SITE_NAME}`,
     metaDescription:
       "We design and implement custom AI lead follow-up automation for US businesses — faster response, qualification, and routing to your team.",
     eyebrow: "AI Lead Follow-Up Automation",
@@ -302,7 +304,7 @@ export const servicesConfig: Record<ServiceSlug, ServiceConfig> = {
 
   "ai-voice-agents": {
     slug: "ai-voice-agents",
-    pageTitle: "Custom AI Voice Agents | TechVerge Solutions",
+    pageTitle: `Custom AI Voice Agents | ${SITE_NAME}`,
     metaDescription:
       "We design and implement custom inbound AI voice agents that handle common calls, qualify callers, and help schedule — with clear human handoffs.",
     eyebrow: "AI Voice Agents",
@@ -513,7 +515,7 @@ export const servicesConfig: Record<ServiceSlug, ServiceConfig> = {
 
   "business-automation": {
     slug: "business-automation",
-    pageTitle: "Business Process Automation | TechVerge Solutions",
+    pageTitle: `Business Process Automation | ${SITE_NAME}`,
     metaDescription:
       "We design and implement custom business automation that connects forms, CRM, email, calendars, and internal systems — reducing repetitive admin.",
     eyebrow: "Business Process Automation",
@@ -724,7 +726,7 @@ export const servicesConfig: Record<ServiceSlug, ServiceConfig> = {
 
   "ai-saas-development": {
     slug: "ai-saas-development",
-    pageTitle: "Custom AI SaaS & Software Development | TechVerge Solutions",
+    pageTitle: `Custom AI SaaS & Software Development | ${SITE_NAME}`,
     metaDescription:
       "We design and build custom AI-powered applications and internal tools for your workflows — not a TechVerge SaaS product you subscribe to.",
     eyebrow: "AI SaaS & Custom Software",

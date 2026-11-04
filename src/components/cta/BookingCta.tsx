@@ -42,6 +42,7 @@ export function BookingCta({
 
   const handleClick = () => {
     trackEvent(eventName, eventParams);
+    if (eventName !== "booking_click") trackEvent("booking_click", eventParams);
     onNavigate?.();
   };
 

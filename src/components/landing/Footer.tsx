@@ -3,18 +3,9 @@ import { Facebook, Github, Instagram, Linkedin, MessageCircle } from "lucide-rea
 import { Link } from "react-router-dom";
 import { BookingCta } from "@/components/cta/BookingCta";
 import { trackEvent } from "@/lib/analytics";
-import { servicePath } from "@/data/services";
-
-const serviceLinks = [
-  { name: "AI Lead Follow-Up", to: servicePath("ai-automation") },
-  { name: "AI Voice Agents", to: servicePath("ai-voice-agents") },
-  { name: "Business Automation", to: servicePath("business-automation") },
-  { name: "AI SaaS Development", to: servicePath("ai-saas-development") },
-];
-
-const WHATSAPP_HREF =
-  "https://wa.me/15055231081?text=" +
-  encodeURIComponent("Hi TechVerge, I'd like to discuss a project");
+import { useServices } from "@/hooks/useServices";
+import { useMarketPages } from "@/hooks/useMarketPages";
+import { useContactSettings } from "@/hooks/useContactSettings";
 
 const socialLinks = [
   {
@@ -37,14 +28,23 @@ const socialLinks = [
     href: "https://github.com/solutiontechverge-hub",
     Icon: Github,
   },
-  {
-    name: "WhatsApp",
-    href: WHATSAPP_HREF,
-    Icon: MessageCircle,
-  },
 ];
 
 export const Footer = () => {
+  const { data: services = [] } = useServices();
+  const { data: markets = [] } = useMarketPages();
+  const { data: contact } = useContactSettings();
+  const whatsapp = contact?.whatsapp?.trim() || "";
+  const whatsappLink = /^\+?[1-9]\d{6,14}$/.test(whatsapp) ? `https://wa.me/${whatsapp.replace(/^\+/, "")}` : null;
+  const links = whatsappLink ? [...socialLinks, { name: "WhatsApp", href: whatsappLink, Icon: MessageCircle }] : socialLinks;
+  const email = contact?.email?.trim() || "info@techvergesolution.com";
+  const seenServiceSlugs = new Set<string>();
+  const uniqueServices = services.filter((service) => {
+    const slug = service.slug?.trim();
+    if (!slug || seenServiceSlugs.has(slug)) return false;
+    seenServiceSlugs.add(slug);
+    return true;
+  });
   const triggerCookieBanner = (e: React.MouseEvent) => {
     e.preventDefault();
     window.dispatchEvent(new Event("show-cookie-banner"));
@@ -65,6 +65,7 @@ export const Footer = () => {
                     alt="TechVerge Solutions logo"
                     width={40}
                     height={40}
+                    loading="lazy"
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -82,13 +83,13 @@ export const Footer = () => {
             </p>
             <div className="flex flex-wrap items-center gap-4 text-sm">
               <a
-                href="mailto:info@techvergesolution.com"
+                href={`mailto:${email}`}
                 className="text-muted-foreground hover:text-primary transition-colors"
                 onClick={() => trackEvent("email_click", { placement: "footer" })}
               >
-                info@techvergesolution.com
+                {email}
               </a>
-              {socialLinks.map(({ name, href, Icon }) => (
+              {links.map(({ name, href, Icon }) => (
                 <a
                   key={name}
                   href={href}
@@ -96,6 +97,7 @@ export const Footer = () => {
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
                   aria-label={name}
+                  onClick={name === "WhatsApp" ? () => trackEvent("whatsapp_click", { placement: "footer" }) : undefined}
                 >
                   <Icon className="w-4 h-4" />
                   {name}
@@ -108,13 +110,13 @@ export const Footer = () => {
             <div>
               <p className="font-display font-bold text-foreground mb-4">Services</p>
               <ul className="space-y-3">
-                {serviceLinks.map((link) => (
-                  <li key={link.to}>
+                {uniqueServices.map((service) => (
+                  <li key={service._id}>
                     <Link
-                      to={link.to}
+                      to={`/services/${service.slug}`}
                       className="text-muted-foreground hover:text-primary transition-colors text-sm"
                     >
-                      {link.name}
+                      {service.title?.trim() || service.slug}
                     </Link>
                   </li>
                 ))}
@@ -171,6 +173,9 @@ export const Footer = () => {
                     Contact
                   </Link>
                 </li>
+                {markets.filter((market, index) => market.slug && market.title && markets.findIndex((other) => other.slug === market.slug) === index).map((market) => <li key={market._id}>
+                  <Link to={`/markets/${encodeURIComponent(market.slug!)}`} className="text-muted-foreground hover:text-primary transition-colors text-sm">{market.title}</Link>
+                </li>)}
                 <li>
                   <BookingCta
                     variant="link"

@@ -8,6 +8,7 @@ import { BlogFigure } from "@/components/blog/BlogFigure";
 import { blogPostPath } from "@/data/blog";
 import { useBlogPostList } from "@/hooks/useBlogPosts";
 import { pageSeo } from "@/lib/seo";
+import { PageBreadcrumbs } from "@/components/PageBreadcrumbs";
 
 function formatDisplayDate(isoDate: string) {
   const [year, month, day] = isoDate.split("-").map(Number);
@@ -35,6 +36,7 @@ const Blog = () => {
             <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
             <div className="absolute inset-0 grid-pattern opacity-10" />
             <div className="section-container relative z-10">
+              <PageBreadcrumbs section="blog" />
               <AnimatedSection className="max-w-3xl">
                 <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-4 block">
                   Blog
@@ -66,8 +68,7 @@ const Blog = () => {
                         alt={featured.featuredImage.alt}
                         width={featured.featuredImage.width}
                         height={featured.featuredImage.height}
-                        lazy={false}
-                        priority
+                        sizes="(min-width: 1400px) 668px, (min-width: 1024px) calc((100vw - 64px) / 2), (min-width: 768px) calc((100vw - 48px) / 2), calc(100vw - 48px)"
                         className="my-0 h-full"
                         frameClassName="h-full min-h-[14rem] rounded-none border-0 md:border-r border-border/50"
                         imgClassName="min-h-[14rem] md:min-h-full"
@@ -120,6 +121,7 @@ const Blog = () => {
                             alt={post.featuredImage.alt}
                             width={post.featuredImage.width}
                             height={post.featuredImage.height}
+                            sizes="(min-width: 1400px) 656px, (min-width: 1024px) calc((100vw - 88px) / 2), (min-width: 768px) calc((100vw - 68px) / 2), calc(100vw - 48px)"
                             className="my-0 rounded-none border-0 border-b border-border/50"
                           />
                           <div className="p-6">

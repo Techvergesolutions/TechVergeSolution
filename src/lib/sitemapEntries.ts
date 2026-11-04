@@ -1,4 +1,4 @@
-import { serviceSlugs } from "@/data/services";
+import type { CmsService } from "@/lib/sanity/queries";
 import { SITE_URL, absoluteUrl } from "@/lib/seo";
 
 export type SitemapChangeFreq =
@@ -18,7 +18,7 @@ export interface SitemapEntry {
   priority: number;
 }
 
-/** Keep in sync with `public/sitemap.xml` (Vite serves the static XML). */
+/** Static routes use this date; service dates come from Sanity. */
 export const SITEMAP_LASTMOD = "2026-10-12";
 
 const staticEntries: Omit<SitemapEntry, "loc" | "lastmod">[] = [
@@ -37,22 +37,22 @@ const staticEntries: Omit<SitemapEntry, "loc" | "lastmod">[] = [
   { path: "/terms-of-service", changefreq: "yearly", priority: 0.3 },
 ];
 
-export function getSitemapEntries(lastmod = SITEMAP_LASTMOD): SitemapEntry[] {
+export function getSitemapEntries(lastmod = SITEMAP_LASTMOD, cmsServices: CmsService[] = []): SitemapEntry[] {
   const staticRoutes: SitemapEntry[] = staticEntries.map((entry) => ({
     ...entry,
     loc: absoluteUrl(entry.path),
     lastmod,
   }));
 
-  const serviceRoutes: SitemapEntry[] = serviceSlugs.map((slug) => ({
-    path: `/services/${slug}`,
-    loc: absoluteUrl(`/services/${slug}`),
-    lastmod,
+  const serviceRoutes: SitemapEntry[] = cmsServices.filter((service) => service.slug && !service.seo?.noIndex).map((service) => ({
+    path: `/services/${service.slug}`,
+    loc: absoluteUrl(`/services/${service.slug}`),
+    lastmod: service._updatedAt?.slice(0, 10) || lastmod,
     changefreq: "monthly" as const,
     priority: 0.8,
   }));
 
-  // Preserve public/sitemap.xml order: home → about → services → service slugs → portfolio → blog → rest
+  // Preserve the site navigation order, with services after the services index.
   const [home, about, services, portfolio, ...rest] = staticRoutes;
   return [home, about, services, ...serviceRoutes, portfolio, ...rest];
 }

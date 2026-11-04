@@ -1,0 +1,11 @@
+---
+description: TechVerge SEO rules
+alwaysApply: true
+---
+- Stack: Next.js (App Router), TypeScript, Sanity CMS. Content (blog, services, FAQs, SEO fields) always comes from Sanity. Never hardcode post or service data in components.
+- All SEO values must be dynamic: metadata via generateMetadata, JSON-LD via helper functions in lib/seo/, sitemap via app/sitemap.ts.
+- Site URL comes from env NEXT_PUBLIC_SITE_URL (https://www.techvergesolution.com). Never hardcode the domain in components.
+- Every Sanity SEO field must have a fallback (e.g. seoTitle -> title, seoDescription -> excerpt).
+- Never invent reviews, ratings, addresses, prices or claims in schema or copy. If data is missing, omit the field.
+- Primary markets: United States, United Kingdom, UAE. Use clear international English.
+- Keep changes small, typed, and do not break existing routes or URLs. Do not change existing slugs without adding a 301 redirect.

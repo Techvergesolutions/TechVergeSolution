@@ -7,15 +7,22 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { loadEnv } from "vite";
+import { createClient } from "@sanity/client";
+import imageUrlBuilder from "@sanity/image-url";
+import { ALL_SERVICES_QUERY } from "../src/lib/sanity/queries.ts";
 import {
+  SITE_URL,
+  SITE_NAME,
+  defaultDescription,
   DEFAULT_OG_IMAGE,
   DEFAULT_OG_IMAGE_ALT,
-  EXPECTED_ROUTE_COUNT,
   absoluteUrl,
-  blogPostingJsonLd,
-  faqPageJsonLd,
+  articleJsonLd,
   organizationJsonLd,
-  prerenderRoutes,
+  visibleFaqs,
+  serializeJsonLd,
+  prerenderRoutes as staticRoutes,
   serviceJsonLd,
 } from "./seo-prerender-data.mjs";
 
@@ -44,12 +51,9 @@ function escapeText(value) {
     .replace(/>/g, "&gt;");
 }
 
-function serializeJsonLd(data) {
-  return JSON.stringify(data).replace(/</g, "\\u003c");
-}
-
-function jsonLdScript(data) {
-  return `<script type="application/ld+json">\n${serializeJsonLd(data)}\n    </script>`;
+function jsonLdScript(data, root = false) {
+  const marker = root ? 'id="site-organization-jsonld"' : 'data-prerender-jsonld="true"';
+  return `<script ${marker} type="application/ld+json">\n${serializeJsonLd(data)}\n    </script>`;
 }
 
 /** Replace or insert a unique meta/link tag matched by attribute selector. */
@@ -61,7 +65,7 @@ function upsertTag(html, { tag, attr, attrValue, attrs }) {
   const attrStr = Object.entries(attrs)
     .map(([k, v]) => `${k}="${escapeAttr(v)}"`)
     .join(" ");
-  const replacement = `<${tag} ${attrStr} />`;
+  const replacement = `<${tag} data-rh="true" ${attrStr} />`;
 
   if (re.test(html)) {
     return html.replace(re, replacement);
@@ -73,7 +77,7 @@ function upsertTag(html, { tag, attr, attrValue, attrs }) {
 
 function upsertTitle(html, title) {
   const re = /<title\b[^>]*>[\s\S]*?<\/title>/i;
-  const replacement = `<title>${escapeText(title)}</title>`;
+  const replacement = `<title data-rh="true">${escapeText(title)}</title>`;
   if (re.test(html)) {
     return html.replace(re, replacement);
   }
@@ -93,45 +97,30 @@ function injectJsonLdBeforeHeadClose(html, scriptsHtml) {
 }
 
 function buildJsonLdBlock(route) {
-  if (route.jsonLd === "organization") {
-    return `    ${jsonLdScript(organizationJsonLd())}`;
-  }
+  const blocks = [`    ${jsonLdScript(organizationJsonLd(), true)}`];
   if (route.service) {
-    const blocks = [
-      serviceJsonLd({
+    blocks.push(`    ${jsonLdScript(serviceJsonLd({
         name: route.service.name,
-        description: route.description,
+        description: route.service.description,
         path: route.path,
-      }),
-    ];
-    if (route.service.faq?.length) {
-      blocks.push(faqPageJsonLd(route.service.faq));
-    }
-    return blocks.map((b) => `    ${jsonLdScript(b)}`).join("\n");
+      }))}`);
   }
   if (route.article) {
-    const blocks = [
-      blogPostingJsonLd({
-        title: route.article.title,
-        description: route.description,
+    blocks.push(`    ${jsonLdScript(articleJsonLd({
+        headline: route.article.title,
         path: route.path,
         datePublished: route.article.datePublished,
         dateModified: route.article.dateModified,
-        imagePath: route.article.imagePath,
-        imageAlt: route.article.imageAlt,
-      }),
-    ];
-    if (route.article.faq?.length) {
-      blocks.push(faqPageJsonLd(route.article.faq));
-    }
-    return blocks.map((b) => `    ${jsonLdScript(b)}`).join("\n");
+        image: route.article.imagePath,
+      }))}`);
   }
-  return "";
+  return blocks.join("\n");
 }
 
 function applyRouteMeta(templateHtml, route) {
-  const canonical = absoluteUrl(route.path);
-  const ogImage = route.ogImage || DEFAULT_OG_IMAGE;
+  const canonical = absoluteUrl(route.canonicalUrl || route.path);
+  const pageUrl = absoluteUrl(route.path);
+  const ogImage = route.article ? absoluteUrl(`/api/og?slug=${encodeURIComponent(route.path.split("/").pop())}`) : route.ogImage || DEFAULT_OG_IMAGE;
   const ogImageAlt = route.ogImageAlt || DEFAULT_OG_IMAGE_ALT;
   const ogType = route.ogType || "website";
   let html = templateHtml;
@@ -168,7 +157,7 @@ function applyRouteMeta(templateHtml, route) {
     tag: "meta",
     attr: "property",
     attrValue: "og:url",
-    attrs: { property: "og:url", content: canonical },
+    attrs: { property: "og:url", content: pageUrl },
   });
   html = upsertTag(html, {
     tag: "meta",
@@ -225,14 +214,12 @@ function applyRouteMeta(templateHtml, route) {
     });
   }
 
-  if (/name\s*=\s*["']robots["']/i.test(html)) {
-    html = upsertTag(html, {
-      tag: "meta",
-      attr: "name",
-      attrValue: "robots",
-      attrs: { name: "robots", content: "index, follow" },
-    });
-  }
+  html = upsertTag(html, {
+    tag: "meta",
+    attr: "name",
+    attrValue: "robots",
+    attrs: { name: "robots", content: route.noIndex ? "noindex, follow" : "index, follow" },
+  });
 
   // JSON-LD: always strip template Organization graph, then inject route-specific
   html = removeJsonLdScripts(html);
@@ -252,7 +239,8 @@ function countMatches(html, re) {
 }
 
 function validateHtml(html, route) {
-  const canonical = absoluteUrl(route.path);
+  const canonical = absoluteUrl(route.canonicalUrl || route.path);
+  const pageUrl = absoluteUrl(route.path);
   const checks = [
     [/id\s*=\s*["']root["']/i, "#root"],
     [/<script\b/i, "script tags"],
@@ -279,76 +267,88 @@ function validateHtml(html, route) {
   if (!html.includes(`href="${escapeAttr(canonical)}"`)) {
     fail(`Route ${route.path}: canonical href mismatch (expected ${canonical})`);
   }
-  if (!html.includes(`content="${escapeAttr(canonical)}"`)) {
-    fail(`Route ${route.path}: og:url content mismatch (expected ${canonical})`);
+  if (!html.includes(`content="${escapeAttr(pageUrl)}"`)) {
+    fail(`Route ${route.path}: og:url content mismatch (expected ${pageUrl})`);
   }
-  if (!html.includes(`<title>${escapeText(route.title)}</title>`)) {
+  if (!html.includes(`<title data-rh="true">${escapeText(route.title)}</title>`)) {
     fail(`Route ${route.path}: title mismatch`);
   }
 
   const hasOrg =
     /"@type"\s*:\s*"Organization"/i.test(html) &&
-    /"@id"\s*:\s*"https:\/\/www\.techvergesolution\.com\/#organization"/i.test(
-      html,
-    ) &&
+    html.includes(JSON.stringify(`${SITE_URL}/#organization`)) &&
     /"@graph"/i.test(html);
   const hasService = /"@type"\s*:\s*"Service"/i.test(html);
-  const hasFaq = /"@type"\s*:\s*"FAQPage"/i.test(html);
-  const hasBlogPosting = /"@type"\s*:\s*"BlogPosting"/i.test(html);
+  const hasArticle = /"@type"\s*:\s*"Article"/i.test(html);
 
-  if (route.path === "/") {
-    if (!hasOrg) fail(`Route /: missing Organization JSON-LD graph`);
-  } else if (hasOrg && /"@graph"/i.test(html)) {
-    // Provider Organization on Service schema is fine; full @graph home schema is not
-    const ldScripts = [
-      ...html.matchAll(
-        /<script\b[^>]*type\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi,
-      ),
-    ];
-    for (const m of ldScripts) {
-      if (/"@graph"/i.test(m[1])) {
-        fail(
-          `Route ${route.path}: homepage Organization @graph must not remain on non-home pages`,
-        );
-      }
-    }
+  if (!hasOrg || countMatches(html, /id\s*=\s*["']site-organization-jsonld["']/gi) !== 1) {
+    fail(`Route ${route.path}: expected exactly one Organization and WebSite graph`);
   }
 
   if (route.service) {
     if (!hasService) fail(`Route ${route.path}: missing Service JSON-LD`);
-    if (route.service.faq?.length && !hasFaq) {
-      fail(`Route ${route.path}: missing FAQPage JSON-LD`);
-    }
   } else if (route.path !== "/" && hasService) {
     fail(`Route ${route.path}: unexpected Service JSON-LD`);
   }
 
   if (route.article) {
-    if (!hasBlogPosting) {
-      fail(`Route ${route.path}: missing BlogPosting JSON-LD`);
-    }
-    if (route.article.faq?.length && !hasFaq) {
-      fail(`Route ${route.path}: missing FAQPage JSON-LD`);
-    }
-  } else if (hasBlogPosting) {
-    fail(`Route ${route.path}: unexpected BlogPosting JSON-LD`);
+    if (!hasArticle) fail(`Route ${route.path}: missing Article JSON-LD`);
+  } else if (hasArticle) {
+    fail(`Route ${route.path}: unexpected Article JSON-LD`);
   }
 }
 
-function main() {
+async function getServiceRoutes() {
+  const env = loadEnv("production", ROOT, "VITE_SANITY_");
+  const projectId = process.env.VITE_SANITY_PROJECT_ID || env.VITE_SANITY_PROJECT_ID;
+  if (!projectId) {
+    console.warn("[prerender-meta] Sanity is not configured; no service metadata was generated.");
+    return [];
+  }
+  const client = createClient({
+    projectId,
+    dataset: process.env.VITE_SANITY_DATASET || env.VITE_SANITY_DATASET || "production",
+    apiVersion: process.env.VITE_SANITY_API_VERSION || env.VITE_SANITY_API_VERSION || "2024-01-01",
+    useCdn: false,
+    perspective: "published",
+  });
+  const services = await client.fetch(ALL_SERVICES_QUERY);
+  return services.map((service) => {
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(service.slug)) {
+      throw new Error(`Invalid service slug: ${service.slug}`);
+    }
+    const name = service.title?.trim() || service.heroHeading?.trim() || "Service";
+    const title = service.seo?.seoTitle?.trim() || name;
+    const schemaDescription = service.seo?.seoDescription?.trim() || service.shortDescription?.trim();
+    const description = schemaDescription || defaultDescription;
+    const faq = visibleFaqs(service.faqs);
+    let ogImage;
+    if (service.seo?.ogImage?.asset) {
+      try { ogImage = imageUrlBuilder(client).image(service.seo.ogImage).width(1200).url(); } catch { /* Use default. */ }
+    }
+    return {
+      path: `/services/${service.slug}`,
+      title: title.endsWith(` | ${SITE_NAME}`) ? title : `${title} | ${SITE_NAME}`,
+      description,
+      canonicalUrl: service.seo?.canonicalUrl,
+      noIndex: service.seo?.noIndex,
+      updatedAt: service._updatedAt,
+      ogImage,
+      service: { name, description: schemaDescription, faq },
+    };
+  });
+}
+
+async function main() {
   if (!fs.existsSync(TEMPLATE)) {
     fail(`Missing ${TEMPLATE}. Run vite build first.`);
   }
 
+  const serviceRoutes = await getServiceRoutes();
+  const prerenderRoutes = [...staticRoutes, ...serviceRoutes];
   if (!Array.isArray(prerenderRoutes)) {
     fail("prerenderRoutes is missing or not an array");
   }
-  if (prerenderRoutes.length !== EXPECTED_ROUTE_COUNT) {
-    fail(
-      `Expected ${EXPECTED_ROUTE_COUNT} routes, got ${prerenderRoutes.length}. Keep in sync with seo.ts / services.ts.`,
-    );
-  }
-
   const paths = new Set();
   for (const route of prerenderRoutes) {
     if (!route?.path || !route?.title || !route?.description) {
@@ -366,10 +366,6 @@ function main() {
     "/",
     "/about",
     "/services",
-    "/services/ai-automation",
-    "/services/ai-voice-agents",
-    "/services/business-automation",
-    "/services/ai-saas-development",
     "/portfolio",
     "/blog",
     "/blog/ai-voice-agents-for-small-business-2026",
@@ -395,6 +391,10 @@ function main() {
     const html = applyRouteMeta(templateHtml, route);
     validateHtml(html, route);
 
+    // Blog article URLs are served dynamically so published CMS edits appear
+    // in the initial HTML without waiting for a deployment.
+    if (route.article) continue;
+
     const out = outputPathForRoute(route.path);
     fs.mkdirSync(path.dirname(out), { recursive: true });
     fs.writeFileSync(out, html, "utf8");
@@ -407,4 +407,4 @@ function main() {
   for (const f of written) console.log(`  - ${f}`);
 }
 
-main();
+main().catch((error) => fail(error.message));

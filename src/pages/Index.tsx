@@ -11,6 +11,7 @@ import { Footer } from "@/components/landing/Footer";
 import { Seo } from "@/components/Seo";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { pageSeo } from "@/lib/seo";
+import { LatestPosts } from "@/components/blog/LatestPosts";
 
 const Index = () => {
   const seo = pageSeo.home;
@@ -26,6 +27,7 @@ const Index = () => {
           <ProblemSection />
           <SolutionsSection />
           <ProcessSection />
+          <LatestPosts />
 
           <section className="relative py-16 md:py-20 overflow-hidden border-y border-border/40">
             <div className="section-container relative z-10">

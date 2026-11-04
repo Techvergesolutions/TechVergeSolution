@@ -17,8 +17,10 @@ export const sanityClient: SanityClient | null = isSanityConfigured()
       projectId,
       dataset,
       apiVersion,
+      perspective: "published",
       token: token || undefined,
-      useCdn: !token,
+      // React Query refreshes published content after Sanity change events.
+      useCdn: false,
     })
   : null;
 

@@ -7,17 +7,12 @@ import { FinalCtaSection } from "@/components/landing/FinalCtaSection";
 import { Seo } from "@/components/Seo";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { pageSeo } from "@/lib/seo";
-import { servicePath } from "@/data/services";
-
-const serviceLinks = [
-  { name: "AI Lead Follow-Up", to: servicePath("ai-automation") },
-  { name: "AI Voice Agents", to: servicePath("ai-voice-agents") },
-  { name: "Business Automation", to: servicePath("business-automation") },
-  { name: "AI SaaS Development", to: servicePath("ai-saas-development") },
-];
+import { useServices } from "@/hooks/useServices";
+import { PageBreadcrumbs } from "@/components/PageBreadcrumbs";
 
 const Portfolio = () => {
   const seo = pageSeo.portfolio;
+  const { data: services = [] } = useServices();
   return (
     <>
       <Seo title={seo.title} description={seo.description} path={seo.path} />
@@ -27,6 +22,7 @@ const Portfolio = () => {
           <section className="relative pt-32 pb-4 md:pt-40 md:pb-6 overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
             <div className="section-container relative z-10">
+              <PageBreadcrumbs section="portfolio" />
               <AnimatedSection className="max-w-3xl mx-auto text-center">
                 <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-4 block">
                   Portfolio
@@ -64,14 +60,14 @@ const Portfolio = () => {
                   software — explored in more depth on each service page.
                 </p>
                 <div className="grid sm:grid-cols-2 gap-3 md:gap-4">
-                  {serviceLinks.map((link) => (
+                  {services.map((service) => (
                     <Link
-                      key={link.to}
-                      to={link.to}
+                      key={service._id}
+                      to={`/services/${service.slug}`}
                       className="group flex items-center justify-between rounded-xl border border-border/60 bg-card/30 px-5 py-4 hover:border-primary/40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                     >
                       <span className="font-medium text-foreground text-sm md:text-base">
-                        {link.name}
+                        {service.title}
                       </span>
                       <ArrowRight className="w-4 h-4 text-primary group-hover:translate-x-1 transition-transform" />
                     </Link>

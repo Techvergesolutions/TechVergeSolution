@@ -1,0 +1,44 @@
+---
+description: >-
+  Stub guidance for Ponytail Extension client/product work. Expand once brand,
+  SEO, and coding standards are confirmed.
+alwaysApply: false
+---
+
+# Ponytail Extension (rule stub)
+
+Use this rule when working on **Ponytail Extension** (client/product) work in or alongside TechVergeSolution.
+
+## Status
+
+**Incomplete stub** — no prior product docs, brand guidelines, or coding standards were found in this repo or nearby company folders. Do not invent brand voice, product claims, or SEO copy until the user fills in the sections below.
+
+## When this applies
+
+- User mentions Ponytail Extension / pony tail extension
+- Tasks clearly scoped to that product/feature (site, landing, CMS, SEO, etc.)
+
+## Placeholders to fill
+
+### Product & scope
+- [ ] What is Ponytail Extension? (e-commerce product, brand site, feature name, other)
+- [ ] Which paths/files belong to it? (e.g. `src/pages/ponytail/**`)
+- [ ] Should this rule `alwaysApply: true`, or only via globs?
+
+### Brand & content
+- [ ] Tone/voice (e.g. luxury, clinical, casual)
+- [ ] Forbidden claims / compliance notes
+- [ ] Preferred terminology (ponytail vs pony tail, product names)
+
+### Engineering
+- [ ] Stack conventions for this product (if different from TechVerge site)
+- [ ] Image/SEO/meta requirements
+- [ ] Do / don't patterns with short examples
+
+## Interim behavior
+
+Until placeholders are filled:
+
+1. Ask for missing product/brand constraints before writing marketing copy or SEO claims.
+2. Match existing TechVergeSolution patterns for code structure and UI.
+3. Keep changes scoped; do not invent a parallel design system.
