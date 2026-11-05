@@ -1,0 +1,17 @@
+# Allow public pages and assets while excluding internal endpoints.
+User-agent: Googlebot
+User-agent: Bingbot
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: PerplexityBot
+User-agent: Google-Extended
+User-agent: *
+Allow: /
+Disallow: /studio
+Disallow: /api
+
+# Optional LLM context file: /llms.txt
+Sitemap: %SEO_SITE_URL%/sitemap.xml
