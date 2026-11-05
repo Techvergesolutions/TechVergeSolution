@@ -1,5 +1,6 @@
 import { createRoot } from "react-dom/client";
 import { HelmetProvider } from "react-helmet-async";
+import "./styles/fonts.css";
 import App from "./App.tsx";
 import "./index.css";
 
@@ -10,5 +11,5 @@ document.querySelectorAll("script[data-prerender-jsonld]").forEach((script) => s
 createRoot(document.getElementById("root")!).render(
   <HelmetProvider>
     <App />
-  </HelmetProvider>
+  </HelmetProvider>,
 );

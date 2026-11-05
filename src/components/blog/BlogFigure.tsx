@@ -12,8 +12,23 @@ type BlogFigureProps = {
   frameClassName?: string;
   imgClassName?: string;
   priority?: boolean;
+  srcSet?: string;
   sizes?: string;
 };
+
+function variantSrcSet(src: string, ext: "webp" | "avif"): string | undefined {
+  if (!/^\/images\/blog\/(ai-voice-agents-hero|ai-call-workflow|appointment-scheduling|human-handoff|support-workflow)\.webp$/i.test(src)) return undefined;
+  const base = src.replace(/\.webp$/i, "");
+  const sizes = base.endsWith("ai-voice-agents-hero") ? [640, 960, 1400] : [640, 960];
+  return sizes.map((size) => `${base}-${size}w.${ext} ${size}w`).join(", ");
+}
+
+/** Build srcSet for local `/images/...` assets that have `-640w` / `-960w` / `-1400w` variants. */
+export function localImageSrcSet(src: string): string | undefined {
+  const set = variantSrcSet(src, "webp");
+  if (!set) return undefined;
+  return set;
+}
 
 export function BlogFigure({
   src,
@@ -26,10 +41,12 @@ export function BlogFigure({
   frameClassName,
   imgClassName,
   priority = false,
+  srcSet: suppliedSrcSet,
   sizes = "(min-width: 768px) 720px, calc(100vw - 48px)",
 }: BlogFigureProps) {
   const shouldLazy = priority ? false : lazy;
-  let srcSet: string | undefined;
+  let srcSet: string | undefined = suppliedSrcSet ?? localImageSrcSet(src);
+  const avifSrcSet = variantSrcSet(src, "avif");
   let imageSrc = src;
   try {
     const url = new URL(src);
@@ -62,18 +79,26 @@ export function BlogFigure({
         )}
         style={{ aspectRatio: `${width} / ${height}` }}
       >
-        <img
-          src={imageSrc}
-          srcSet={srcSet}
-          sizes={srcSet ? sizes : undefined}
-          alt={alt}
-          width={width}
-          height={height}
-          loading={shouldLazy ? "lazy" : "eager"}
-          decoding="async"
-          fetchPriority={priority ? "high" : undefined}
-          className={cn("h-full w-full object-cover", imgClassName)}
-        />
+        <picture className="block h-full w-full">
+          {avifSrcSet ? (
+            <source type="image/avif" srcSet={avifSrcSet} sizes={sizes} />
+          ) : null}
+          {srcSet && !imageSrc.startsWith("https://cdn.sanity.io/") ? (
+            <source type="image/webp" srcSet={srcSet} sizes={sizes} />
+          ) : null}
+          <img
+            src={imageSrc}
+            alt={alt}
+            width={width}
+            height={height}
+            srcSet={srcSet}
+            sizes={srcSet ? sizes : undefined}
+            loading={shouldLazy ? "lazy" : "eager"}
+            decoding="async"
+            fetchPriority={priority ? "high" : undefined}
+            className={cn("h-full w-full object-cover", imgClassName)}
+          />
+        </picture>
       </div>
       {caption ? (
         <figcaption className="mt-3 text-sm text-muted-foreground text-center">

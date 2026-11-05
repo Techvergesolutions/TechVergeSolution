@@ -3,12 +3,14 @@ import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { BookingCta } from "@/components/cta/BookingCta";
 import { WorkflowAuditCta } from "@/components/cta/WorkflowAuditCta";
 import type { ServiceConfig } from "@/data/services";
+import type { ReactNode } from "react";
 
 interface ServiceHeroProps {
   service: ServiceConfig;
+  breadcrumb?: ReactNode;
 }
 
-export function ServiceHero({ service }: ServiceHeroProps) {
+export function ServiceHero({ service, breadcrumb }: ServiceHeroProps) {
   return (
     <section className="relative pt-32 pb-16 md:pt-40 md:pb-24 overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
@@ -16,6 +18,7 @@ export function ServiceHero({ service }: ServiceHeroProps) {
 
       <div className="section-container relative z-10">
         <AnimatedSection className="max-w-3xl">
+          {breadcrumb}
           <Link
             to="/services"
             className="inline-flex items-center text-sm text-muted-foreground hover:text-primary transition-colors mb-6"

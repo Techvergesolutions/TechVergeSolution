@@ -41,15 +41,29 @@ export const GoogleTagManager = () => {
     const gtmId = import.meta.env.VITE_GTM_ID?.trim();
     if (!gtmId) return;
 
-    const tryLoad = () => {
-      if (localStorage.getItem("cookie-consent") === "accepted") {
-        injectGtm(gtmId);
+    let idleId = 0;
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+    const loadWhenIdle = () => {
+      if (localStorage.getItem("cookie-consent") !== "accepted") return;
+      const run = () => injectGtm(gtmId);
+      if ("requestIdleCallback" in window) {
+        idleId = window.requestIdleCallback(run, { timeout: 4000 });
+      } else {
+        timeoutId = globalThis.setTimeout(run, 2000);
       }
     };
 
-    tryLoad();
-    window.addEventListener("cookie-consent-updated", tryLoad);
-    return () => window.removeEventListener("cookie-consent-updated", tryLoad);
+    loadWhenIdle();
+    const onConsent = () => loadWhenIdle();
+    window.addEventListener("cookie-consent-updated", onConsent);
+    return () => {
+      window.removeEventListener("cookie-consent-updated", onConsent);
+      if (idleId && "cancelIdleCallback" in window) {
+        window.cancelIdleCallback(idleId);
+      }
+      if (timeoutId) globalThis.clearTimeout(timeoutId);
+    };
   }, []);
 
   return null;

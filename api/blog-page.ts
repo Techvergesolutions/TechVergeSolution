@@ -8,7 +8,7 @@ export default {
     const slug = new URL(request.url).searchParams.get("slug")?.trim();
     if (!slug || slug.length > 200 || /[\\/]/.test(slug) || slug === "." || slug === "..") return new Response("Not found", { status: 404 });
     try {
-      const [template, data] = await Promise.all([readFile(path.join(process.cwd(), "dist", "index.html"), "utf8"), fetchBlogHead(slug)]);
+      const [template, data] = await Promise.all([readFile(path.join(process.cwd(), "dist", "blog-shell.html"), "utf8"), fetchBlogHead(slug)]);
       const result = renderBlogHead(template, slug, data.post, data.image, data.ogImage);
       return new Response(request.method === "HEAD" ? null : result.html, { status: result.found ? 200 : 404, headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" } });
     } catch (error) {

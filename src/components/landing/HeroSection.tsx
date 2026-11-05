@@ -1,49 +1,32 @@
-import { motion } from "framer-motion";
 import { BookingCta } from "@/components/cta/BookingCta";
 import { WorkflowAuditCta } from "@/components/cta/WorkflowAuditCta";
 
+/** CSS-first hero — avoids framer-motion on the LCP path. */
 export const HeroSection = () => {
   return (
     <section className="relative min-h-[100svh] flex items-center justify-center overflow-hidden">
-      <div className="absolute inset-0 grid-pattern opacity-20" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_hsl(190_100%_50%_/_0.06)_0%,_transparent_55%)]" />
+      <div className="absolute inset-0 grid-pattern opacity-20" aria-hidden="true" />
+      <div
+        className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_hsl(190_100%_50%_/_0.06)_0%,_transparent_55%)]"
+        aria-hidden="true"
+      />
 
-      <div className="section-container relative z-10 pt-28 pb-20">
+      <div className="section-container relative z-10 pt-28 pb-16 sm:pb-20">
         <div className="max-w-4xl mx-auto text-center">
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="font-display text-sm md:text-base font-semibold tracking-[0.2em] uppercase text-primary mb-6"
-          >
+          <p className="font-display text-sm md:text-base font-semibold tracking-[0.2em] uppercase text-primary mb-5 sm:mb-6">
             TechVerge Solutions
-          </motion.p>
+          </p>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.05 }}
-            className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-[1.1] tracking-tight"
-          >
-            AI Automation That Turns More Leads Into Customers
-          </motion.h1>
+          <h1 className="font-display text-[1.75rem] leading-tight sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-5 sm:mb-6 sm:leading-[1.1] tracking-tight px-1">
+            AI Automation & Voice Agents for Small Businesses
+          </h1>
 
-          <motion.p
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.15 }}
-            className="text-lg md:text-xl text-muted-foreground mb-10 max-w-3xl mx-auto leading-relaxed"
-          >
-            We build AI-powered workflows, voice agents, and business software that help US
-            businesses respond faster, automate repetitive work, and convert more opportunities.
-          </motion.p>
+          <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-8 sm:mb-10 max-w-3xl mx-auto leading-relaxed px-1">
+            Practical systems for teams in the US, UK, and UAE—faster follow-up, fewer missed
+            calls, and less repetitive work without the buzzword fog.
+          </p>
 
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.25 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12"
-          >
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 mb-10 sm:mb-12 px-1">
             <BookingCta
               showArrow
               eventName="hero_primary_cta_click"
@@ -53,16 +36,11 @@ export const HeroSection = () => {
               eventName="hero_secondary_cta_click"
               className="px-8 py-4 rounded-xl text-foreground font-semibold text-base md:text-lg w-full sm:w-auto"
             />
-          </motion.div>
+          </div>
 
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-sm md:text-base text-muted-foreground/80 tracking-wide"
-          >
+          <p className="text-xs sm:text-sm md:text-base text-muted-foreground/80 tracking-wide px-2">
             AI Automation · AI Voice Agents · Business Automation · Custom Software
-          </motion.p>
+          </p>
         </div>
       </div>
     </section>

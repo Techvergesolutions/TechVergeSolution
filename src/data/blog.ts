@@ -1,7 +1,9 @@
 /**
- * Blog post registry. Keep slugs/titles/descriptions in sync with
- * `scripts/seo-prerender-data.mjs` prerender routes.
+ * Blog registry — compiled from `/content/blog/*.md` via `scripts/compile-blog.mjs`.
+ * Keep URLs as `/blog` and `/blog/:slug`.
  */
+
+import compiledPosts from "@/generated/blog-posts.json";
 
 export interface BlogImage {
   src: string;
@@ -10,45 +12,68 @@ export interface BlogImage {
   height: number;
 }
 
+export interface BlogFaq {
+  question: string;
+  answer: string;
+}
+
+export interface BlogTocItem {
+  id: string;
+  text: string;
+  level: 2 | 3;
+}
+
+export interface BlogCta {
+  label: string;
+  path: string;
+  description?: string;
+}
+
 export interface BlogPostMeta {
   slug: string;
   title: string;
   description: string;
   excerpt: string;
+  /** 2–3 sentence plain-language answer shown under the H1. */
+  quickAnswer?: string;
   datePublished: string;
   dateModified: string;
   readingTimeMinutes: number;
+  author?: string;
+  category?: string;
   tags?: string[];
   featuredImage: BlogImage;
   /** Absolute or site-relative path used for Open Graph when suitable. */
   ogImage?: string;
   ogImageAlt?: string;
+  faq?: BlogFaq[];
+  toc?: BlogTocItem[];
+  relatedSlugs?: string[];
+  cta?: BlogCta;
+  /** Pre-rendered HTML from Markdown (available for file-based posts). */
+  bodyHtml?: string;
+  source?: string;
 }
 
-export const blogPosts: BlogPostMeta[] = [
-  {
-    slug: "ai-voice-agents-for-small-business-2026",
-    title:
-      "AI Voice Agents for Small Businesses in 2026: Use Cases, Costs, and Limitations",
-    description:
-      "A practical guide for US small and appointment-based businesses on AI voice agents in 2026 — suitable use cases, cost drivers, limitations, privacy basics, and when human handoff matters.",
-    excerpt:
-      "Missed calls and after-hours inquiries still cost small businesses real opportunities. Here is a clear look at where AI voice agents help in 2026, what they cost to build well, and where they still fall short.",
-    datePublished: "2026-10-12",
-    dateModified: "2026-10-12",
-    readingTimeMinutes: 8,
-    tags: ["AI voice agents", "small business", "automation"],
-    featuredImage: {
-      src: "/images/blog/ai-voice-agents-hero.webp",
-      alt: "Customer support specialist wearing a headset at a workstation",
-      width: 1400,
-      height: 934,
-    },
-    ogImage: "/images/blog/ai-voice-agents-hero.webp",
-    ogImageAlt:
-      "AI voice agents for small businesses — headset workstation illustration",
-  },
-];
+type CompiledPost = BlogPostMeta & { bodyHtml: string };
+
+const posts = compiledPosts as CompiledPost[];
+
+export const blogPosts: BlogPostMeta[] = posts.map(
+  ({ bodyHtml: _bodyHtml, ...meta }) => meta,
+);
+
+export const BLOG_PAGE_SIZE = 6;
+
+export function getCompiledBlogPosts(): CompiledPost[] {
+  return posts;
+}
+
+export function getCompiledBlogPostBySlug(
+  slug: string,
+): CompiledPost | undefined {
+  return posts.find((post) => post.slug === slug);
+}
 
 export function getBlogPostBySlug(slug: string): BlogPostMeta | undefined {
   return blogPosts.find((post) => post.slug === slug);
@@ -58,9 +83,53 @@ export function blogPostPath(slug: string): string {
   return `/blog/${slug}`;
 }
 
+export function getBlogCategories(): string[] {
+  const set = new Set<string>();
+  for (const post of posts) {
+    if (post.category?.trim()) set.add(post.category.trim());
+  }
+  return Array.from(set).sort((a, b) => a.localeCompare(b));
+}
+
+export function getRelatedPosts(
+  slug: string,
+  relatedSlugs?: string[],
+  limit = 3,
+): BlogPostMeta[] {
+  const bySlug = new Map(posts.map((p) => [p.slug, p]));
+  const picked: BlogPostMeta[] = [];
+
+  for (const related of relatedSlugs ?? []) {
+    const post = bySlug.get(related);
+    if (post && post.slug !== slug) picked.push(post);
+    if (picked.length >= limit) return picked;
+  }
+
+  const current = bySlug.get(slug);
+  for (const post of posts) {
+    if (post.slug === slug) continue;
+    if (picked.some((p) => p.slug === post.slug)) continue;
+    if (
+      current?.category &&
+      post.category &&
+      post.category === current.category
+    ) {
+      picked.push(post);
+    }
+    if (picked.length >= limit) return picked;
+  }
+
+  for (const post of posts) {
+    if (post.slug === slug) continue;
+    if (picked.some((p) => p.slug === post.slug)) continue;
+    picked.push(post);
+    if (picked.length >= limit) break;
+  }
+
+  return picked;
+}
+
 export const blogSlugs = blogPosts.map((post) => post.slug);
 
-/** Slugs with hand-authored TSX bodies in `src/content/blog/`. */
-export const staticArticleBodySlugs = new Set<string>([
-  "ai-voice-agents-for-small-business-2026",
-]);
+/** All Markdown-compiled posts have HTML bodies. */
+export const staticArticleBodySlugs = new Set<string>(blogSlugs);

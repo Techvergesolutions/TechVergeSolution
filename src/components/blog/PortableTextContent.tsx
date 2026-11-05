@@ -71,11 +71,16 @@ const components: PortableTextComponents = {
   types: {
     image: ({ value }) => {
       if (!value?.asset) return null;
-      const src = urlForImage(value).width(1200).quality(85).url();
+      const builder = urlForImage(value);
+      const src = builder.width(1200).quality(85).url();
+      const srcSet = [640, 960, 1200, 1400]
+        .map((w) => `${urlForImage(value).width(w).quality(85).url()} ${w}w`)
+        .join(", ");
       const alt = (value.alt as string | undefined)?.trim() || "";
       return (
         <BlogFigure
           src={src}
+          srcSet={srcSet}
           alt={alt}
           width={1200}
           height={800}

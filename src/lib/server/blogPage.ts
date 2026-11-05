@@ -1,6 +1,10 @@
 import { createClient } from "@sanity/client";
 import imageUrlBuilder from "@sanity/image-url";
-import { getBlogPostBySlug } from "../../data/blog";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { PortableText, type PortableTextComponents } from "@portabletext/react";
+import type { PortableTextBlock } from "@portabletext/types";
+import { getBlogPostBySlug, getCompiledBlogPostBySlug } from "../../data/blog";
 import { buildMetadata } from "../seo/metadata";
 import { articleJsonLd, faqPageJsonLd, serializeJsonLd, visibleFaqs } from "../seo/schema";
 import { siteName } from "../seo/config";
@@ -11,13 +15,31 @@ export type BlogHeadPost = {
   title: string | null; slug: string | null; excerpt: string | null; description: string | null;
   publishedAt: string | null; updatedAt: string | null; seo: CmsSeo | null;
   mainImage: CmsImage | null; author: { name: string | null } | null; faqs: CmsFaq[] | null;
+  body?: PortableTextBlock[] | null;
 };
 
 export const BLOG_HEAD_QUERY = `*[_type == "post" && slug.current == $slug && !(_id in path("drafts.**")) && !(_id in path("versions.**"))][0] {
-  title, "slug": slug.current, excerpt, description, publishedAt, updatedAt,
+  title, "slug": slug.current, excerpt, description, publishedAt, updatedAt, body,
   seo { seoTitle, seoDescription, canonicalUrl, noIndex, ogImage }, mainImage,
   author-> { name }, faqs[] { _key, question, answer }
 }`;
+
+const portableComponents: PortableTextComponents = {
+  block: { h1: ({ children }) => createElement("h2", null, children) },
+  types: {
+    image: ({ value }) => {
+      const projectId = process.env.SANITY_PROJECT_ID || process.env.VITE_SANITY_PROJECT_ID;
+      if (!projectId || !value?.asset) return null;
+      try {
+        const client = createClient({ projectId, dataset: process.env.SANITY_DATASET || process.env.VITE_SANITY_DATASET || "production", apiVersion: process.env.VITE_SANITY_API_VERSION || "2024-01-01", useCdn: true });
+        const src = imageUrlBuilder(client).image(value).width(1200).quality(75).auto("format").url();
+        return createElement("figure", null,
+          createElement("img", { src, alt: typeof value.alt === "string" ? value.alt : "", width: 1200, height: 800, loading: "lazy" }),
+          typeof value.caption === "string" && value.caption.trim() ? createElement("figcaption", null, value.caption) : null);
+      } catch { return null; }
+    },
+  },
+};
 
 export async function fetchBlogHead(slug: string): Promise<{ post: BlogHeadPost | null; image?: string; ogImage?: string }> {
   const projectId = process.env.SANITY_PROJECT_ID || process.env.VITE_SANITY_PROJECT_ID;
@@ -73,6 +95,12 @@ export function renderBlogHead(template: string, slug: string, post: BlogHeadPos
     const faq = faqPageJsonLd(visibleFaqs(post?.faqs));
     const scripts = [article, ...(faq ? [faq] : [])].map((data) => `<script data-prerender-jsonld="true" type="application/ld+json">${serializeJsonLd(data)}</script>`).join("\n");
     html = html.replace(/<\/head>/i, () => `${scripts}\n</head>`);
+    const bodyHtml = post?.body?.length
+      ? renderToStaticMarkup(createElement(PortableText, { value: post.body, components: portableComponents }))
+      : !post ? getCompiledBlogPostBySlug(slug)?.bodyHtml || "" : "";
+    const faqHtml = visibleFaqs(post?.faqs).map(({ question, answer }) => `<section><h3>${escapeXml(question)}</h3><p>${escapeXml(answer)}</p></section>`).join("");
+    const content = `<main class="section-container max-w-3xl pt-32 pb-20"><article><h1>${escapeXml(title)}</h1>${bodyHtml}${faqHtml ? `<section><h2>Frequently Asked Questions</h2>${faqHtml}</section>` : ""}</article></main>`;
+    html = html.replace(/<div\s+id=["']root["']\s*>\s*<\/div>/i, () => `<div id="root">${content}</div>`);
   }
   return { html, found };
 }

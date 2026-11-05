@@ -15,7 +15,7 @@ const state = vi.hoisted(() => ({
     },
   },
 }));
-vi.mock("@/hooks/useBlogPosts", () => ({ useBlogPostDetail: () => ({ data: state.post, isLoading: false, isError: false }) }));
+vi.mock("@/hooks/useBlogPosts", () => ({ useBlogPostDetail: () => ({ data: state.post, isLoading: false, isError: false }), useBlogFaqs: () => ({ faqs: [] }) }));
 vi.mock("@/components/landing/Navbar", () => ({ Navbar: () => null }));
 vi.mock("@/components/landing/Footer", () => ({ Footer: () => null }));
 vi.mock("@/components/Seo", () => ({ Seo: () => null }));

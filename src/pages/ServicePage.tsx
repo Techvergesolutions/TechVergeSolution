@@ -12,6 +12,8 @@ import NotFound from "./NotFound";
 import { PageBreadcrumbs } from "@/components/PageBreadcrumbs";
 import { ServiceGuides } from "@/components/services/ServiceGuides";
 import { trackEvent } from "@/lib/analytics";
+import { getServiceBySlug } from "@/data/services";
+import { ServicePageLayout } from "@/components/services/ServicePageLayout";
 
 export default function ServicePage() {
   const { slug } = useParams<{ slug: string }>();
@@ -39,6 +41,7 @@ export default function ServicePage() {
   }
   const faq = visibleFaqs(service.faqs);
   const faqSchema = faqPageJsonLd(faq);
+  const previousLayout = getServiceBySlug(slug);
 
   return <>
     <Seo title={title} description={description} path={path} image={image}
@@ -48,6 +51,14 @@ export default function ServicePage() {
     <div className="min-h-screen bg-background overflow-x-hidden">
       <Navbar />
       <main>
+        {previousLayout ? <div data-analytics-service={name}>
+          <ServicePageLayout breadcrumb={<PageBreadcrumbs section="services" current={{ href: path, title: service.title || service.heroHeading }} />} service={{ ...previousLayout, headline: service.heroHeading || name, eyebrow: name, subheadline: service.shortDescription || previousLayout.subheadline, pageTitle: title, metaDescription: description, faq: faq.length ? faq : previousLayout.faq }} />
+          <div className="section-container max-w-4xl pb-20">
+            {service.body?.length ? <PortableTextContent value={service.body} /> : null}
+            {!!service.industries?.some((item) => item.title?.trim()) && <section className="mt-14"><h2 className="font-display text-3xl font-bold mb-6">Industries</h2><ul className="space-y-5">{service.industries.filter((item) => item.title?.trim()).map((item) => <li key={item._key}><h3 className="font-display text-xl font-bold mb-2">{item.marketPage?.slug && item.marketPage.title?.trim() && (item.marketPage.bodyCount ?? 0) > 0 && item.marketPage.noIndex !== true ? <Link className="text-primary hover:underline" to={`/markets/${encodeURIComponent(item.marketPage.slug)}`}>{item.title}</Link> : item.title}</h3>{item.description && <p className="text-muted-foreground">{item.description}</p>}</li>)}</ul></section>}
+            <ServiceGuides serviceId={service._id} manual={service.relatedPosts ?? []} />
+          </div>
+        </div> :
         <article data-analytics-service={name} className="section-container max-w-4xl pt-32 pb-20 md:pt-40 md:pb-28">
           <header className="mb-12">
             <PageBreadcrumbs section="services" current={{ href: path, title: service.title || service.heroHeading }} />
@@ -78,7 +89,7 @@ export default function ServicePage() {
             <h2 className="font-display text-2xl font-bold mb-4">Discuss Your Project</h2>
             <Link to="/contact" onClick={() => trackEvent("service_cta_click", { service_name: name })} className="inline-flex rounded-xl bg-primary px-6 py-3 font-semibold text-primary-foreground">Contact Us</Link>
           </section>
-        </article>
+        </article>}
       </main>
       <Footer />
     </div>

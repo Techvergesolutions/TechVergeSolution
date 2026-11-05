@@ -6,19 +6,21 @@ const projectId = import.meta.env.VITE_SANITY_PROJECT_ID?.trim() ?? "";
 const dataset = import.meta.env.VITE_SANITY_DATASET?.trim() || "production";
 const apiVersion =
   import.meta.env.VITE_SANITY_API_VERSION?.trim() || "2024-01-01";
-const token = import.meta.env.VITE_SANITY_TOKEN?.trim() ?? "";
 
 export function isSanityConfigured(): boolean {
   return projectId.length > 0;
 }
 
+/**
+ * Browser/client Sanity client — published public content only.
+ * Never pass a token here (VITE_* tokens would leak into the JS bundle).
+ */
 export const sanityClient: SanityClient | null = isSanityConfigured()
   ? createClient({
       projectId,
       dataset,
       apiVersion,
       perspective: "published",
-      token: token || undefined,
       // React Query refreshes published content after Sanity change events.
       useCdn: false,
     })

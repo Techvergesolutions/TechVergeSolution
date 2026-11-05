@@ -1,4 +1,5 @@
 import type { ServiceConfig } from "@/data/services";
+import type { ReactNode } from "react";
 import { ServiceHero } from "./ServiceHero";
 import { ServiceProblem } from "./ServiceProblem";
 import { ServiceBuilds } from "./ServiceBuilds";
@@ -14,9 +15,12 @@ import { ServiceLimitations } from "./ServiceLimitations";
 import { ServiceFaq } from "./ServiceFaq";
 import { RelatedServices } from "./RelatedServices";
 import { ServiceCta } from "./ServiceCta";
+import { RelatedGuidesSection } from "@/components/blog/RelatedGuidesSection";
+import { SERVICE_GUIDE_LINKS } from "@/data/internalLinks";
 
 interface ServicePageLayoutProps {
   service: ServiceConfig;
+  breadcrumb?: ReactNode;
 }
 
 function collectCapabilities(service: ServiceConfig): string[] {
@@ -33,12 +37,12 @@ function collectCapabilities(service: ServiceConfig): string[] {
   return out;
 }
 
-export function ServicePageLayout({ service }: ServicePageLayoutProps) {
+export function ServicePageLayout({ service, breadcrumb }: ServicePageLayoutProps) {
   const capabilities = collectCapabilities(service);
 
   return (
     <>
-      <ServiceHero service={service} />
+      <ServiceHero service={service} breadcrumb={breadcrumb} />
       <ServiceProblem problem={service.problem} />
       <ServiceBuilds builds={service.builds} />
       <ServiceDeliverables deliverables={service.deliverables} />
@@ -62,7 +66,14 @@ export function ServicePageLayout({ service }: ServicePageLayoutProps) {
       <ServiceWhoFor whoFor={service.whoFor} />
       <ServiceLimitations limitations={service.limitations} />
       <ServiceFaq faq={service.faq} />
+      <RelatedGuidesSection
+        title="Related guides"
+        description="Read the practical write-ups that sit behind this service — written for operators, not for keyword stuffing."
+        links={SERVICE_GUIDE_LINKS[service.slug] ?? []}
+        muted
+      />
       <RelatedServices currentSlug={service.slug} />
-      <ServiceCta cta={service.cta} serviceSlug={service.slug} />    </>
+      <ServiceCta cta={service.cta} serviceSlug={service.slug} />
+    </>
   );
 }

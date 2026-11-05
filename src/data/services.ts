@@ -95,9 +95,9 @@ export const servicesConfig: Record<ServiceSlug, ServiceConfig> = {
     slug: "ai-automation",
     pageTitle: `AI Lead Follow-Up Automation | ${SITE_NAME}`,
     metaDescription:
-      "We design and implement custom AI lead follow-up automation for US businesses — faster response, qualification, and routing to your team.",
+      "TechVerge Solutions designs AI automation for lead follow-up and back-office tasks so new enquiries get answered fast and routine work stops piling up.",
     eyebrow: "AI Lead Follow-Up Automation",
-    headline: "Respond to New Leads Before They Go Cold",
+    headline: "AI Automation for Lead Follow-Up and Back-Office Work",
     subheadline:
       "We design and implement custom follow-up workflows that reply quickly, qualify interest, and route ready opportunities to your team.",
     problem: {
@@ -304,11 +304,11 @@ export const servicesConfig: Record<ServiceSlug, ServiceConfig> = {
 
   "ai-voice-agents": {
     slug: "ai-voice-agents",
-    pageTitle: `Custom AI Voice Agents | ${SITE_NAME}`,
+    pageTitle: `AI Voice Agents 24/7 | ${SITE_NAME}`,
     metaDescription:
-      "We design and implement custom inbound AI voice agents that handle common calls, qualify callers, and help schedule — with clear human handoffs.",
+      "TechVerge Solutions builds AI voice agents that answer inbound calls, qualify callers, and book jobs around the clock—with clear handoffs to your team.",
     eyebrow: "AI Voice Agents",
-    headline: "Handle Common Inbound Calls Without Missing the Important Ones",
+    headline: "AI Voice Agents That Answer Calls and Book Jobs 24/7",
     subheadline:
       "We design and implement custom voice agents that answer routine questions, qualify callers, and help schedule — then hand off to your team when a person should take over.",
     problem: {
@@ -517,9 +517,9 @@ export const servicesConfig: Record<ServiceSlug, ServiceConfig> = {
     slug: "business-automation",
     pageTitle: `Business Process Automation | ${SITE_NAME}`,
     metaDescription:
-      "We design and implement custom business automation that connects forms, CRM, email, calendars, and internal systems — reducing repetitive admin.",
+      "TechVerge Solutions connects forms, CRM, email, and calendars with business process automation built for service businesses that outgrow manual admin.",
     eyebrow: "Business Process Automation",
-    headline: "Connect Your Tools So Work Moves Without Copy-Paste",
+    headline: "Business Process Automation for Service Businesses",
     subheadline:
       "We design and implement automations across forms, CRM, email, calendars, and internal systems so your team spends less time on repetitive admin.",
     problem: {

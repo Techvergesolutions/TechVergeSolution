@@ -172,7 +172,11 @@ export const TestimonialsSection = () => {
                   <div className="flex items-center gap-4 mt-auto">
                     <img
                       src={testimonial.image}
-                      alt={testimonial.name}
+                      alt={`${testimonial.name}, ${testimonial.role}`}
+                      width={48}
+                      height={48}
+                      loading="lazy"
+                      decoding="async"
                       className="w-12 h-12 rounded-full object-cover ring-2 ring-primary/20"
                     />
                     <div>

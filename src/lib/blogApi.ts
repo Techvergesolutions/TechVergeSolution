@@ -2,6 +2,7 @@ import { siteName, defaultOgImage } from "./seo/config";
 import type { PortableTextBlock } from "@portabletext/types";
 import {
   blogPosts as staticBlogPosts,
+  getCompiledBlogPostBySlug,
   type BlogImage,
   type BlogPostMeta,
 } from "@/data/blog";
@@ -9,6 +10,24 @@ import { isSanityConfigured, sanityClient, urlForImage } from "@/lib/sanity";
 import { POST_BY_SLUG_QUERY, type CmsPostSummary, type CmsServiceSummary } from "@/lib/sanity/queries";
 
 export type BlogFaq = { question: string; answer: string };
+export const PUBLISHED_POST_FILTER = '_type == "post" && defined(slug.current)';
+
+export function normalizeFaqs(faqs: unknown, limit = 12): BlogFaq[] {
+  if (!Array.isArray(faqs)) return [];
+  return faqs.flatMap((item) => typeof item?.question === "string" && item.question.trim() && typeof item?.answer === "string" && item.answer.trim() ? [{ question: item.question.trim(), answer: item.answer.trim() }] : []).slice(0, limit);
+}
+
+export async function fetchSanityFaqs(slug: string): Promise<BlogFaq[]> {
+  if (!slug || !sanityClient) return [];
+  try {
+    const row = await sanityClient.fetch<{ faqs?: unknown } | null>(`*[_type == "post" && slug.current == $slug][0]{ faqs[]{question, answer} }`, { slug });
+    return normalizeFaqs(row?.faqs);
+  } catch { return []; }
+}
+
+export function resolveFaqs(sanityFaqs: BlogFaq[] | undefined, markdownFaqs: BlogFaq[] | undefined): BlogFaq[] {
+  return (sanityFaqs?.length ? sanityFaqs : markdownFaqs ?? []).slice(0, 12);
+}
 
 export type SanityBlogPost = BlogPostMeta & {
   source: "sanity";
@@ -38,6 +57,7 @@ const POST_LIST_QUERY = `*[_type == "post" && defined(slug.current)] | order(pub
   _updatedAt,
   readingTimeMinutes,
   tags,
+  categories[]->{_id, title},
   mainImage {
     asset,
     alt,
@@ -67,7 +87,7 @@ type SanityPostRow = {
   };
   body?: PortableTextBlock[];
   faqs?: BlogFaq[];
-  categories?: ({ _id: string } | null)[] | null;
+  categories?: ({ _id: string; title?: string | null } | null)[] | null;
   relatedPosts?: (CmsPostSummary | null)[] | null;
   relatedService?: CmsServiceSummary | null;
   linkedFromServices?: CmsServiceSummary[] | null;
@@ -144,6 +164,7 @@ function mapSanityRowToMeta(row: SanityPostRow): BlogPostMeta {
     readingTimeMinutes:
       row.readingTimeMinutes ?? estimateReadingMinutes(row.body),
     tags: row.tags?.filter(Boolean),
+    category: row.categories?.find((category) => category?.title?.trim())?.title?.trim() || undefined,
     featuredImage,
     ogImage: featuredImage.src.startsWith("http")
       ? featuredImage.src
@@ -232,7 +253,7 @@ export async function resolveBlogPost(slug: string): Promise<
   const sanityPost = await getSanityPostBySlug(slug);
   if (sanityPost) return { kind: "sanity", post: sanityPost };
 
-  const staticMeta = staticBlogPosts.find((post) => post.slug === slug);
+  const staticMeta = getCompiledBlogPostBySlug(slug);
   if (staticMeta) return { kind: "static", meta: staticMeta };
 
   return null;
