@@ -27,6 +27,7 @@ describe("dynamic sitemap and RSS", () => {
     expect(xml).toContain(`<loc>${absoluteUrl("/markets/market-1")}</loc>`);
     expect(xml).not.toContain("/markets/market-hidden");
     expect(xml).toContain(`<loc>${absoluteUrl("/contact")}</loc>`);
+    expect(xml).toContain(`<loc>${absoluteUrl("/ai-facts")}</loc>`);
     expect(xml).not.toContain("draft-post");
     expect(xml).not.toContain("release-post");
     expect(xml).not.toContain("/blog/hidden");

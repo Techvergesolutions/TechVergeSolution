@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import crypto from "node:crypto";
+import { setSecurityHeaders } from "../src/lib/server/securityHeaders";
 
 /**
  * Sanity → Vercel rebuild webhook + IndexNow ping for published posts.
@@ -105,6 +106,7 @@ function extractBlogUrls(body: unknown): string[] {
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  setSecurityHeaders(res);
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }

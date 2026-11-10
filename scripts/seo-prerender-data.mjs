@@ -50,35 +50,47 @@ function areaServedNodes() {
 }
 
 function organizationNode() {
+  const email = "info@techvergesolution.com";
+  const sameAs = SOCIAL_PROFILES.filter((url) => url.trim());
   return {
-    "@type": "Organization",
+    "@type": ["Organization", "LocalBusiness"],
     "@id": `${SITE_URL}/#organization`,
-    name: SITE_NAME,
-    alternateName: ["Techverge Solution", "TechVerge", "Techverge"],
+    name: "Tech Verge Solution",
+    alternateName: [SITE_NAME, "Techverge Solution", "TechVerge", "Techverge"],
     url: `${SITE_URL}/`,
     logo: {
       "@type": "ImageObject",
       url: `${SITE_URL}/Logo.svg`,
     },
     description: ORG_DESCRIPTION,
-    email: "info@techvergesolution.com",
-    telephone: "+1-505-523-1081",
+    telephone: "+15055231081",
+    email,
+    priceRange: "Starting at $299 USD",
     address: {
       "@type": "PostalAddress",
-      addressLocality: "Albuquerque",
-      addressRegion: "NM",
-      addressCountry: "US",
+      addressLocality: "Lahore",
+      addressRegion: "Punjab",
+      addressCountry: "PK",
     },
     areaServed: areaServedNodes(),
-    contactPoint: {
-      "@type": "ContactPoint",
-      telephone: "+1-505-523-1081",
-      email: "info@techvergesolution.com",
-      contactType: "sales",
-      areaServed: areaServedNodes(),
-      availableLanguage: ["English"],
-    },
-    sameAs: SOCIAL_PROFILES,
+    contactPoint: [
+      {
+        "@type": "ContactPoint",
+        telephone: "+15055231081",
+        email,
+        contactType: "sales",
+        areaServed: areaServedNodes(),
+        availableLanguage: ["English"],
+      },
+      {
+        "@type": "ContactPoint",
+        telephone: "+923240049330",
+        contactType: "sales",
+        areaServed: areaServedNodes(),
+        availableLanguage: ["English", "Urdu"],
+      },
+    ],
+  ...(sameAs.length ? { sameAs } : {}),
   };
 }
 
@@ -95,17 +107,27 @@ function webSiteNode() {
 }
 
 function professionalServiceNode() {
+  const email = "info@techvergesolution.com";
+  const sameAs = SOCIAL_PROFILES.filter((url) => url.trim());
   return {
-    "@type": "ProfessionalService",
+    "@type": ["ProfessionalService", "LocalBusiness"],
     "@id": `${SITE_URL}/#professional-service`,
-    name: SITE_NAME,
+    name: "Tech Verge Solution",
     url: `${SITE_URL}/`,
     image: DEFAULT_OG_IMAGE,
-    email: "info@techvergesolution.com",
-    telephone: "+1-505-523-1081",
+    telephone: "+15055231081",
+    email,
+    priceRange: "Starting at $299 USD",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Lahore",
+      addressRegion: "Punjab",
+      addressCountry: "PK",
+    },
     areaServed: areaServedNodes(),
     provider: { "@id": `${SITE_URL}/#organization` },
     description: ORG_DESCRIPTION,
+    ...(sameAs.length ? { sameAs } : {}),
     hasOfferCatalog: {
       "@type": "OfferCatalog",
       name: "Automation & Software Services",
@@ -397,7 +419,7 @@ export const prerenderRoutes = [
   },
   {
     path: "/services/ai-saas-development",
-    title: "Custom AI SaaS & Software Development | TechVerge Solutions",
+    title: "Custom AI SaaS & Software | TechVerge Solutions",
     description:
       "We design and build custom AI-powered applications and internal tools for your workflows — not a TechVerge SaaS product you subscribe to.",
     service: {

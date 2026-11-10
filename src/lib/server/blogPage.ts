@@ -91,7 +91,15 @@ export function renderBlogHead(template: string, slug: string, post: BlogHeadPos
   if (found && author) tags.push(["meta", "property", "article:author", author]);
   for (const [tag, key, name, value] of tags) html = putTag(html, tag, key, name, value);
   if (found && title) {
-    const article = articleJsonLd({ headline: title, path, image: post ? image : fallback?.featuredImage.src, datePublished: publishedTime, dateModified: modifiedTime, authorName: author });
+    const article = articleJsonLd({
+      headline: title,
+      description,
+      path,
+      image: post ? image : fallback?.featuredImage.src,
+      datePublished: publishedTime,
+      dateModified: modifiedTime,
+      authorName: author,
+    });
     const faq = faqPageJsonLd(visibleFaqs(post?.faqs));
     const scripts = [article, ...(faq ? [faq] : [])].map((data) => `<script data-prerender-jsonld="true" type="application/ld+json">${serializeJsonLd(data)}</script>`).join("\n");
     html = html.replace(/<\/head>/i, () => `${scripts}\n</head>`);

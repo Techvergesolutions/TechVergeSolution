@@ -12,18 +12,28 @@ import { RelatedGuidesSection } from "@/components/blog/RelatedGuidesSection";
 import { Seo } from "@/components/Seo";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { HOMEPAGE_GUIDE_LINKS } from "@/data/internalLinks";
-import { pageSeo } from "@/lib/seo";
+import { composeJsonLd, faqPageJsonLd, organizationJsonLd, pageSeo } from "@/lib/seo";
+import { HOMEPAGE_FAQ } from "@/data/homepageContent";
+import { HomeAboutSection } from "@/components/landing/HomeAboutSection";
+import { HomeFaqSection } from "@/components/landing/HomeFaqSection";
 import { LatestPosts } from "@/components/blog/LatestPosts";
 
 const Index = () => {
   const seo = pageSeo.home;
   return (
     <>
-      <Seo title={seo.title} description={seo.description} path={seo.path} />
+      <Seo
+        title={seo.title}
+        description={seo.description}
+        path={seo.path}
+        jsonLd={composeJsonLd(organizationJsonLd(), faqPageJsonLd(HOMEPAGE_FAQ))}
+      />
       <div className="min-h-screen bg-background overflow-x-hidden">
         <Navbar />
         <main>
           <HeroSection />
+          <HomeAboutSection />
+          <HomeFaqSection />
           <CapabilitiesSection />
           <ProblemSection />
           <SolutionsSection />

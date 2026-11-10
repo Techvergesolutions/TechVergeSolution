@@ -1,4 +1,5 @@
 import { absoluteUrl, defaultDescription, defaultOgImage, siteName } from "./config";
+import { clampMetaDescription, clampMetaTitle } from "./limits";
 
 export type MetadataInput = {
   title: string;
@@ -15,8 +16,10 @@ export type MetadataInput = {
 
 /** Metadata for the Vite/Helmet renderer; title formatting is centralized here. */
 export function buildMetadata(input: MetadataInput) {
-  const title = input.title.endsWith(` | ${siteName}`) ? input.title : `${input.title} | ${siteName}`;
-  const description = input.description?.trim() || defaultDescription;
+  const title = clampMetaTitle(input.title, siteName);
+  const description = clampMetaDescription(
+    input.description?.trim() || defaultDescription,
+  );
   const url = absoluteUrl(input.path);
   const canonical = absoluteUrl(input.canonicalUrl?.trim() || input.path);
   const image = absoluteUrl(input.image?.trim() || defaultOgImage);

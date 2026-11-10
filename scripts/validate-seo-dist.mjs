@@ -6,6 +6,8 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { ROOT } from "./load-env.mjs";
 import { buildPrerenderRoutes, SITE_URL } from "./build-prerender-routes.mjs";
+import { SEO_CRAWLER_BOTS } from "./seo-crawler-bots.mjs";
+import { META_DESCRIPTION_MAX, META_TITLE_MAX } from "./seo-limits.mjs";
 
 const DIST = path.join(ROOT, "dist");
 
@@ -27,6 +29,28 @@ function outputRelForRoute(routePath) {
 
 function extractTitle(html) {
   return html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1]?.trim() ?? "";
+}
+
+function extractMetaDescription(html) {
+  return (
+    html.match(
+      /<meta[^>]*name=["']description["'][^>]*content=["']([^"']*)["']/i,
+    )?.[1] ??
+    html.match(
+      /<meta[^>]*content=["']([^"']*)["'][^>]*name=["']description["']/i,
+    )?.[1] ??
+    ""
+  );
+}
+
+function decodeEntities(value) {
+  return value
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'");
 }
 
 function extractCanonical(html) {
@@ -73,14 +97,6 @@ function walkAssets(dir, files = []) {
   return files;
 }
 
-function decodeEntities(value) {
-  return value
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"');
-}
-
 /**
  * @param {{ allowShellOnly?: boolean }} [options]
  * allowShellOnly: when Playwright capture was skipped (e.g. no Chromium on Vercel),
@@ -89,6 +105,15 @@ function decodeEntities(value) {
 export async function validateSeoDist(options = {}) {
   const allowShellOnly = Boolean(options.allowShellOnly);
   if (!fs.existsSync(DIST)) fail("dist/ missing — run build first");
+
+  const rootTemplate = read("index.html");
+  if (
+    !/<meta[^>]*name=["']viewport["'][^>]*content=["'][^"']*width=device-width/i.test(
+      rootTemplate,
+    )
+  ) {
+    fail("index.html missing responsive viewport meta");
+  }
 
   const { routes, posts } = await buildPrerenderRoutes();
   const requiredSamples = ["/", "/blog", "/services/ai-voice-agents"];
@@ -112,7 +137,26 @@ export async function validateSeoDist(options = {}) {
     const inner = rootInner(html);
     const text = inner.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
 
+    const decoded = decodeEntities(title);
+    const metaDescription = decodeEntities(extractMetaDescription(html));
+
     if (!title) fail(`${rel}: missing <title>`);
+    if (decoded.length > META_TITLE_MAX) {
+      fail(`${rel}: title too long (${decoded.length} > ${META_TITLE_MAX})`);
+    }
+    if (!metaDescription) fail(`${rel}: missing meta description`);
+    if (metaDescription.length > META_DESCRIPTION_MAX) {
+      fail(
+        `${rel}: meta description too long (${metaDescription.length} > ${META_DESCRIPTION_MAX})`,
+      );
+    }
+    if (!/property=["']og:title["']/i.test(html)) fail(`${rel}: missing og:title`);
+    if (!/property=["']og:description["']/i.test(html)) {
+      fail(`${rel}: missing og:description`);
+    }
+    if (!/name=["']twitter:card["']/i.test(html)) {
+      fail(`${rel}: missing twitter:card`);
+    }
     if (!canonical) fail(`${rel}: missing canonical`);
     if (canonicals.has(canonical)) fail(`${rel}: duplicate canonical ${canonical}`);
     canonicals.add(canonical);
@@ -123,7 +167,6 @@ export async function validateSeoDist(options = {}) {
       fail(`${rel}: canonical ${canonical} !== ${expectedCanon}`);
     }
 
-    const decoded = decodeEntities(title);
     if (decoded !== route.title) {
       fail(
         `${rel}: title mismatch\n  got: ${decoded}\n  expected: ${route.title}`,
@@ -142,11 +185,19 @@ export async function validateSeoDist(options = {}) {
     }
 
     const ld = parseJsonLd(html);
-    if (
-      route.path === "/" &&
-      !ld.some((b) => b["@graph"] || b["@type"] === "Organization")
-    ) {
-      fail(`${rel}: missing Organization JSON-LD`);
+    if (route.path === "/") {
+      if (!ld.some((b) => b["@graph"] || b["@type"] === "Organization")) {
+        fail(`${rel}: missing Organization JSON-LD`);
+      }
+      if (!ld.some((b) => b["@type"] === "FAQPage")) {
+        fail(`${rel}: missing FAQPage JSON-LD on homepage`);
+      }
+      if (!/What services does Tech Verge Solution offer/i.test(html)) {
+        fail(`${rel}: homepage missing services FAQ text for AI search`);
+      }
+      if (!/Lahore, Punjab, Pakistan/i.test(html)) {
+        fail(`${rel}: homepage missing location FAQ text`);
+      }
     }
     if (route.article) {
       if (!ld.some((b) => b["@type"] === "BlogPosting")) {
@@ -176,6 +227,9 @@ export async function validateSeoDist(options = {}) {
 
   const notFound = read("404.html");
   if (!/noindex/i.test(notFound)) fail("404.html missing noindex");
+  if (!/<html[^>]*\blang=["']en["']/i.test(notFound)) {
+    fail("404.html missing html lang=en");
+  }
 
   const sitemap = read("sitemap.xml");
   if (!sitemap.includes("<urlset")) fail("sitemap.xml invalid");
@@ -205,19 +259,27 @@ export async function validateSeoDist(options = {}) {
   if (/Disallow:\s*\/assets/i.test(robots) || /Disallow:\s*\*\.(css|js)/i.test(robots)) {
     fail("robots.txt must not block CSS/JS");
   }
-  for (const bot of [
-    "Googlebot",
-    "Bingbot",
-    "GPTBot",
-    "OAI-SearchBot",
-    "ChatGPT-User",
-    "ClaudeBot",
-    "Claude-SearchBot",
-    "PerplexityBot",
-    "Google-Extended",
-  ]) {
+  for (const bot of SEO_CRAWLER_BOTS) {
     if (!robots.includes(`User-agent: ${bot}`)) {
       fail(`robots.txt missing User-agent: ${bot}`);
+    }
+  }
+
+  const llms = read("llms.txt");
+  if (!llms.includes("TechVerge Solutions") || !llms.includes("/sitemap.xml")) {
+    fail("llms.txt missing required discovery links");
+  }
+  for (const requiredPath of [
+    "/services",
+    "/about",
+    "/contact",
+    "/portfolio",
+    "/blog",
+    "## Key pages",
+    "## Locations",
+  ]) {
+    if (!llms.includes(requiredPath)) {
+      fail(`llms.txt missing required section or link: ${requiredPath}`);
     }
   }
 

@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { Resend } from 'resend';
+import { setSecurityHeaders } from '../src/lib/server/securityHeaders';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -21,6 +22,7 @@ function isHoneypotFilled(body: Record<string, unknown>): boolean {
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  setSecurityHeaders(res);
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const body = (req.body ?? {}) as Record<string, unknown>;

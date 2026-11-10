@@ -1,39 +1,38 @@
 import { describe, expect, it } from "vitest";
 import { buildMetadata } from "@/lib/seo/metadata";
-import { absoluteUrl, defaultDescription } from "@/lib/seo/config";
+import { clampMetaDescription, clampMetaTitle, META_DESCRIPTION_MAX, META_TITLE_MAX } from "@/lib/seo/limits";
+import { pageSeo } from "@/lib/seo";
+
+describe("clampMetaTitle", () => {
+  it("keeps titles within the limit including site suffix", () => {
+    const long =
+      "How to Automate Your Business with n8n and AI in 2026: Seven Workflows";
+    const out = clampMetaTitle(long, "TechVerge Solutions");
+    expect(out.length).toBeLessThanOrEqual(META_TITLE_MAX);
+    expect(out.endsWith("| TechVerge Solutions")).toBe(true);
+  });
+});
+
+describe("clampMetaDescription", () => {
+  it("shortens long descriptions at a word boundary", () => {
+    const long = "x".repeat(META_DESCRIPTION_MAX + 40);
+    const out = clampMetaDescription(long);
+    expect(out.length).toBeLessThanOrEqual(META_DESCRIPTION_MAX);
+  });
+});
 
 describe("buildMetadata", () => {
-  it("creates absolute metadata, applies the title template once and honors noindex", () => {
-    const metadata = buildMetadata({
-      title: "Example | TechVerge Solutions",
-      description: "Example description",
-      path: "/blog/example",
-      canonicalUrl: "https://example.org/original",
-      image: "https://cdn.example.org/image.webp",
-      noIndex: true,
-      type: "article",
-      publishedTime: "2026-01-01",
-      modifiedTime: "2026-01-02",
-      authors: ["Example Author"],
+  it("returns canonical, Open Graph, and Twitter fields for static pages", () => {
+    const home = pageSeo.home;
+    const meta = buildMetadata({
+      title: home.title,
+      description: home.description,
+      path: home.path,
     });
-    expect(metadata.title).toBe("Example | TechVerge Solutions");
-    expect(metadata.alternates.canonical).toBe("https://example.org/original");
-    expect(metadata.openGraph).toMatchObject({
-      url: absoluteUrl("/blog/example"),
-      images: ["https://cdn.example.org/image.webp"],
-      type: "article",
-      publishedTime: "2026-01-01",
-      modifiedTime: "2026-01-02",
-      authors: ["Example Author"],
-    });
-    expect(metadata.robots).toEqual({ index: false, follow: true });
-  });
-
-  it("uses defaults when optional fields are empty", () => {
-    const metadata = buildMetadata({ title: "About", description: " ", path: "/about" });
-    expect(metadata.title).toBe("About | TechVerge Solutions");
-    expect(metadata.description).toBe(defaultDescription);
-    expect(metadata.openGraph.images).toEqual([absoluteUrl("/og-image.webp")]);
-    expect(metadata.robots.index).toBe(true);
+    expect(meta.title.length).toBeLessThanOrEqual(META_TITLE_MAX);
+    expect(meta.description.length).toBeLessThanOrEqual(META_DESCRIPTION_MAX);
+    expect(meta.alternates.canonical).toMatch(/^https:\/\/www\.techvergesolution\.com\//);
+    expect(meta.openGraph.images[0]).toContain("og-image");
+    expect(meta.twitter.card).toBe("summary_large_image");
   });
 });

@@ -1,32 +1,53 @@
 import { describe, expect, it } from "vitest";
 import { render } from "@testing-library/react";
 import { JsonLd } from "@/components/JsonLd";
-import { absoluteUrl, areaServed } from "@/lib/seo/config";
+import { ORG_SCHEMA_NAME } from "@/data/organizationProfiles";
+import { absoluteUrl } from "@/lib/seo/config";
 import { articleJsonLd, faqPageJsonLd, organizationJsonLd, serviceJsonLd, visibleFaqs } from "@/lib/seo/schema";
 
 describe("structured data", () => {
-  it("uses one organization and website graph with configured countries and no unsupported contact details", () => {
+  it("uses Organization, LocalBusiness, WebSite, and ProfessionalService on the home graph", () => {
     const graph = organizationJsonLd()["@graph"];
-    expect(graph).toHaveLength(2);
-    expect(graph[0]).toMatchObject({ "@type": "Organization", "@id": `${absoluteUrl("/")}#organization`, areaServed: areaServed.map((name) => ({ "@type": "Country", name })) });
-    expect(graph[1]).toMatchObject({ "@type": "WebSite", "@id": `${absoluteUrl("/")}#website`, publisher: { "@id": `${absoluteUrl("/")}#organization` } });
-    expect(graph[0]).not.toHaveProperty("address");
-    expect(graph[0]).not.toHaveProperty("telephone");
-    expect(graph[0]).not.toHaveProperty("aggregateRating");
-    expect(graph[0]).not.toHaveProperty("review");
+    const types = graph.flatMap((node) =>
+      Array.isArray(node["@type"]) ? node["@type"] : [node["@type"]],
+    );
+    expect(types).toEqual(
+      expect.arrayContaining(["Organization", "LocalBusiness", "WebSite", "ProfessionalService"]),
+    );
+    const org = graph.find((n) => n["@id"] === `${absoluteUrl("/")}#organization`)!;
+    expect(org).toMatchObject({
+      name: ORG_SCHEMA_NAME,
+      "@id": `${absoluteUrl("/")}#organization`,
+    });
+    expect(org.address).toMatchObject({ addressLocality: "Lahore", addressCountry: "PK" });
+    expect(org).not.toHaveProperty("aggregateRating");
+    expect(org).not.toHaveProperty("review");
   });
 
-  it("creates Service and Article markup without inventing missing fields", () => {
-    expect(serviceJsonLd({ name: "Example", path: "/services/example" })).toMatchObject({
-      "@type": "Service", url: absoluteUrl("/services/example"), provider: { "@id": `${absoluteUrl("/")}#organization` },
+  it("creates Service and BlogPosting markup without inventing missing fields", () => {
+    expect(serviceJsonLd({ name: "Example", description: "Desc", path: "/services/example" })).toMatchObject({
+      "@type": "Service",
+      url: absoluteUrl("/services/example"),
+      provider: { "@id": `${absoluteUrl("/")}#organization` },
     });
-    const article = articleJsonLd({ headline: "A post", path: "/blog/a-post", datePublished: "2026-01-01", authorName: "A Person", image: "https://cdn.example/image.jpg" });
+    const article = articleJsonLd({
+      headline: "A post",
+      description: "Summary",
+      path: "/blog/a-post",
+      datePublished: "2026-01-01",
+      authorName: "A Person",
+      image: "https://cdn.example/image.jpg",
+    });
     expect(article).toMatchObject({
-      "@type": "Article", datePublished: "2026-01-01", dateModified: "2026-01-01", image: "https://cdn.example/image.jpg",
-      author: { "@type": "Person", name: "A Person" }, publisher: { "@id": `${absoluteUrl("/")}#organization` },
+      "@type": "BlogPosting",
+      datePublished: "2026-01-01",
+      dateModified: "2026-01-01",
+      author: { "@type": "Person", name: "A Person" },
+      publisher: { "@id": `${absoluteUrl("/")}#organization` },
     });
-    expect(articleJsonLd({ headline: "No details", path: "/blog/empty" })).not.toHaveProperty("author");
-    expect(articleJsonLd({ headline: "No details", path: "/blog/empty" })).not.toHaveProperty("datePublished");
+    expect(articleJsonLd({ headline: "No details", path: "/blog/empty", description: "x" })).not.toHaveProperty(
+      "datePublished",
+    );
   });
 
   it("uses only complete FAQs without changing their text", () => {

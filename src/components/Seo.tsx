@@ -33,6 +33,8 @@ export function Seo({ title, description, path = "/", image = DEFAULT_OG_IMAGE, 
   const metadata = buildMetadata({ title, description, path, image, noIndex: noindex, canonicalUrl, type, publishedTime, modifiedTime, authors });
   const graphs = jsonLd ? Array.isArray(jsonLd) ? jsonLd : [jsonLd] : [];
   return <Helmet>
+    <html lang="en" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{metadata.title}</title><meta name="description" content={metadata.description} /><link rel="canonical" href={metadata.alternates.canonical} />
     <meta name="robots" content={noindex ? "noindex, follow" : "index, follow"} />
     <meta property="og:title" content={metadata.title} /><meta property="og:description" content={metadata.description} />

@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { portraitVariantSrcSet } from "@/lib/images/responsiveVariants";
 import { AnimatedSection } from "../ui/AnimatedSection";
 import { teamMembers } from "@/data/team";
 
@@ -23,7 +24,10 @@ export const TeamSection = () => {
         </AnimatedSection>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
-          {teamMembers.map((member, index) => (
+          {teamMembers.map((member, index) => {
+            const portraitWebp = portraitVariantSrcSet(member.image, "webp");
+            const portraitAvif = portraitVariantSrcSet(member.image, "avif");
+            return (
             <AnimatedSection key={member.name} delay={index * 0.08}>
               <motion.div
                 whileHover={{ y: -8 }}
@@ -31,21 +35,33 @@ export const TeamSection = () => {
               >
                 <div className="relative h-full w-full">
                   <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent z-10" />
-                  <img
-                    src={member.image}
-                    alt={`${member.name}, ${member.role} at TechVerge Solutions`}
-                    width={640}
-                    height={640}
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                    srcSet={
-                      member.image.endsWith(".webp")
-                        ? `${member.image.replace(/\.webp$/, "")}-160w.webp 160w, ${member.image.replace(/\.webp$/, "")}-320w.webp 320w, ${member.image.replace(/\.webp$/, "")}-640w.webp 640w, ${member.image} 800w`
-                        : undefined
-                    }
-                    loading="lazy"
-                    decoding="async"
-                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-100 group-hover:scale-105"
-                  />
+                  <picture className="block h-full w-full">
+                    {portraitAvif ? (
+                      <source
+                        type="image/avif"
+                        srcSet={portraitAvif}
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                      />
+                    ) : null}
+                    {portraitWebp ? (
+                      <source
+                        type="image/webp"
+                        srcSet={portraitWebp}
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                      />
+                    ) : null}
+                    <img
+                      src={member.image}
+                      alt={`${member.name}, ${member.role} at TechVerge Solutions`}
+                      width={640}
+                      height={640}
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      srcSet={portraitWebp}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-100 group-hover:scale-105"
+                    />
+                  </picture>
                   <div className="absolute bottom-0 left-0 right-0 p-7 z-20">
                     <h3 className="font-display text-2xl font-bold text-white mb-1">
                       {member.name}
@@ -60,7 +76,8 @@ export const TeamSection = () => {
                 </div>
               </motion.div>
             </AnimatedSection>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

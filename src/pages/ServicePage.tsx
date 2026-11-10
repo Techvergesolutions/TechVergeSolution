@@ -4,6 +4,7 @@ import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { PortableTextContent } from "@/components/blog/PortableTextContent";
 import { Seo } from "@/components/Seo";
+import { breadcrumbJsonLd } from "@/lib/seo";
 import { faqPageJsonLd, serviceJsonLd, visibleFaqs } from "@/lib/seo/schema";
 import { JsonLd } from "@/components/JsonLd";
 import { sanityClient, urlForImage } from "@/lib/sanity";
@@ -27,8 +28,21 @@ export default function ServicePage() {
     staleTime: 5 * 60 * 1000,
   });
 
-  if (isLoading) return <main className="section-container pt-40" role="status"><h1>Loading service…</h1></main>;
-  if (isError) return <main className="section-container pt-40" role="status"><h1>Service unavailable</h1><p>Please try again.</p></main>;
+  if (isLoading) {
+    return (
+      <main className="section-container pt-40" role="status" aria-live="polite">
+        <p className="text-lg text-muted-foreground">Loading service…</p>
+      </main>
+    );
+  }
+  if (isError) {
+    return (
+      <main className="section-container pt-40" role="status" aria-live="polite">
+        <p className="text-lg font-semibold text-foreground">Service unavailable</p>
+        <p className="text-muted-foreground">Please try again.</p>
+      </main>
+    );
+  }
   if (!slug || !service) return <NotFound />;
 
   const path = `/services/${slug}`;
@@ -47,6 +61,13 @@ export default function ServicePage() {
     <Seo title={title} description={description} path={path} image={image}
       canonicalUrl={service.seo?.canonicalUrl || undefined} noindex={service.seo?.noIndex ?? false} />
     <JsonLd data={serviceJsonLd({ name, description, path })} />
+    <JsonLd
+      data={breadcrumbJsonLd([
+        { name: "Home", path: "/" },
+        { name: "Services", path: "/services" },
+        { name, path },
+      ])}
+    />
     {faqSchema && <JsonLd data={faqSchema} />}
     <div className="min-h-screen bg-background overflow-x-hidden">
       <Navbar />

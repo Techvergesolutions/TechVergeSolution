@@ -1,8 +1,30 @@
 # TechVerge Solutions
 
-> Custom AI automation and voice agents for small businesses.
+> Custom AI automation, voice agents, and business software for small teams.
 
-TechVerge Solutions designs and implements custom AI lead follow-up, inbound voice agents, business process automation, and client-owned AI software. We primarily serve small and service businesses in the United States, and also work with clients in the United Kingdom and the United Arab Emirates.
+## Summary
+
+Custom AI automation and voice agents for small businesses in the US, UK, and UAE—built by TechVerge Solutions to cut manual work and catch more leads.
+
+We design and implement custom AI lead follow-up, inbound voice agents, business process automation, custom websites, mobile apps, and client-owned AI software—not off-the-shelf SaaS seats from TechVerge.
+
+## Who we serve
+
+Small and service businesses that rely on leads, appointments, calls, and follow-up—especially teams in the United States, with clients also in the United Kingdom and United Arab Emirates.
+
+## Locations
+
+- Head office: Lahore, Punjab, Pakistan
+- Primary markets served: United States, United Kingdom, United Arab Emirates
+
+## Key pages
+
+- [Services](https://www.techvergesolution.com/services): Overview of what we design and implement.
+- [About](https://www.techvergesolution.com/about): Who we are, how we work, and team roles.
+- [Contact](https://www.techvergesolution.com/contact): Book a strategy call or reach us at info@techvergesolution.com.
+- [Portfolio](https://www.techvergesolution.com/portfolio): Case studies by problem, solution, and outcome.
+- [Blog](https://www.techvergesolution.com/blog): Practical guides on automation and voice agents.
+- [Home](https://www.techvergesolution.com/): Main site overview.
 
 ## Services
 
@@ -10,23 +32,22 @@ TechVerge Solutions designs and implements custom AI lead follow-up, inbound voi
 - [AI Voice Agents](https://www.techvergesolution.com/services/ai-voice-agents): Custom inbound voice agents that answer routine calls, qualify callers, and help schedule with clear human handoffs.
 - [Business Process Automation](https://www.techvergesolution.com/services/business-automation): Automations across forms, CRM, email, calendars, and internal tools so teams spend less time on repetitive admin.
 - [AI SaaS & Custom Software](https://www.techvergesolution.com/services/ai-saas-development): Custom AI-powered applications and internal tools built around your workflows—software you own, not seats on a TechVerge product.
-- [All services](https://www.techvergesolution.com/services): Overview of what we design and implement.
+- [Custom Website Development](https://www.techvergesolution.com/services/custom-website-development): Custom website design and development for businesses, from responsive layouts to CMS integration and ongoing support.
+- [Mobile App Development](https://www.techvergesolution.com/services/mobile-app-development): Custom mobile app development for iOS and Android, from product planning and design to testing and launch.
 
 ## Guides
 
-- [AI Voice Agents: How They Work & Cost](https://www.techvergesolution.com/blog/ai-voice-agents-for-small-businesses-how-they-work-cost): Plain-language explanation of how voice agents answer calls, book appointments, and what cost drivers look like for small businesses.
-- [AI Voice Agents in 2026](https://www.techvergesolution.com/blog/ai-voice-agents-for-small-business-2026): Use cases, costs, and honest limitations for appointment-based and service businesses.
-- [AI Automation for Small Businesses](https://www.techvergesolution.com/blog/ai-automation-small-business-2026): Seven practical workflows to automate first, with a realistic implementation mindset.
-- [n8n + AI Business Automation](https://www.techvergesolution.com/blog/n8n-ai-business-automation-2026): Seven n8n AI workflows for lead capture, follow-up, and ops time savings.
-- [Blog index](https://www.techvergesolution.com/blog): All practical automation guides.
+- [Mobile App Development Cost and Process: A 2026 Guide](https://www.techvergesolution.com/blog/mobile-app-development-cost-process): Blog Excerpt: Discover how mobile app development works, what it costs, and how long it takes in 2026. Explore the development process, key cost factors, native vs. cross-platform options, and practical tips to build a successful app while staying within budget.
+- [How AI Voice Receptionists Help Doctors Stop Losing Patients to Missed Calls](https://www.techvergesolution.com/blog/ai-receptionist-for-doctors): Blog Excerpt: Missed calls can mean lost patients and revenue for medical practices. Discover how an AI voice receptionist helps doctors answer calls 24/7, automate appointment bookings, handle patient inquiries, and improve the overall patient experience.
+- [7 Signs Your Small Business Needs an AI Phone Agent](https://www.techvergesolution.com/blog/signs-small-business-needs-ai-phone-agent): Missed calls mean missed customers. If your team is overwhelmed, your after-hours calls go unanswered or leads slip away, an AI phone agent may be the fix. Here are 7 clear signs it is time.
+- [AI Voice Agents for Small Businesses: How They Work, What They Cost](https://www.techvergesolution.com/blog/ai-voice-agents-for-small-businesses-how-they-work-cost): AI voice agents can answer every call, book appointments and follow up with leads around the clock. Here is how they work, what they really cost in 2026, and how US small businesses can start safely.
+- [How to Automate Your Business with n8n and AI in 2026: 7 Workflows That Save Time and Generate More Leads](https://www.techvergesolution.com/blog/n8n-ai-business-automation-2026): Discover 7 powerful n8n AI automation workflows that help businesses save time, capture more leads, automate customer support, and streamline daily operations. Learn how TechVerge Solutions can help you build custom AI-powered automation solutions to grow your business in 2026.
+- [AI Automation for Small Businesses in 2026: 7 Workflows to Automate First](https://www.techvergesolution.com/blog/ai-automation-small-business-2026): Discover 7 practical AI automations for small businesses in 2026, from lead follow-ups and customer support to appointment booking, document processing, and reporting. Learn how to choose the right workflow, implement it in 30 days, and measure your return on investment.
+- [AI Voice Agents for Small Businesses in 2026: Use Cases, Costs, and Limitations](https://www.techvergesolution.com/blog/ai-voice-agents-for-small-business-2026): Missed calls and after-hours inquiries still cost small businesses real opportunities. Here is a clear look at where AI voice agents help in 2026, what they cost to build well, and where they still fall short.
 
-## Company
+## Discovery
 
-- [About](https://www.techvergesolution.com/about): Who we are, where we operate, team roles, tools, and how we approach delivery.
-- [AI facts](https://www.techvergesolution.com/ai-facts): Short factual list—what we do, who we serve, services, timelines, pricing approach, and how to contact us.
-- [Contact](https://www.techvergesolution.com/contact): Book a strategy call or tell us about your workflow via the contact form, email, or phone.
-- [Portfolio](https://www.techvergesolution.com/portfolio): Selected case studies described by problem, solution, and outcome.
+- [XML sitemap](https://www.techvergesolution.com/sitemap.xml): All indexable marketing and blog URLs.
+- [Blog RSS](https://www.techvergesolution.com/feed.xml): Latest published blog posts.
+- [AI facts](https://www.techvergesolution.com/ai-facts): Short factual page for assistants and search.
 
-## Optional
-
-- [Homepage](https://www.techvergesolution.com/): Main overview of TechVerge Solutions.

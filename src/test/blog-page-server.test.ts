@@ -28,7 +28,11 @@ describe("dynamic blog HTML", () => {
     expect(doc.querySelector('meta[property="og:type"]')?.getAttribute("content")).toBe("article");
     expect(doc.querySelector('meta[property="og:image"]')?.getAttribute("content")).toMatch(/\/api\/og\?slug=new-post$/);
     const schemas = [...doc.querySelectorAll('script[type="application/ld+json"]')].map((node) => JSON.parse(node.textContent!));
-    expect(schemas.find((schema) => schema["@type"] === "Article")).toMatchObject({ headline: "A <real> post", author: { name: "Real Author" }, dateModified: post.publishedAt });
+    expect(schemas.find((schema) => schema["@type"] === "BlogPosting")).toMatchObject({
+      headline: "A <real> post",
+      author: { "@type": "Person", name: "Real Author" },
+      dateModified: post.publishedAt,
+    });
     expect(schemas.find((schema) => schema["@type"] === "FAQPage").mainEntity[0].acceptedAnswer.text).toBe("An answer </script>");
     expect(raw).not.toContain("An answer </script>");
   });

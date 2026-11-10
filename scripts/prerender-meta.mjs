@@ -17,7 +17,9 @@ import {
   faqPageJsonLd,
   organizationJsonLd,
   serviceJsonLd,
+  SITE_NAME,
 } from "./build-prerender-routes.mjs";
+import { clampMetaDescription, clampMetaTitle } from "./seo-limits.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -137,15 +139,17 @@ function applyRouteMeta(templateHtml, route) {
   const ogImage = route.ogImage || DEFAULT_OG_IMAGE;
   const ogImageAlt = route.ogImageAlt || DEFAULT_OG_IMAGE_ALT;
   const ogType = route.ogType || "website";
+  const title = clampMetaTitle(route.title, SITE_NAME);
+  const description = clampMetaDescription(route.description);
   let html = templateHtml;
 
-  html = upsertTitle(html, route.title);
+  html = upsertTitle(html, title);
 
   html = upsertTag(html, {
     tag: "meta",
     attr: "name",
     attrValue: "description",
-    attrs: { name: "description", content: route.description },
+    attrs: { name: "description", content: description },
   });
 
   html = upsertTag(html, {
@@ -159,13 +163,13 @@ function applyRouteMeta(templateHtml, route) {
     tag: "meta",
     attr: "property",
     attrValue: "og:title",
-    attrs: { property: "og:title", content: route.title },
+    attrs: { property: "og:title", content: title },
   });
   html = upsertTag(html, {
     tag: "meta",
     attr: "property",
     attrValue: "og:description",
-    attrs: { property: "og:description", content: route.description },
+    attrs: { property: "og:description", content: description },
   });
   html = upsertTag(html, {
     tag: "meta",
@@ -200,7 +204,7 @@ function applyRouteMeta(templateHtml, route) {
       tag: "meta",
       attr: "name",
       attrValue: "twitter:title",
-      attrs: { name: "twitter:title", content: route.title },
+      attrs: { name: "twitter:title", content: title },
     });
   }
   if (/name\s*=\s*["']twitter:description["']/i.test(html)) {
@@ -208,7 +212,7 @@ function applyRouteMeta(templateHtml, route) {
       tag: "meta",
       attr: "name",
       attrValue: "twitter:description",
-      attrs: { name: "twitter:description", content: route.description },
+      attrs: { name: "twitter:description", content: description },
     });
   }
   if (/name\s*=\s*["']twitter:image["']/i.test(html)) {
@@ -275,8 +279,16 @@ function countMatches(html, re) {
   return (html.match(re) || []).length;
 }
 
+/** @type may be a string or schema.org type array (e.g. Organization + LocalBusiness). */
+function jsonLdNodeTypes(node) {
+  const raw = node?.["@type"];
+  if (!raw) return [];
+  return Array.isArray(raw) ? raw : [raw];
+}
+
 function validateHtml(html, route) {
   const canonical = absoluteUrl(route.path);
+  const title = clampMetaTitle(route.title, SITE_NAME);
   const checks = [
     [/id\s*=\s*["']root["']/i, "#root"],
     [/<script\b/i, "script tags"],
@@ -306,7 +318,7 @@ function validateHtml(html, route) {
   if (!html.includes(`content="${escapeAttr(canonical)}"`)) {
     fail(`Route ${route.path}: og:url content mismatch (expected ${canonical})`);
   }
-  if (!html.includes(`<title data-rh="true">${escapeText(route.title)}</title>`)) {
+  if (!html.includes(`<title data-rh="true">${escapeText(title)}</title>`)) {
     fail(`Route ${route.path}: title mismatch`);
   }
 
@@ -326,9 +338,9 @@ function validateHtml(html, route) {
     ldScripts.flatMap((data) => {
       if (!data) return [];
       if (Array.isArray(data["@graph"])) {
-        return data["@graph"].map((n) => n["@type"]).filter(Boolean);
+        return data["@graph"].flatMap((n) => jsonLdNodeTypes(n));
       }
-      return data["@type"] ? [data["@type"]] : [];
+      return jsonLdNodeTypes(data);
     }),
   );
 
@@ -336,8 +348,8 @@ function validateHtml(html, route) {
     (data) =>
       data &&
       Array.isArray(data["@graph"]) &&
-      data["@graph"].some((n) => n["@type"] === "Organization") &&
-      data["@graph"].some((n) => n["@type"] === "WebSite"),
+      data["@graph"].some((n) => jsonLdNodeTypes(n).includes("Organization")) &&
+      data["@graph"].some((n) => jsonLdNodeTypes(n).includes("WebSite")),
   );
 
   if (!hasOrgGraph) {

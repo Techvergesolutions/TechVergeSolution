@@ -58,7 +58,7 @@ export const Navbar = () => {
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 animate-nav-in",
+        "fixed top-0 left-0 right-0 z-50 min-h-[4.75rem] flex items-center transition-[padding,background-color] duration-300 animate-nav-in",
         isScrolled || isMobileMenuOpen
           ? "glass-card py-4 bg-background/80 backdrop-blur-md"
           : "py-6 bg-transparent",

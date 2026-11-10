@@ -27,6 +27,8 @@ export function BlogAuthorCard({
           alt={author.imageAlt}
           width={72}
           height={72}
+          loading="lazy"
+          decoding="async"
           className="w-16 h-16 md:w-[72px] md:h-[72px] rounded-full object-cover border border-border/60 bg-muted/40"
         />
       </Link>

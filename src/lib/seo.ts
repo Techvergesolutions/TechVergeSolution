@@ -3,10 +3,12 @@ import {
   DEFAULT_BLOG_AUTHOR,
   ORG_ADDRESS,
   ORG_DESCRIPTION,
-  ORG_EMAIL,
   ORG_NAME,
-  ORG_TELEPHONE,
+  ORG_SCHEMA_NAME,
+  ORG_PHONE_LINES,
   organizationSameAs,
+  organizationSchemaContact,
+  organizationSchemaPriceRange,
 } from "@/data/organizationProfiles";
 import { siteUrl, siteName } from "./seo/config";
 
@@ -134,34 +136,50 @@ function areaServedNodes() {
   }));
 }
 
+function postalAddressNode() {
+  return { "@type": "PostalAddress" as const, ...ORG_ADDRESS };
+}
+
 export function organizationNode() {
+  const contact = organizationSchemaContact();
+  const sameAs = organizationSameAs();
   return {
-    "@type": "Organization" as const,
+    "@type": ["Organization", "LocalBusiness"] as const,
     "@id": ORGANIZATION_ID,
-    name: SITE_NAME,
-    alternateName: ["Techverge Solution", "TechVerge", "Techverge"],
+    name: ORG_SCHEMA_NAME,
+    alternateName: [SITE_NAME, "Techverge Solution", "TechVerge", "Techverge"],
     url: `${SITE_URL}/`,
     logo: {
       "@type": "ImageObject",
       url: `${SITE_URL}/Logo.svg`,
     },
     description: ORG_DESCRIPTION,
-    email: ORG_EMAIL,
-    telephone: ORG_TELEPHONE,
-    address: {
-      "@type": "PostalAddress",
-      ...ORG_ADDRESS,
-    },
+    ...organizationSchemaPriceRange(),
+    address: postalAddressNode(),
     areaServed: areaServedNodes(),
-    contactPoint: {
-      "@type": "ContactPoint",
-      telephone: ORG_TELEPHONE,
-      email: ORG_EMAIL,
-      contactType: "sales",
-      areaServed: areaServedNodes(),
-      availableLanguage: ["English"],
-    },
-    sameAs: organizationSameAs(),
+    ...contact,
+    ...(ORG_PHONE_LINES.length || contact.email
+      ? {
+          contactPoint:
+            ORG_PHONE_LINES.length > 1
+              ? ORG_PHONE_LINES.map((line, index) => ({
+                  "@type": "ContactPoint" as const,
+                  telephone: line.tel,
+                  contactType: "sales",
+                  ...(index === 0 && contact.email ? { email: contact.email } : {}),
+                  areaServed: areaServedNodes(),
+                  availableLanguage: ["English"],
+                }))
+              : {
+                  "@type": "ContactPoint" as const,
+                  ...contact,
+                  contactType: "sales",
+                  areaServed: areaServedNodes(),
+                  availableLanguage: ["English"],
+                },
+        }
+      : {}),
+    ...(sameAs.length ? { sameAs } : {}),
   };
 }
 
@@ -178,17 +196,21 @@ export function webSiteNode() {
 }
 
 export function professionalServiceNode() {
+  const contact = organizationSchemaContact();
+  const sameAs = organizationSameAs();
   return {
-    "@type": "ProfessionalService" as const,
+    "@type": ["ProfessionalService", "LocalBusiness"] as const,
     "@id": PROFESSIONAL_SERVICE_ID,
-    name: SITE_NAME,
+    name: ORG_SCHEMA_NAME,
     url: `${SITE_URL}/`,
     image: DEFAULT_OG_IMAGE,
-    email: ORG_EMAIL,
-    telephone: ORG_TELEPHONE,
+    ...contact,
+    ...organizationSchemaPriceRange(),
+    address: postalAddressNode(),
     areaServed: areaServedNodes(),
     provider: { "@id": ORGANIZATION_ID },
     description: ORG_DESCRIPTION,
+    ...(sameAs.length ? { sameAs } : {}),
     hasOfferCatalog: {
       "@type": "OfferCatalog",
       name: "Automation & Software Services",
@@ -311,8 +333,8 @@ export function blogPostingJsonLd(input: {
       url: imageUrl,
       ...(input.imageAlt ? { caption: input.imageAlt } : {}),
     },
-    datePublished: input.datePublished,
-    dateModified: input.dateModified,
+    ...(input.datePublished ? { datePublished: input.datePublished } : {}),
+    ...(input.dateModified ? { dateModified: input.dateModified } : {}),
     author: {
       "@type": "Person",
       name: authorName,

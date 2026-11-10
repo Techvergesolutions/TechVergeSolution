@@ -2,7 +2,17 @@ import { absoluteUrl, defaultDescription, siteName } from "../seo/config";
 import { blogPosts } from "../../data/blog";
 import type { IndexDocument } from "./content";
 
-const staticPaths = ["/", "/about", "/services", "/portfolio", "/blog", "/contact", "/privacy-policy", "/terms-of-service"];
+const staticPaths = [
+  "/",
+  "/about",
+  "/ai-facts",
+  "/services",
+  "/portfolio",
+  "/blog",
+  "/contact",
+  "/privacy-policy",
+  "/terms-of-service",
+];
 
 export function escapeXml(value: string): string {
   const safe = Array.from(value).filter((character) => {
@@ -62,17 +72,49 @@ export function generateSitemapXml(documents: IndexDocument[]): string {
 }
 
 export function generateRssXml(documents: IndexDocument[]): string {
-  const hiddenPaths = new Set(documents.filter((doc) => isPublished(doc) && doc._type === "post" && doc.noIndex === true).map(documentPath).filter(Boolean));
-  const posts = documents.filter((doc) => isPublished(doc) && doc._type === "post" && doc.noIndex !== true && doc.title?.trim() && documentPath(doc) && !hiddenPaths.has(documentPath(doc)))
-    .sort((a, b) => (b.publishedAt ?? "").localeCompare(a.publishedAt ?? ""));
+  const publishedSanityPosts = documents.filter(
+    (doc) => isPublished(doc) && doc._type === "post" && doc.noIndex !== true && doc.title?.trim() && documentPath(doc),
+  );
+  const hiddenPaths = new Set(
+    documents
+      .filter((doc) => isPublished(doc) && doc._type === "post" && doc.noIndex === true)
+      .map(documentPath)
+      .filter((path): path is string => Boolean(path)),
+  );
+  const cmsSlugs = new Set(publishedSanityPosts.map((doc) => doc.slug).filter(Boolean));
+
+  type FeedItem = { path: string; title: string; description: string; publishedAt?: string };
+  const feedItems: FeedItem[] = publishedSanityPosts
+    .filter((doc) => !hiddenPaths.has(documentPath(doc)!))
+    .map((doc) => ({
+      path: documentPath(doc)!,
+      title: doc.title!.trim(),
+      description: doc.excerpt?.trim() || doc.description?.trim() || "",
+      publishedAt: validDate(doc.publishedAt),
+    }));
+
+  for (const post of blogPosts) {
+    if (cmsSlugs.has(post.slug)) continue;
+    if (publishedSanityPosts.some((doc) => doc.slug === post.slug && doc.noIndex === true)) continue;
+    feedItems.push({
+      path: `/blog/${encodeURIComponent(post.slug)}`,
+      title: post.title,
+      description: post.excerpt || post.description,
+      publishedAt: validDate(post.dateModified || post.datePublished),
+    });
+  }
+
   const seen = new Set<string>();
-  const items = posts.flatMap((post) => {
-    const path = documentPath(post)!;
-    if (seen.has(path)) return [];
-    seen.add(path);
-    const link = escapeXml(absoluteUrl(path));
-    const published = validDate(post.publishedAt);
-    return [`    <item><title>${escapeXml(post.title!)}</title><link>${link}</link><guid isPermaLink="true">${link}</guid><description>${escapeXml(post.excerpt || post.description || "")}</description>${published ? `<pubDate>${new Date(published).toUTCString()}</pubDate>` : ""}</item>`];
-  });
+  const items = feedItems
+    .sort((a, b) => (b.publishedAt ?? "").localeCompare(a.publishedAt ?? ""))
+    .flatMap((post) => {
+      if (seen.has(post.path)) return [];
+      seen.add(post.path);
+      const link = escapeXml(absoluteUrl(post.path));
+      return [
+        `    <item><title>${escapeXml(post.title)}</title><link>${link}</link><guid isPermaLink="true">${link}</guid><description>${escapeXml(post.description)}</description>${post.publishedAt ? `<pubDate>${new Date(post.publishedAt).toUTCString()}</pubDate>` : ""}</item>`,
+      ];
+    });
+
   return `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0"><channel>\n  <title>${escapeXml(`${siteName} Blog`)}</title>\n  <link>${escapeXml(absoluteUrl("/blog"))}</link>\n  <description>${escapeXml(defaultDescription)}</description>\n${items.join("\n")}\n</channel></rss>\n`;
 }

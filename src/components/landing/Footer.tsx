@@ -12,8 +12,7 @@ import {
   ORG_EMAIL,
   ORG_NAME,
   ORG_SITE_HOST,
-  ORG_TELEPHONE,
-  ORG_TELEPHONE_DISPLAY,
+  ORG_PHONE_LINES,
 } from "@/data/organizationProfiles";
 import { AFFILIATION_DISCLAIMER } from "@/data/team";
 
@@ -102,15 +101,17 @@ export const Footer = () => {
                   {email}
                 </a>
               </p>
-              <p>
-                <a
-                  href={`tel:${ORG_TELEPHONE}`}
-                  className="hover:text-primary transition-colors"
-                  onClick={() => trackEvent("phone_click", { placement: "footer" })}
-                >
-                  {ORG_TELEPHONE_DISPLAY}
-                </a>
-              </p>
+              {ORG_PHONE_LINES.map((line) => (
+                <p key={line.tel}>
+                  <a
+                    href={`tel:${line.tel}`}
+                    className="hover:text-primary transition-colors"
+                    onClick={() => trackEvent("phone_click", { placement: "footer" })}
+                  >
+                    {line.display}
+                  </a>
+                </p>
+              ))}
             </address>
 
             <div className="flex flex-wrap items-center gap-4 text-sm mb-5">

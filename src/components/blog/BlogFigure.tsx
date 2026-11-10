@@ -1,3 +1,4 @@
+import { blogVariantSrcSet } from "@/lib/images/responsiveVariants";
 import { cn } from "@/lib/utils";
 
 type BlogFigureProps = {
@@ -16,18 +17,9 @@ type BlogFigureProps = {
   sizes?: string;
 };
 
-function variantSrcSet(src: string, ext: "webp" | "avif"): string | undefined {
-  if (!/^\/images\/blog\/(ai-voice-agents-hero|ai-call-workflow|appointment-scheduling|human-handoff|support-workflow)\.webp$/i.test(src)) return undefined;
-  const base = src.replace(/\.webp$/i, "");
-  const sizes = base.endsWith("ai-voice-agents-hero") ? [640, 960, 1400] : [640, 960];
-  return sizes.map((size) => `${base}-${size}w.${ext} ${size}w`).join(", ");
-}
-
-/** Build srcSet for local `/images/...` assets that have `-640w` / `-960w` / `-1400w` variants. */
+/** Build srcSet for local blog assets that have `-640w` / `-960w` / `-1400w` variants. */
 export function localImageSrcSet(src: string): string | undefined {
-  const set = variantSrcSet(src, "webp");
-  if (!set) return undefined;
-  return set;
+  return blogVariantSrcSet(src, "webp");
 }
 
 export function BlogFigure({
@@ -46,7 +38,7 @@ export function BlogFigure({
 }: BlogFigureProps) {
   const shouldLazy = priority ? false : lazy;
   let srcSet: string | undefined = suppliedSrcSet ?? localImageSrcSet(src);
-  const avifSrcSet = variantSrcSet(src, "avif");
+  const avifSrcSet = blogVariantSrcSet(src, "avif");
   let imageSrc = src;
   try {
     const url = new URL(src);
@@ -70,6 +62,8 @@ export function BlogFigure({
     }
   } catch { /* Local images keep their original URL. */ }
 
+  const resolvedAlt = alt.trim() || caption?.trim() || "Image in article";
+
   return (
     <figure className={cn("my-8", className)}>
       <div
@@ -88,7 +82,7 @@ export function BlogFigure({
           ) : null}
           <img
             src={imageSrc}
-            alt={alt}
+            alt={resolvedAlt}
             width={width}
             height={height}
             srcSet={srcSet}

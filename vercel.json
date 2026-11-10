@@ -4,6 +4,12 @@
   "outputDirectory": "dist",
   "functions": { "api/blog-page.ts": { "includeFiles": "dist/blog-shell.html" } },
   "routes": [
+    {
+      "src": "/(.*)",
+      "has": [{ "type": "header", "key": "x-forwarded-proto", "value": "http" }],
+      "headers": { "Location": "https://www.techvergesolution.com/$1" },
+      "status": 308
+    },
     { "src": "/(.*)", "has": [{ "type": "host", "value": "techvergesolution\\.com" }], "headers": { "Location": "https://www.techvergesolution.com/$1" }, "status": 308 },
     { "src": "/(.+)/$", "headers": { "Location": "/$1" }, "status": 308 },
     { "src": "/ai-automation", "headers": { "Location": "/services/ai-automation" }, "status": 308 },
@@ -21,5 +27,67 @@
     { "src": "/services/[^/]+", "dest": "/index.html" },
     { "src": "/markets/[^/]+", "dest": "/index.html" },
     { "src": "/(.*)", "dest": "/404.html", "status": 404 }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=63072000; includeSubDomains; preload"
+        },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    },
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/fonts/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/images/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=604800, stale-while-revalidate=86400"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)\\.(webp|avif|svg|woff2|ico)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=604800, stale-while-revalidate=86400"
+        }
+      ]
+    },
+    {
+      "source": "/(robots\\.txt|llms\\.txt)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, stale-while-revalidate=86400"
+        }
+      ]
+    }
   ]
 }

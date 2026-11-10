@@ -1,6 +1,8 @@
 /**
  * Assemble prerender route list (static pages + dynamic blog posts).
  */
+import fs from "node:fs";
+import path from "node:path";
 import {
   absoluteUrl,
   blogPostingJsonLd,
@@ -12,6 +14,12 @@ import {
   SITE_URL,
 } from "./seo-prerender-data.mjs";
 import { collectBlogPosts } from "./collect-blog-posts.mjs";
+import { clampMetaDescription, clampMetaTitle } from "./seo-limits.mjs";
+import { ROOT } from "./load-env.mjs";
+
+const HOMEPAGE_FAQ = JSON.parse(
+  fs.readFileSync(path.join(ROOT, "src", "data", "homepage-content.json"), "utf8"),
+).faqs;
 
 function breadcrumbJsonLd(items) {
   return {
@@ -126,9 +134,19 @@ export async function buildPrerenderRoutes() {
   const posts = await collectBlogPosts();
 
   // Drop hardcoded blog post routes from base; rebuild from collected posts
-  const withoutBlogPosts = baseRoutes.filter(
-    (r) => !r.path.startsWith("/blog/") && r.path !== "/blog",
-  );
+  const withoutBlogPosts = baseRoutes
+    .filter((r) => !r.path.startsWith("/blog/") && r.path !== "/blog")
+    .map((route) =>
+      route.path === "/"
+        ? {
+            ...route,
+            extraJsonLd: [
+              ...(route.extraJsonLd ?? []),
+              faqPageJsonLd(HOMEPAGE_FAQ),
+            ],
+          }
+        : route,
+    );
 
   const blogIndex = {
     path: "/blog",
@@ -170,8 +188,8 @@ export async function buildPrerenderRoutes() {
     };
   });
 
-  const routes = [...withoutBlogPosts, blogIndex, ...blogPostRoutes].map(
-    (route) => {
+  const routes = [...withoutBlogPosts, blogIndex, ...blogPostRoutes]
+    .map((route) => {
       const crumbs = BREADCRUMBS[route.path];
       const extra = [...(route.extraJsonLd || [])];
       if (crumbs && route.path !== "/") {
@@ -183,8 +201,12 @@ export async function buildPrerenderRoutes() {
         // skip home breadcrumb-only
       }
       return { ...route, extraJsonLd: extra };
-    },
-  );
+    })
+    .map((route) => ({
+      ...route,
+      title: clampMetaTitle(route.title, SITE_NAME),
+      description: clampMetaDescription(route.description),
+    }));
 
   return { routes, posts };
 }

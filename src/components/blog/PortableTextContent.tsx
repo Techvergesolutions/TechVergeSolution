@@ -76,7 +76,10 @@ const components: PortableTextComponents = {
       const srcSet = [640, 960, 1200, 1400]
         .map((w) => `${urlForImage(value).width(w).quality(85).url()} ${w}w`)
         .join(", ");
-      const alt = (value.alt as string | undefined)?.trim() || "";
+      const alt =
+        (value.alt as string | undefined)?.trim() ||
+        (value.caption as string | undefined)?.trim() ||
+        "Illustration supporting the article";
       return (
         <BlogFigure
           src={src}

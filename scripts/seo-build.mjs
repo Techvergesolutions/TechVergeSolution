@@ -3,9 +3,11 @@
  */
 import { loadEnvFiles } from "./load-env.mjs";
 import { generateSitemap } from "./generate-sitemap.mjs";
+import { generateLlmsTxt } from "./generate-llms.mjs";
 import { optimizeBlogImages } from "./optimize-images.mjs";
 import { prerenderMeta } from "./prerender-meta.mjs";
 import { injectBlogHtml } from "./inject-blog-html.mjs";
+import { injectHomeHtml } from "./inject-home-html.mjs";
 import { prerenderHtml } from "./prerender-html.mjs";
 import { validateSeoDist } from "./validate-seo-dist.mjs";
 
@@ -15,8 +17,12 @@ async function main() {
   await optimizeBlogImages();
   console.log("[seo-build] Generating sitemap…");
   await generateSitemap();
+  console.log("[seo-build] Generating llms.txt…");
+  await generateLlmsTxt();
   console.log("[seo-build] Writing route meta HTML…");
   await prerenderMeta();
+  console.log("[seo-build] Injecting static homepage HTML shell…");
+  await injectHomeHtml();
   console.log("[seo-build] Injecting Markdown blog HTML into shells…");
   await injectBlogHtml();
   console.log("[seo-build] Capturing rendered HTML bodies…");

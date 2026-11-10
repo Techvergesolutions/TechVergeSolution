@@ -3,7 +3,7 @@ import {
   AREA_SERVED_COUNTRIES,
   DEFAULT_BLOG_AUTHOR,
   ORG_DESCRIPTION,
-  ORG_NAME,
+  ORG_SCHEMA_NAME,
   SOCIAL_PROFILES,
   organizationSameAs,
 } from "@/data/organizationProfiles";
@@ -24,22 +24,41 @@ describe("organization JSON-LD", () => {
   it("includes Organization, WebSite, description, contactPoint, areaServed, sameAs", () => {
     const graph = organizationJsonLd();
     expect(graph["@context"]).toBe("https://schema.org");
-    const types = graph["@graph"].map((n) => n["@type"]);
+    const types = graph["@graph"].flatMap((n) =>
+      Array.isArray(n["@type"]) ? n["@type"] : [n["@type"]],
+    );
     expect(types).toEqual(
-      expect.arrayContaining(["Organization", "WebSite", "ProfessionalService"]),
+      expect.arrayContaining(["Organization", "LocalBusiness", "WebSite", "ProfessionalService"]),
     );
 
-    const org = graph["@graph"].find((n) => n["@type"] === "Organization")!;
-    expect(org.name).toBe(ORG_NAME);
+    const org = graph["@graph"].find((n) => {
+      const t = Array.isArray(n["@type"]) ? n["@type"] : [n["@type"]];
+      return t.includes("Organization");
+    })!;
+    expect(org.name).toBe(ORG_SCHEMA_NAME);
     expect(org.url).toBe("https://www.techvergesolution.com/");
     expect(org.description).toBe(ORG_DESCRIPTION);
     expect(org["@id"]).toBe(ORGANIZATION_ID);
     expect((org.logo as { url: string }).url).toContain("/Logo.svg");
-    expect(org.contactPoint).toMatchObject({
+    expect(org.address).toMatchObject({
+      addressLocality: "Lahore",
+      addressRegion: "Punjab",
+      addressCountry: "PK",
+    });
+    expect(org["@type"]).toEqual(expect.arrayContaining(["Organization", "LocalBusiness"]));
+    const contactPoints = Array.isArray(org.contactPoint)
+      ? org.contactPoint
+      : [org.contactPoint];
+    expect(contactPoints.length).toBeGreaterThanOrEqual(2);
+    expect(contactPoints[0]).toMatchObject({
       "@type": "ContactPoint",
       contactType: "sales",
-      telephone: "+1-505-523-1081",
+      email: "info@techvergesolution.com",
+      telephone: "+15055231081",
     });
+    expect(contactPoints.some((p) => p.telephone === "+923240049330")).toBe(true);
+    expect(org.telephone).toBe("+15055231081");
+    expect(org.priceRange).toBe("Starting at $299 USD");
     expect(
       (org.areaServed as { name: string }[]).map((c) => c.name),
     ).toEqual([...AREA_SERVED_COUNTRIES]);

@@ -2,7 +2,8 @@ import {
   ORG_ADDRESS_DISPLAY,
   ORG_EMAIL,
   ORG_NAME,
-  ORG_TELEPHONE_DISPLAY,
+  ORG_PHONE_LINES,
+  ORG_STARTING_PRICE_USD,
 } from "@/data/organizationProfiles";
 
 export interface AiFact {
@@ -34,11 +35,11 @@ export const AI_FACTS: AiFact[] = [
   },
   {
     label: "How pricing works",
-    text: "Engagements are scoped custom builds, not monthly seats on a TechVerge product. Pricing depends on channels, integrations, call or lead volume complexity, and scope. We outline fit and next steps after a discovery conversation; deposits and payment terms are set in the engagement agreement before build work begins.",
+    text: `Engagements are scoped custom builds, not monthly seats on a TechVerge product. Many focused projects start from about $${ORG_STARTING_PRICE_USD} USD; final pricing depends on channels, integrations, call or lead volume complexity, and scope. We outline fit and next steps after a discovery conversation; deposits and payment terms are set in the engagement agreement before build work begins.`,
   },
   {
     label: "How to contact us",
-    text: `Use the contact form or book a strategy call at /contact, email ${ORG_EMAIL}, or call ${ORG_TELEPHONE_DISPLAY}. WhatsApp is also available from the site footer for quick project questions.`,
+    text: `Use the contact form or book a strategy call at /contact, email ${ORG_EMAIL}, or call ${ORG_PHONE_LINES.map((line) => line.display).join(" or ")}. WhatsApp is also available from the site footer for quick project questions.`,
   },
 ];
 

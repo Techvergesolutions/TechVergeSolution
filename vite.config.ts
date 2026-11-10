@@ -80,7 +80,7 @@ export default defineConfig(async ({ mode }) => {
     process.env.NEXT_PUBLIC_SITE_URL = env.NEXT_PUBLIC_SITE_URL;
   }
   const { siteUrl, defaultDescription } = await import("./src/lib/seo/config");
-  const { organizationJsonLd } = await import("./src/lib/seo/schema");
+  const { organizationJsonLd } = await import("./scripts/seo-prerender-data.mjs");
   const publicSeoFiles = ["robots.txt"];
   const renderPublicSeoFile = (file: string) =>
     readFileSync(path.resolve("public", file), "utf8").replaceAll("%SEO_SITE_URL%", siteUrl);
@@ -123,10 +123,18 @@ export default defineConfig(async ({ mode }) => {
         transformIndexHtml: {
           order: "pre",
           handler(html) {
-          const verification = env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION?.trim();
-          const verificationTag = verification ? `<meta name="google-site-verification" content="${verification.replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")}" />` : "";
+          const escapeMeta = (value: string) =>
+            value.replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+          const googleVerification = env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION?.trim();
+          const bingVerification = env.NEXT_PUBLIC_BING_SITE_VERIFICATION?.trim();
+          const verificationTags = [
+            googleVerification ? `<meta name="google-site-verification" content="${escapeMeta(googleVerification)}" />` : "",
+            bingVerification ? `<meta name="msvalidate.01" content="${escapeMeta(bingVerification)}" />` : "",
+          ]
+            .filter(Boolean)
+            .join("\n    ");
           return html
-            .replace("</head>", `${verificationTag}\n  </head>`)
+            .replace("</head>", `${verificationTags ? `${verificationTags}\n  ` : ""}</head>`)
             .replaceAll("%SEO_SITE_URL%", siteUrl)
             .replaceAll("%SEO_DEFAULT_DESCRIPTION%", defaultDescription.replaceAll("&", "&amp;").replaceAll('"', "&quot;"))
             .replaceAll("%SEO_ORGANIZATION_JSON_LD%", JSON.stringify(organizationJsonLd()).replaceAll("<", "\\u003c"));
@@ -141,6 +149,8 @@ export default defineConfig(async ({ mode }) => {
     },
     build: {
     cssCodeSplit: true,
+    cssMinify: true,
+    minify: "esbuild",
     sourcemap: false,
     target: "es2020",
     modulePreload: {

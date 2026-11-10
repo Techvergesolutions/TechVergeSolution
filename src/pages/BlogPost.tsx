@@ -20,6 +20,7 @@ import { JsonLd } from "@/components/JsonLd";
 import { blogPostPath, getRelatedPosts } from "@/data/blog";
 import { resolveBlogAuthor } from "@/data/blogAuthors";
 import { absoluteUrl } from "@/lib/seo";
+import { breadcrumbJsonLd } from "@/lib/seo";
 import { articleJsonLd, faqPageJsonLd, visibleFaqs } from "@/lib/seo/schema";
 import NotFound from "./NotFound";
 
@@ -37,7 +38,15 @@ export default function BlogPost() {
   const faqs = cms ? visibleFaqs(cms.faqs) : markdownFaqs;
   const path = blogPostPath(post.slug);
   const image = cms?.customOgImage || absoluteUrl(`/api/og?slug=${encodeURIComponent(post.slug)}`);
-  const article = articleJsonLd({ headline: post.title, path, image: cms ? cms.schemaImage : post.featuredImage.src, datePublished: cms?.publishedTime || post.datePublished, dateModified: cms?.modifiedTime || post.dateModified, authorName: cms?.authors?.[0] });
+  const article = articleJsonLd({
+    headline: post.title,
+    description: post.description,
+    path,
+    image: cms ? cms.schemaImage : post.featuredImage.src,
+    datePublished: cms?.publishedTime || post.datePublished,
+    dateModified: cms?.modifiedTime || post.dateModified,
+    authorName: cms?.authors?.[0] || post.author,
+  });
   const faqSchema = faqPageJsonLd(faqs);
   const author = !cms ? resolveBlogAuthor(post.author) : undefined;
   const related = !cms ? getRelatedPosts(post.slug, post.relatedSlugs, 3) : [];
@@ -45,7 +54,15 @@ export default function BlogPost() {
 
   return <>
     <Seo title={cms?.seoTitle || post.title} description={cms?.seoDescription || post.description} path={path} image={image} imageAlt={cms?.customOgImage ? post.ogImageAlt || post.title : post.title} type="article" canonicalUrl={cms?.canonicalUrl} noindex={cms?.noIndex} publishedTime={cms?.publishedTime || post.datePublished} modifiedTime={cms?.modifiedTime || post.dateModified} authors={cms?.authors} />
-    <JsonLd data={article} />{faqSchema && <JsonLd data={faqSchema} />}
+    <JsonLd data={article} />
+    <JsonLd
+      data={breadcrumbJsonLd([
+        { name: "Home", path: "/" },
+        { name: "Blog", path: "/blog" },
+        { name: post.title, path },
+      ])}
+    />
+    {faqSchema && <JsonLd data={faqSchema} />}
     <div className="min-h-screen bg-background overflow-x-hidden"><Navbar /><main><article>
       <header className="relative pt-28 pb-8 md:pt-36 md:pb-10 overflow-hidden"><div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
         <div className="section-container relative z-10 max-w-3xl">
