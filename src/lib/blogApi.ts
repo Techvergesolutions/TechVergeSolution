@@ -245,15 +245,28 @@ export async function getSanityPostBySlug(
   }
 }
 
+const SANITY_POST_TIMEOUT_MS = 20_000;
+
 export async function resolveBlogPost(slug: string): Promise<
   | { kind: "static"; meta: BlogPostMeta }
   | { kind: "sanity"; post: SanityBlogPost }
   | null
 > {
-  const sanityPost = await getSanityPostBySlug(slug);
-  if (sanityPost) return { kind: "sanity", post: sanityPost };
-
   const staticMeta = getCompiledBlogPostBySlug(slug);
+
+  let sanityPost: SanityBlogPost | null = null;
+  try {
+    sanityPost = await Promise.race([
+      getSanityPostBySlug(slug),
+      new Promise<null>((resolve) =>
+        setTimeout(() => resolve(null), SANITY_POST_TIMEOUT_MS),
+      ),
+    ]);
+  } catch {
+    sanityPost = null;
+  }
+
+  if (sanityPost) return { kind: "sanity", post: sanityPost };
   if (staticMeta) return { kind: "static", meta: staticMeta };
 
   return null;

@@ -4,4 +4,5 @@ node_modules/
 .env*.local
 !.env.example
 dist/.prerender-template.html
+.playwright-browsers/
 

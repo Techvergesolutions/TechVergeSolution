@@ -28,11 +28,19 @@ export type ResolvedBlogPost = {
   meta: BlogPostMeta & { bodyHtml?: string };
 } | { kind: "sanity"; post: SanityBlogPost };
 
+function compiledBlogPlaceholder(slug: string | undefined): ResolvedBlogPost | undefined {
+  if (!slug) return undefined;
+  const meta = getCompiledBlogPostBySlug(slug);
+  return meta ? { kind: "static", meta } : undefined;
+}
+
 export function useBlogPostDetail(slug: string | undefined) {
   return useQuery({
     queryKey: ["blog", "post", slug],
     enabled: Boolean(slug),
-    queryFn: async (): Promise<ResolvedBlogPost | null> => slug ? resolveBlogPost(slug) : null,
+    queryFn: async (): Promise<ResolvedBlogPost | null> =>
+      slug ? resolveBlogPost(slug) : null,
+    initialData: () => compiledBlogPlaceholder(slug),
     staleTime: 5 * 60 * 1000,
   });
 }

@@ -134,7 +134,7 @@ function buildJsonLdBlock(route) {
   return blocks.map((b, index) => `    ${jsonLdScript(b, index)}`).join("\n");
 }
 
-function applyRouteMeta(templateHtml, route) {
+export function applyRouteMeta(templateHtml, route) {
   const canonical = absoluteUrl(route.path);
   const ogImage = route.ogImage || DEFAULT_OG_IMAGE;
   const ogImageAlt = route.ogImageAlt || DEFAULT_OG_IMAGE_ALT;

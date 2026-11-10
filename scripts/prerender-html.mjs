@@ -10,9 +10,33 @@ import { chromium } from "playwright";
 import sirv from "sirv";
 import { ROOT } from "./load-env.mjs";
 import { buildPrerenderRoutes } from "./build-prerender-routes.mjs";
+import { applyRouteMeta } from "./prerender-meta.mjs";
 
 const DIST = path.join(ROOT, "dist");
 const MIN_ROOT_TEXT = 120;
+
+function rootInnerHtml(html) {
+  const open = html.match(/<div[^>]*id=["']root["'][^>]*>/i);
+  if (!open || open.index === undefined) return "";
+  const start = open.index + open[0].length;
+  let depth = 1;
+  const tagRe = /<\/?div\b[^>]*>/gi;
+  tagRe.lastIndex = start;
+  let match;
+  while ((match = tagRe.exec(html))) {
+    const token = match[0];
+    if (token.startsWith("</")) depth -= 1;
+    else if (!/\/\s*>$/.test(token)) depth += 1;
+    if (depth === 0) return html.slice(start, match.index);
+  }
+  return "";
+}
+
+function shellHasUsableRoot(html) {
+  const inner = rootInnerHtml(html);
+  const text = inner.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  return text.length >= MIN_ROOT_TEXT && /<h1\b/i.test(inner);
+}
 
 /** Throw so callers (seo-build) can soft-fail without killing the whole build. */
 function fail(message) {
@@ -114,10 +138,33 @@ export async function prerenderHtml() {
   const { server, port } = await startStaticServer();
   const base = `http://127.0.0.1:${port}`;
 
+  async function launchBrowser() {
+    const base = { headless: true };
+    if (process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH) {
+      return chromium.launch({
+        ...base,
+        executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH,
+      });
+    }
+    try {
+      return await chromium.launch(base);
+    } catch (bundledError) {
+      for (const channel of ["chrome", "msedge", "chromium"]) {
+        try {
+          console.log(`[prerender-html] Retrying with system browser channel: ${channel}`);
+          return await chromium.launch({ ...base, channel });
+        } catch {
+          // try next channel
+        }
+      }
+      throw bundledError;
+    }
+  }
+
   let browser;
   try {
     try {
-      browser = await chromium.launch({ headless: true, ...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH } : {}) });
+      browser = await launchBrowser();
     } catch (error) {
       fail(
         `Failed to launch Chromium (${error.message}). Run: npx playwright install chromium`,
@@ -129,6 +176,10 @@ export async function prerenderHtml() {
     await context.route(
       /googletagmanager|google-analytics|googleadservices|doubleclick|hotjar|clarity\.ms|facebook\.net|linkedin\.com\/px/i,
       (route) => route.abort(),
+    );
+    // Live preview / listen keeps connections open and can stall prerender.
+    await context.route(/\.sanity\.io\/v\d+-\d+-\d+\/data\/listen\//i, (route) =>
+      route.abort(),
     );
     // Sanity CORS often omits ephemeral http://127.0.0.1:<port> origins used by
     // this prerender server. Fulfill Sanity API calls from Node (no CORS).
@@ -163,21 +214,25 @@ export async function prerenderHtml() {
       },
     );
 
-    const page = await context.newPage();
-    page.setDefaultTimeout(90000);
-    page.on("pageerror", (err) => {
-      console.warn(`[prerender-html] pageerror: ${err.message}`);
-    });
-    page.on("console", (msg) => {
-      if (msg.type() === "error" || msg.type() === "warning") {
-        console.warn(`[prerender-html] console.${msg.type()}: ${msg.text()}`);
-      }
-    });
-
     const written = [];
     for (const route of routes) {
       const url = `${base}${route.path === "/" ? "/" : route.path}`;
+      const out = outputPathForRoute(route.path);
+      const shellBefore =
+        fs.existsSync(out) ? fs.readFileSync(out, "utf8") : "";
       console.log(`[prerender-html] Rendering ${route.path}`);
+
+      const page = await context.newPage();
+      page.setDefaultTimeout(90000);
+      page.on("pageerror", (err) => {
+        console.warn(`[prerender-html] pageerror: ${err.message}`);
+      });
+      page.on("console", (msg) => {
+        if (msg.type() === "error" || msg.type() === "warning") {
+          console.warn(`[prerender-html] console.${msg.type()}: ${msg.text()}`);
+        }
+      });
+
       const failedRequests = [];
       const onResponse = (res) => {
         if (res.status() >= 400) {
@@ -185,32 +240,45 @@ export async function prerenderHtml() {
         }
       };
       page.on("response", onResponse);
+      let captured = false;
       try {
-        // Prefer "load" over "networkidle": image srcsets / lazy media can keep
-        // the network active long enough to time out on blog routes.
         await page.goto(url, { waitUntil: "load", timeout: 90000 });
         await waitForContent(page);
         await assertCapturedPage(page, route.path);
+
+        let html = await page.content();
+        if (/<div[^>]*id=["']root["'][^>]*>\s*<\/div>/i.test(html)) {
+          fail(`Route ${route.path}: #root empty in serialized HTML`);
+        }
+        html = applyRouteMeta(html, route);
+
+        fs.mkdirSync(path.dirname(out), { recursive: true });
+        fs.writeFileSync(out, html, "utf8");
+        written.push(path.relative(ROOT, out).replace(/\\/g, "/"));
+        captured = true;
       } catch (error) {
         if (failedRequests.length) {
           console.warn(
             `[prerender-html] failed responses:\n  ${failedRequests.slice(0, 8).join("\n  ")}`,
           );
         }
-        fail(`Route ${route.path}: render failed — ${error.message}`);
+        if (route.article && shellHasUsableRoot(shellBefore)) {
+          console.warn(
+            `[prerender-html] ${route.path}: React capture failed; keeping injected blog HTML (${error.message})`,
+          );
+          written.push(path.relative(ROOT, out).replace(/\\/g, "/"));
+          captured = true;
+        } else {
+          fail(`Route ${route.path}: render failed — ${error.message}`);
+        }
       } finally {
         page.off("response", onResponse);
+        await page.close();
       }
 
-      const html = await page.content();
-      if (/<div[^>]*id=["']root["'][^>]*>\s*<\/div>/i.test(html)) {
-        fail(`Route ${route.path}: #root empty in serialized HTML`);
+      if (!captured) {
+        fail(`Route ${route.path}: no HTML written`);
       }
-
-      const out = outputPathForRoute(route.path);
-      fs.mkdirSync(path.dirname(out), { recursive: true });
-      fs.writeFileSync(out, html, "utf8");
-      written.push(path.relative(ROOT, out).replace(/\\/g, "/"));
     }
 
     console.log(

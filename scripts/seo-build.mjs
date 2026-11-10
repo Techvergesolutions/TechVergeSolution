@@ -27,13 +27,25 @@ async function main() {
   await injectBlogHtml();
   console.log("[seo-build] Capturing rendered HTML bodies…");
   let playwrightOk = false;
+  const allowSkip =
+    process.env.SKIP_PLAYWRIGHT_PRERENDER === "1" ||
+    process.env.SKIP_PLAYWRIGHT_PRERENDER === "true";
   try {
     await prerenderHtml();
     playwrightOk = true;
   } catch (error) {
     console.error(
-      "[seo-build] Playwright capture failed; Markdown inject still present:",
+      "[seo-build] Playwright capture failed:",
       error.message || error,
+    );
+    if (!allowSkip) {
+      console.error(
+        "[seo-build] Install Chromium: npx playwright install chromium (or set SKIP_PLAYWRIGHT_PRERENDER=1 to bypass)",
+      );
+      process.exit(1);
+    }
+    console.warn(
+      "[seo-build] SKIP_PLAYWRIGHT_PRERENDER set — continuing with meta shells only",
     );
   }
   console.log("[seo-build] Validating dist SEO artifacts…");

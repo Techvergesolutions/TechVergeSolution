@@ -66,10 +66,25 @@ function extractCanonical(html) {
 }
 
 function rootInner(html) {
-  const m = html.match(
-    /<div[^>]*id=["']root["'][^>]*>([\s\S]*)<\/div>\s*(?:<script|<\/body>)/i,
-  );
-  return m?.[1] ?? "";
+  const open = html.match(/<div[^>]*id=["']root["'][^>]*>/i);
+  if (!open || open.index === undefined) return "";
+  const start = open.index + open[0].length;
+  let depth = 1;
+  const tagRe = /<\/?div\b[^>]*>/gi;
+  tagRe.lastIndex = start;
+  let match;
+  while ((match = tagRe.exec(html))) {
+    const token = match[0];
+    if (token.startsWith("</")) {
+      depth -= 1;
+    } else if (!/\/\s*>$/.test(token)) {
+      depth += 1;
+    }
+    if (depth === 0) {
+      return html.slice(start, match.index);
+    }
+  }
+  return "";
 }
 
 function parseJsonLd(html) {
