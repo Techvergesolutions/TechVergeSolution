@@ -3,8 +3,7 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "functions": {
-    "api/blog-page.ts": { "includeFiles": "dist/blog-shell.html" },
-    "api/blog-page.js": { "includeFiles": "dist/blog-shell.html" }
+    "api/blog-page.ts": { "includeFiles": "dist/blog-shell.html" }
   },
   "routes": [
     {
