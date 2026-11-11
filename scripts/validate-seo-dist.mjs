@@ -7,7 +7,11 @@ import { pathToFileURL } from "node:url";
 import { ROOT } from "./load-env.mjs";
 import { buildPrerenderRoutes, SITE_URL } from "./build-prerender-routes.mjs";
 import { SEO_CRAWLER_BOTS } from "./seo-crawler-bots.mjs";
-import { META_DESCRIPTION_MAX, META_TITLE_MAX } from "./seo-limits.mjs";
+import {
+  META_DESCRIPTION_MAX,
+  META_DESCRIPTION_MIN,
+  META_TITLE_MAX,
+} from "./seo-limits.mjs";
 
 const DIST = path.join(ROOT, "dist");
 
@@ -160,6 +164,11 @@ export async function validateSeoDist(options = {}) {
       fail(`${rel}: title too long (${decoded.length} > ${META_TITLE_MAX})`);
     }
     if (!metaDescription) fail(`${rel}: missing meta description`);
+    if (metaDescription.length < META_DESCRIPTION_MIN) {
+      fail(
+        `${rel}: meta description too short (${metaDescription.length} < ${META_DESCRIPTION_MIN})`,
+      );
+    }
     if (metaDescription.length > META_DESCRIPTION_MAX) {
       fail(
         `${rel}: meta description too long (${metaDescription.length} > ${META_DESCRIPTION_MAX})`,
@@ -192,7 +201,10 @@ export async function validateSeoDist(options = {}) {
       if (text.length < 120) {
         fail(`${rel}: #root text too short (${text.length})`);
       }
-      if (!/<h1\b/i.test(inner)) fail(`${rel}: missing <h1> in #root`);
+      const h1Count = (inner.match(/<h1\b/gi) || []).length;
+      if (h1Count !== 1) {
+        fail(`${rel}: expected exactly 1 <h1> in #root (found ${h1Count})`);
+      }
     }
 
     if (!/name=["']robots["'][^>]*content=["']index,\s*follow["']/i.test(html)) {

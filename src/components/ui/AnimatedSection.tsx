@@ -6,6 +6,8 @@ interface AnimatedSectionProps {
   className?: string;
   delay?: number;
   direction?: "up" | "down" | "left" | "right";
+  /** Render visible immediately (hero headings must not start at opacity 0). */
+  eager?: boolean;
 }
 
 const OFFSET: Record<NonNullable<AnimatedSectionProps["direction"]>, string> = {
@@ -21,11 +23,13 @@ export const AnimatedSection = ({
   className = "",
   delay = 0,
   direction = "up",
+  eager = false,
 }: AnimatedSectionProps) => {
   const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(eager);
 
   useEffect(() => {
+    if (eager) return;
     const el = ref.current;
     if (!el) return;
 

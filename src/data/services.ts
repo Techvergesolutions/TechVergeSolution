@@ -728,7 +728,7 @@ export const servicesConfig: Record<ServiceSlug, ServiceConfig> = {
     slug: "ai-saas-development",
     pageTitle: `Custom AI SaaS & Software | ${SITE_NAME}`,
     metaDescription:
-      "We design and build custom AI-powered applications and internal tools for your workflows — not a TechVerge SaaS product you subscribe to.",
+      "We design and build custom AI-powered applications and internal tools for your workflows — software you own, not a TechVerge product you subscribe to.",
     eyebrow: "AI SaaS & Custom Software",
     headline: "Custom AI-Powered Apps Built Around Your Workflows",
     subheadline:

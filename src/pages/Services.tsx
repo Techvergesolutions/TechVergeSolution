@@ -27,7 +27,7 @@ const Services = () => {
             <div className="absolute inset-0 grid-pattern opacity-20" />
             <div className="section-container relative z-10">
               <PageBreadcrumbs section="services" />
-              <AnimatedSection className="max-w-3xl mx-auto text-center">
+              <AnimatedSection eager className="max-w-3xl mx-auto text-center">
                 <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-4 block">
                   Services
                 </span>

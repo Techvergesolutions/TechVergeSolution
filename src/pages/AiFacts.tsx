@@ -27,7 +27,7 @@ const AiFacts = () => {
           <section className="relative pt-32 pb-10 md:pt-40 md:pb-14 overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
             <div className="section-container relative z-10">
-              <AnimatedSection className="max-w-3xl mx-auto text-center">
+              <AnimatedSection eager className="max-w-3xl mx-auto text-center">
                 <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-4 block">
                   AI facts
                 </span>

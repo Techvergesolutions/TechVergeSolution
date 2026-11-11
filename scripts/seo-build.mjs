@@ -28,14 +28,14 @@ async function main() {
   await injectHomeHtml();
   console.log("[seo-build] Injecting Markdown blog HTML into shells…");
   await injectBlogHtml();
+  console.log("[seo-build] Injecting fallback body HTML for remaining empty #root shells…");
+  await injectRouteFallback();
   console.log("[seo-build] Capturing rendered HTML bodies…");
-  let playwrightOk = false;
   const allowSkip =
     process.env.SKIP_PLAYWRIGHT_PRERENDER === "1" ||
     process.env.SKIP_PLAYWRIGHT_PRERENDER === "true";
   try {
     await prerenderHtml();
-    playwrightOk = true;
   } catch (error) {
     console.error(
       "[seo-build] Playwright capture failed:",
@@ -45,8 +45,6 @@ async function main() {
       console.warn(
         "[seo-build] Applying static route fallback HTML (Vercel or SKIP_PLAYWRIGHT_PRERENDER)",
       );
-      await injectRouteFallback();
-      playwrightOk = true;
     } else {
       console.error(
         "[seo-build] Install Chromium: npx playwright install chromium (or set SKIP_PLAYWRIGHT_PRERENDER=1 to bypass)",
@@ -54,8 +52,10 @@ async function main() {
       process.exit(1);
     }
   }
+  console.log("[seo-build] Filling any remaining empty #root shells…");
+  await injectRouteFallback();
   console.log("[seo-build] Validating dist SEO artifacts…");
-  await validateSeoDist({ allowShellOnly: !playwrightOk });
+  await validateSeoDist({ allowShellOnly: false });
 
   // After a production Vercel build, notify IndexNow that blog URLs are live.
   if (process.env.VERCEL === "1" || process.env.INDEXNOW_PING_ON_BUILD === "1") {

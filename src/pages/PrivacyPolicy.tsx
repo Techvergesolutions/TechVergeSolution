@@ -46,7 +46,7 @@ const PrivacyPolicy = () => {
 
         <div className="max-w-6xl mx-auto">
           <motion.header
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 1, y: 0 }}
             animate={{ opacity: 1, y: 0 }}
             className="mb-16"
           >

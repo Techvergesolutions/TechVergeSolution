@@ -77,7 +77,7 @@ const Blog = () => {
             <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
             <div className="absolute inset-0 grid-pattern opacity-10" />
             <div className="section-container relative z-10">
-              <AnimatedSection className="max-w-3xl">
+              <AnimatedSection eager className="max-w-3xl">
                 <PageBreadcrumbs section="blog" />
                 <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-4 block">
                   Blog

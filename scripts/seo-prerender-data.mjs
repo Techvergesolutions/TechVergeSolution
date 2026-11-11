@@ -277,19 +277,19 @@ export const prerenderRoutes = [
     path: "/about",
     title: "About | TechVerge Solutions",
     description:
-      "How TechVerge approaches AI automation and custom software — integration-first workflows, human + AI handoffs, and teams that ship practical systems for US businesses.",
+      "Meet Tech Verge Solution: we design custom AI automation, voice agents, and software for small businesses in the United States, United Kingdom, and UAE.",
   },
   {
     path: "/ai-facts",
     title: "AI Facts | TechVerge Solutions",
     description:
-      "Plain facts about TechVerge Solutions: what we do, who we serve, countries, services, typical timelines, how pricing works, and how to contact us.",
+      "Plain facts about TechVerge Solutions: who we serve, where we work, which services we build, typical timelines, how pricing starts, and how to contact us.",
   },
   {
     path: "/services",
     title: "Services | TechVerge Solutions",
     description:
-      "Explore TechVerge services: AI lead follow-up automation, AI voice agents, business process automation, and custom AI SaaS development for US businesses.",
+      "Explore TechVerge services: AI lead follow-up, inbound voice agents, business process automation, custom websites, mobile apps, and AI software for your team.",
   },
   {
     path: "/services/ai-automation",
@@ -421,7 +421,7 @@ export const prerenderRoutes = [
     path: "/services/ai-saas-development",
     title: "Custom AI SaaS & Software | TechVerge Solutions",
     description:
-      "We design and build custom AI-powered applications and internal tools for your workflows — not a TechVerge SaaS product you subscribe to.",
+      "We design and build custom AI-powered applications and internal tools for your workflows — software you own, not a TechVerge product you subscribe to.",
     service: {
       name: "Custom AI-Powered Apps Built Around Your Workflows",
       serviceType: "AI SaaS & Custom Software",
@@ -463,7 +463,7 @@ export const prerenderRoutes = [
     path: "/services/custom-website-development",
     title: "Custom Website Development | TechVerge Solutions",
     description:
-      "Explore custom website design and development for businesses, from responsive layouts to CMS integration and ongoing support.",
+      "Custom website design and development for businesses: responsive layouts, CMS integration, performance, and support from TechVerge Solutions.",
     service: {
       name: "Custom Website Development",
       serviceType: "Custom Website Development",
@@ -473,7 +473,7 @@ export const prerenderRoutes = [
     path: "/services/mobile-app-development",
     title: "Mobile App Development | TechVerge Solutions",
     description:
-      "Explore custom mobile app development for iOS and Android, from product planning and design to testing and launch.",
+      "Custom iOS and Android app development from TechVerge Solutions: product planning, interface design, testing, launch, and practical handoff.",
     service: {
       name: "Mobile App Development",
       serviceType: "Mobile App Development",
@@ -483,13 +483,13 @@ export const prerenderRoutes = [
     path: "/portfolio",
     title: "Portfolio | TechVerge Solutions",
     description:
-      "Selected TechVerge case studies — real automation and software projects described by problem, solution, and outcome, without invented metrics.",
+      "Selected TechVerge case studies describing the operational problem, what we built, and the outcome — without invented metrics or unverified claims.",
   },
   {
     path: "/blog",
     title: "AI Automation Guides | TechVerge Solutions",
     description:
-      "Practical TechVerge Solutions guides on AI voice agents, lead follow-up, and workflow automation for small and service businesses—clear and jargon-light.",
+      "Practical TechVerge guides on AI voice agents, lead follow-up, and workflow automation for small and service businesses — clear, specific, and jargon-light.",
   },
   {
     path: "/blog/ai-voice-agents-for-small-business-2026",
@@ -548,19 +548,19 @@ export const prerenderRoutes = [
     path: "/contact",
     title: "Contact | TechVerge Solutions",
     description:
-      "Contact TechVerge Solutions to discuss AI automation, voice agents, or custom software. Book a free strategy call or tell us about your workflow.",
+      "Contact TechVerge Solutions to discuss AI automation, voice agents, or custom software. Book a strategy call or describe how your workflow works today.",
   },
   {
     path: "/privacy-policy",
     title: "Privacy Policy | TechVerge Solutions",
     description:
-      "How TechVerge Solutions collects, uses, and protects personal information when you use our website and services.",
+      "How TechVerge Solutions collects, uses, stores, and protects personal information when you visit our site, request a quote, or use our services.",
   },
   {
     path: "/terms-of-service",
     title: "Terms of Service | TechVerge Solutions",
     description:
-      "Terms and conditions for using TechVerge Solutions websites and custom AI automation, voice agent, and software development services.",
+      "Terms for using TechVerge Solutions websites and commissioning custom AI automation, voice agents, websites, apps, and software for your business.",
   },
 ];
 

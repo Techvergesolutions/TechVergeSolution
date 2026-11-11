@@ -17,7 +17,7 @@ export function ServiceHero({ service, breadcrumb }: ServiceHeroProps) {
       <div className="absolute inset-0 grid-pattern opacity-20" />
 
       <div className="section-container relative z-10">
-        <AnimatedSection className="max-w-3xl">
+        <AnimatedSection eager className="max-w-3xl">
           {breadcrumb}
           <Link
             to="/services"

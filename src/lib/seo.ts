@@ -45,49 +45,49 @@ export const pageSeo = {
   about: {
     title: formatPageTitle("About"),
     description:
-      "How TechVerge approaches AI automation and custom software — integration-first workflows, human + AI handoffs, and teams that ship practical systems for US businesses.",
+      "Meet Tech Verge Solution: we design custom AI automation, voice agents, and software for small businesses in the United States, United Kingdom, and UAE.",
     path: "/about",
   },
   aiFacts: {
     title: formatPageTitle("AI Facts"),
     description:
-      "Plain facts about TechVerge Solutions: what we do, who we serve, countries, services, typical timelines, how pricing works, and how to contact us.",
+      "Plain facts about TechVerge Solutions: who we serve, where we work, which services we build, typical timelines, how pricing starts, and how to contact us.",
     path: "/ai-facts",
   },
   services: {
     title: formatPageTitle("Services"),
     description:
-      "Explore TechVerge services: AI lead follow-up automation, AI voice agents, business process automation, and custom AI SaaS development for US businesses.",
+      "Explore TechVerge services: AI lead follow-up, inbound voice agents, business process automation, custom websites, mobile apps, and AI software for your team.",
     path: "/services",
   },
   portfolio: {
     title: formatPageTitle("Portfolio"),
     description:
-      "Selected TechVerge case studies — real automation and software projects described by problem, solution, and outcome, without invented metrics.",
+      "Selected TechVerge case studies describing the operational problem, what we built, and the outcome — without invented metrics or unverified claims.",
     path: "/portfolio",
   },
   contact: {
     title: formatPageTitle("Contact"),
     description:
-      "Contact TechVerge Solutions to discuss AI automation, voice agents, or custom software. Book a free strategy call or tell us about your workflow.",
+      "Contact TechVerge Solutions to discuss AI automation, voice agents, or custom software. Book a strategy call or describe how your workflow works today.",
     path: "/contact",
   },
   privacyPolicy: {
     title: formatPageTitle("Privacy Policy"),
     description:
-      "How TechVerge Solutions collects, uses, and protects personal information when you use our website and services.",
+      "How TechVerge Solutions collects, uses, stores, and protects personal information when you visit our site, request a quote, or use our services.",
     path: "/privacy-policy",
   },
   termsOfService: {
     title: formatPageTitle("Terms of Service"),
     description:
-      "Terms and conditions for using TechVerge Solutions websites and custom AI automation, voice agent, and software development services.",
+      "Terms for using TechVerge Solutions websites and commissioning custom AI automation, voice agents, websites, apps, and software for your business.",
     path: "/terms-of-service",
   },
   blog: {
     title: formatPageTitle("AI Automation Guides"),
     description:
-      "Practical TechVerge Solutions guides on AI voice agents, lead follow-up, and workflow automation for small and service businesses—clear and jargon-light.",
+      "Practical TechVerge guides on AI voice agents, lead follow-up, and workflow automation for small and service businesses — clear, specific, and jargon-light.",
     path: "/blog",
   },
   notFound: {

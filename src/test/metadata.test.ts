@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buildMetadata } from "@/lib/seo/metadata";
-import { clampMetaDescription, clampMetaTitle, META_DESCRIPTION_MAX, META_TITLE_MAX } from "@/lib/seo/limits";
+import { clampMetaDescription, clampMetaTitle, META_DESCRIPTION_MAX, META_DESCRIPTION_MIN, META_TITLE_MAX } from "@/lib/seo/limits";
 import { pageSeo } from "@/lib/seo";
 
 describe("clampMetaTitle", () => {
@@ -19,6 +19,13 @@ describe("clampMetaDescription", () => {
     const out = clampMetaDescription(long);
     expect(out.length).toBeLessThanOrEqual(META_DESCRIPTION_MAX);
   });
+
+  it("pads short descriptions into the 120–160 character window", () => {
+    const out = clampMetaDescription("Short unique summary about this page.");
+    expect(out.length).toBeGreaterThanOrEqual(META_DESCRIPTION_MIN);
+    expect(out.length).toBeLessThanOrEqual(META_DESCRIPTION_MAX);
+    expect(out.startsWith("Short unique summary about this page.")).toBe(true);
+  });
 });
 
 describe("buildMetadata", () => {
@@ -30,6 +37,7 @@ describe("buildMetadata", () => {
       path: home.path,
     });
     expect(meta.title.length).toBeLessThanOrEqual(META_TITLE_MAX);
+    expect(meta.description.length).toBeGreaterThanOrEqual(META_DESCRIPTION_MIN);
     expect(meta.description.length).toBeLessThanOrEqual(META_DESCRIPTION_MAX);
     expect(meta.alternates.canonical).toMatch(/^https:\/\/www\.techvergesolution\.com\//);
     expect(meta.openGraph.images[0]).toContain("og-image");
