@@ -9,7 +9,10 @@ import { prerenderMeta } from "./prerender-meta.mjs";
 import { injectBlogHtml } from "./inject-blog-html.mjs";
 import { injectHomeHtml } from "./inject-home-html.mjs";
 import { prerenderHtml } from "./prerender-html.mjs";
+import { injectRouteFallback } from "./inject-route-fallback.mjs";
 import { validateSeoDist } from "./validate-seo-dist.mjs";
+
+const onVercel = process.env.VERCEL === "1";
 
 async function main() {
   loadEnvFiles();
@@ -38,15 +41,18 @@ async function main() {
       "[seo-build] Playwright capture failed:",
       error.message || error,
     );
-    if (!allowSkip) {
+    if (onVercel || allowSkip) {
+      console.warn(
+        "[seo-build] Applying static route fallback HTML (Vercel or SKIP_PLAYWRIGHT_PRERENDER)",
+      );
+      await injectRouteFallback();
+      playwrightOk = true;
+    } else {
       console.error(
         "[seo-build] Install Chromium: npx playwright install chromium (or set SKIP_PLAYWRIGHT_PRERENDER=1 to bypass)",
       );
       process.exit(1);
     }
-    console.warn(
-      "[seo-build] SKIP_PLAYWRIGHT_PRERENDER set — continuing with meta shells only",
-    );
   }
   console.log("[seo-build] Validating dist SEO artifacts…");
   await validateSeoDist({ allowShellOnly: !playwrightOk });

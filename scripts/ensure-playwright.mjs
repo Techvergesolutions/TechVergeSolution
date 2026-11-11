@@ -45,12 +45,39 @@ if (!shouldInstall) {
   process.exit(0);
 }
 
+const onLinuxCi = onCi && process.platform === "linux";
+
+if (onLinuxCi) {
+  console.log(
+    "[ensure-playwright] Installing Chromium OS dependencies (Linux CI/Vercel)…",
+  );
+  const deps = spawnSync("npx playwright install-deps chromium", {
+    cwd: ROOT,
+    stdio: "inherit",
+    shell: true,
+    env: {
+      ...process.env,
+      PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS: "1",
+    },
+  });
+  if (deps.status !== 0) {
+    console.warn(
+      "[ensure-playwright] install-deps exited",
+      deps.status,
+      "— continuing with browser download",
+    );
+  }
+}
+
 console.log("[ensure-playwright] Installing Chromium for HTML prerender…");
 const result = spawnSync("npx playwright install chromium", {
   cwd: ROOT,
   stdio: "inherit",
   shell: true,
-  env: process.env,
+  env: {
+    ...process.env,
+    PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS: "1",
+  },
 });
 
 process.exit(result.status ?? 1);

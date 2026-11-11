@@ -139,20 +139,31 @@ export async function prerenderHtml() {
   const base = `http://127.0.0.1:${port}`;
 
   async function launchBrowser() {
-    const base = { headless: true };
+    const launchOpts = {
+      headless: true,
+      ...(process.platform === "linux"
+        ? {
+            args: [
+              "--no-sandbox",
+              "--disable-setuid-sandbox",
+              "--disable-dev-shm-usage",
+            ],
+          }
+        : {}),
+    };
     if (process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH) {
       return chromium.launch({
-        ...base,
+        ...launchOpts,
         executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH,
       });
     }
     try {
-      return await chromium.launch(base);
+      return await chromium.launch(launchOpts);
     } catch (bundledError) {
       for (const channel of ["chrome", "msedge", "chromium"]) {
         try {
           console.log(`[prerender-html] Retrying with system browser channel: ${channel}`);
-          return await chromium.launch({ ...base, channel });
+          return await chromium.launch({ ...launchOpts, channel });
         } catch {
           // try next channel
         }
