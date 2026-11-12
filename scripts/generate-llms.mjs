@@ -58,8 +58,10 @@ const WHO_WE_SERVE =
   "Small and service businesses that rely on leads, appointments, calls, and follow-up—especially teams in the United States, with clients also in the United Kingdom and United Arab Emirates.";
 
 const LOCATIONS = [
-  "Head office: Lahore, Punjab, Pakistan",
+  "Head office: 1209 Mountain Rd Pl NE #5036, Albuquerque, NM 87110, USA",
+  "Secondary office: Lahore, Punjab, Pakistan",
   "Primary markets served: United States, United Kingdom, United Arab Emirates",
+  "City list (markets served; additional cities are remote, not extra local offices): /locations",
 ];
 
 const CONTACT_EMAIL = "info@techvergesolution.com";
@@ -93,6 +95,11 @@ export async function generateLlmsTxt() {
     "",
     line("Services", `${SITE}/services`, "Overview of what we design and implement."),
     line("About", `${SITE}/about`, "Who we are, how we work, and team roles."),
+    line(
+      "Locations",
+      `${SITE}/locations`,
+      "Major US, UK, and UAE cities we serve with AI automation, voice agents, websites, apps, and custom software.",
+    ),
     line(
       "Contact",
       `${SITE}/contact`,

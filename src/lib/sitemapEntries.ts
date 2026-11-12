@@ -18,6 +18,7 @@ export function getSitemapEntries(lastmod = SITEMAP_LASTMOD, cmsServices: CmsSer
     { path: "/portfolio", lastmod, changefreq: "monthly", priority: 0.8 },
     { path: "/blog", lastmod: newestPost, changefreq: "weekly", priority: 0.8 },
     ...blogPosts.map((post) => ({ path: `/blog/${post.slug}`, lastmod: post.dateModified || post.datePublished, changefreq: "monthly" as const, priority: 0.7 })),
+    { path: "/locations", lastmod, changefreq: "monthly", priority: 0.7 },
     { path: "/contact", lastmod, changefreq: "monthly", priority: 0.8 },
     { path: "/privacy-policy", lastmod, changefreq: "yearly", priority: 0.3 },
     { path: "/terms-of-service", lastmod, changefreq: "yearly", priority: 0.3 },

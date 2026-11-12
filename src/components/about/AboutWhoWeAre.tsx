@@ -1,6 +1,10 @@
 import { Link } from "react-router-dom";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { AFFILIATION_DISCLAIMER } from "@/data/team";
+import {
+  ORG_ADDRESS_DISPLAY,
+  ORG_SECONDARY_ADDRESS_DISPLAY,
+} from "@/data/organizationProfiles";
 
 export function AboutWhoWeAre() {
   return (
@@ -71,9 +75,10 @@ export function AboutWhoWeAre() {
                 </h3>
                 <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
                   We primarily serve businesses in the United States, and also work with
-                  clients in the United Kingdom and the United Arab Emirates. Delivery is
-                  remote. We are based in Albuquerque, New Mexico, USA and do not claim
-                  local offices in every market we support.
+                  clients in the United Kingdom and the United Arab Emirates. Head office:{" "}
+                  {ORG_ADDRESS_DISPLAY}. Secondary office: {ORG_SECONDARY_ADDRESS_DISPLAY}.
+                  Work outside those offices is delivered remotely — we do not claim
+                  additional local offices in every city we serve.
                 </p>
               </div>
               <div className="pt-4 border-t border-border/50">

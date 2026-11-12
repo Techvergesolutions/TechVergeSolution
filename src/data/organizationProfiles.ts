@@ -43,13 +43,26 @@ export const AREA_SERVED_COUNTRIES = [
   "United Arab Emirates",
 ] as const;
 
+/** Head office — used as Organization / LocalBusiness `address`. */
 export const ORG_ADDRESS = {
+  streetAddress: "1209 Mountain Rd Pl NE #5036",
+  addressLocality: "Albuquerque",
+  addressRegion: "NM",
+  postalCode: "87110",
+  addressCountry: "US",
+} as const;
+
+export const ORG_ADDRESS_DISPLAY =
+  "1209 Mountain Rd Pl NE #5036, Albuquerque, NM 87110, USA";
+
+/** Secondary office — locality only; no street was provided. */
+export const ORG_SECONDARY_ADDRESS = {
   addressLocality: "Lahore",
   addressRegion: "Punjab",
   addressCountry: "PK",
 } as const;
 
-export const ORG_ADDRESS_DISPLAY = "Lahore, Punjab, Pakistan";
+export const ORG_SECONDARY_ADDRESS_DISPLAY = "Lahore, Punjab, Pakistan";
 export const ORG_SITE_HOST = "techvergesolution.com";
 
 /** Public profile URLs for schema.org sameAs (no login/settings URLs). */

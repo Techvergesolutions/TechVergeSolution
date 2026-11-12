@@ -13,6 +13,10 @@ import {
 } from "@/lib/booking";
 import { trackEvent } from "@/lib/analytics";
 import { useContactSettings } from "@/hooks/useContactSettings";
+import {
+  ORG_ADDRESS_DISPLAY,
+  ORG_SECONDARY_ADDRESS_DISPLAY,
+} from "@/data/organizationProfiles";
 
 const INTENT_PRESETS: Record<string, string> = {
   strategy:
@@ -612,13 +616,19 @@ export const ContactSection = ({ hidePageHeader = false }: ContactSectionProps) 
             </div>
 
             <div className="glass-card p-8 rounded-2xl space-y-6 border border-border/50 bg-black/10">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                   <MapPin className="text-primary" size={20} />
                 </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Location</p>
-                  <p className="text-sm font-medium">Albuquerque, New Mexico, USA</p>
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Head office</p>
+                    <p className="text-sm font-medium">{ORG_ADDRESS_DISPLAY}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Secondary office</p>
+                    <p className="text-sm font-medium">{ORG_SECONDARY_ADDRESS_DISPLAY}</p>
+                  </div>
                 </div>
               </div>
 

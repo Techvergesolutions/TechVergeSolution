@@ -422,6 +422,7 @@ export async function prerenderMeta() {
     "/portfolio",
     "/blog",
     "/blog/ai-voice-agents-for-small-business-2026",
+    "/locations",
     "/contact",
     "/privacy-policy",
     "/terms-of-service",

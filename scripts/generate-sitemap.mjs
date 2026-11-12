@@ -53,6 +53,7 @@ const STATIC_ROUTES = [
   },
   { path: "/portfolio", changefreq: "monthly", priority: "0.8", lastmod: "2026-10-12" },
   { path: "/blog", changefreq: "weekly", priority: "0.8", lastmod: null },
+  { path: "/locations", changefreq: "monthly", priority: "0.7", lastmod: "2026-11-12" },
   { path: "/contact", changefreq: "monthly", priority: "0.8", lastmod: "2026-10-12" },
 ];
 

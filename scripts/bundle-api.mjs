@@ -70,6 +70,7 @@ async function main() {
       `[bundle-api] Wrote ${written.length} bundled files to .api-bundle/`,
     );
   }
+  process.exit(0);
 }
 
 main().catch((error) => {

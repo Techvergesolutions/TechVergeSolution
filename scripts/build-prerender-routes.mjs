@@ -116,6 +116,10 @@ const BREADCRUMBS = {
     { name: "Home", path: "/" },
     { name: "Blog", path: "/blog" },
   ],
+  "/locations": [
+    { name: "Home", path: "/" },
+    { name: "Locations", path: "/locations" },
+  ],
   "/contact": [
     { name: "Home", path: "/" },
     { name: "Contact", path: "/contact" },

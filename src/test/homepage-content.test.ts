@@ -9,13 +9,15 @@ describe("homepage AI search content", () => {
     expect(questions).toContain("Where is Tech Verge Solution located?");
   });
 
-  it("mentions Lahore and core services in answers", () => {
+  it("mentions Albuquerque head office, Lahore secondary office, and core services", () => {
     const location = HOMEPAGE_FAQ.find((f) =>
       /located/i.test(f.question),
     )?.answer;
     const services = HOMEPAGE_FAQ.find((f) =>
       /services does/i.test(f.question),
     )?.answer;
+    expect(location).toMatch(/Albuquerque/i);
+    expect(location).toMatch(/1209 Mountain Rd Pl NE #5036/i);
     expect(location).toMatch(/Lahore/i);
     expect(services).toMatch(/voice agents/i);
     expect(services).toMatch(/automation/i);

@@ -24,6 +24,7 @@ const STATIC_PATHS = new Set([
   "/services",
   "/portfolio",
   "/blog",
+  "/locations",
   "/contact",
   "/privacy-policy",
   "/terms-of-service",

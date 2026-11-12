@@ -9,6 +9,7 @@ import { siteUrl } from "@/lib/seo/config";
 import {
   FOOTER_SOCIAL_LINKS,
   ORG_ADDRESS_DISPLAY,
+  ORG_SECONDARY_ADDRESS_DISPLAY,
   ORG_EMAIL,
   ORG_NAME,
   ORG_SITE_HOST,
@@ -70,7 +71,7 @@ export const Footer = () => {
                 />
               </div>
               <span className="font-display font-bold text-xl text-foreground">
-                TechVerge<span className="text-gradient"> Solutions</span>
+                TechVerge <span className="text-gradient">Solutions</span>
               </span>
             </Link>
             <p className="text-muted-foreground mb-2 font-medium text-foreground/90">
@@ -91,7 +92,14 @@ export const Footer = () => {
                   {ORG_SITE_HOST}
                 </a>
               </p>
-              <p>{ORG_ADDRESS_DISPLAY}</p>
+              <p>
+                <span className="text-foreground/80">Head office: </span>
+                {ORG_ADDRESS_DISPLAY}
+              </p>
+              <p>
+                <span className="text-foreground/80">Secondary office: </span>
+                {ORG_SECONDARY_ADDRESS_DISPLAY}
+              </p>
               <p>
                 <a
                   href={`mailto:${email}`}
@@ -197,6 +205,14 @@ export const Footer = () => {
                     className="text-muted-foreground hover:text-primary transition-colors text-sm"
                   >
                     About Us
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/locations"
+                    className="text-muted-foreground hover:text-primary transition-colors text-sm"
+                  >
+                    Locations
                   </Link>
                 </li>
                 <li>

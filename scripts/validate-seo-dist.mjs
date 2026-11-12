@@ -222,8 +222,11 @@ export async function validateSeoDist(options = {}) {
       if (!/What services does Tech Verge Solution offer/i.test(html)) {
         fail(`${rel}: homepage missing services FAQ text for AI search`);
       }
+      if (!/1209 Mountain Rd Pl NE #5036/i.test(html) || !/Albuquerque/i.test(html)) {
+        fail(`${rel}: homepage missing Albuquerque head office in location FAQ`);
+      }
       if (!/Lahore, Punjab, Pakistan/i.test(html)) {
-        fail(`${rel}: homepage missing location FAQ text`);
+        fail(`${rel}: homepage missing Lahore secondary office in location FAQ`);
       }
     }
     if (route.article) {
@@ -265,6 +268,7 @@ export async function validateSeoDist(options = {}) {
     "/about",
     "/services",
     "/portfolio",
+    "/locations",
     "/contact",
     "/blog",
   ]) {

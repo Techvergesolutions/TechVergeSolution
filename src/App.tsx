@@ -19,6 +19,7 @@ const Portfolio = lazy(() => import("./pages/Portfolio"));
 const Blog = lazy(() => import("./pages/Blog"));
 const BlogPost = lazy(() => import("./pages/BlogPost"));
 const MarketPage = lazy(() => import("./pages/MarketPage"));
+const Locations = lazy(() => import("./pages/Locations"));
 const Contact = lazy(() => import("./pages/Contact"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermsAndConditions = lazy(() => import("./pages/TermsAndConditions"));
@@ -41,7 +42,7 @@ export default function App() {
             <Route path="/ai-facts" element={<AiFacts />} /><Route path="/services" element={<Services />} />
             <Route path="/services/:slug" element={<ServicePage />} /><Route path="/portfolio" element={<Portfolio />} />
             <Route path="/blog" element={<Blog />} /><Route path="/blog/:slug" element={<BlogPost />} />
-            <Route path="/markets/:slug" element={<MarketPage />} /><Route path="/contact" element={<Contact />} />
+            <Route path="/markets/:slug" element={<MarketPage />} /><Route path="/locations" element={<Locations />} /><Route path="/contact" element={<Contact />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} /><Route path="/terms-of-service" element={<TermsAndConditions />} />
             {legacyServiceSlugs.map((slug) => <Route key={slug} path={`/${slug}`} element={<Navigate to={`/services/${slug}`} replace />} />)}
             <Route path="/lead-follow-up-automation" element={<Navigate to="/services/ai-automation" replace />} />

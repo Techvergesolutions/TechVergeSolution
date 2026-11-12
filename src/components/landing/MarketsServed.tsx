@@ -6,15 +6,16 @@ interface MarketsServedProps {
 }
 
 /**
- * Markets served remotely — no local-office claims.
+ * Markets served: US HQ in Albuquerque, secondary office in Lahore.
+ * Listed UK/UAE/other US cities are markets — not extra local offices.
  */
 export function MarketsServed({ compact = false }: MarketsServedProps) {
   if (compact) {
     return (
       <p className="text-muted-foreground text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
         <span className="text-foreground/90 font-medium">Markets we serve: </span>
-        United States (primary), United Kingdom, and United Arab Emirates — remotely,
-        without claiming local offices in those markets.
+        United States (primary), United Kingdom, and United Arab Emirates. Head office in
+        Albuquerque; secondary office in Lahore. Other cities are served remotely.
       </p>
     );
   }
@@ -28,8 +29,10 @@ export function MarketsServed({ compact = false }: MarketsServedProps) {
           </h2>
           <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
             We primarily work with US businesses and also support clients in the United
-            Kingdom and United Arab Emirates. Engagements are delivered remotely — we do not
-            claim brick-and-mortar offices in those markets.
+            Kingdom and United Arab Emirates. Our head office is in Albuquerque, New Mexico,
+            USA, with a secondary office in Lahore, Pakistan. Work outside those offices is
+            delivered remotely — we do not claim additional local offices in every city we
+            serve.
           </p>
         </AnimatedSection>
       </div>

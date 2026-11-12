@@ -41,9 +41,20 @@ describe("organization JSON-LD", () => {
     expect(org["@id"]).toBe(ORGANIZATION_ID);
     expect((org.logo as { url: string }).url).toContain("/Logo.svg");
     expect(org.address).toMatchObject({
-      addressLocality: "Lahore",
-      addressRegion: "Punjab",
-      addressCountry: "PK",
+      streetAddress: "1209 Mountain Rd Pl NE #5036",
+      addressLocality: "Albuquerque",
+      addressRegion: "NM",
+      postalCode: "87110",
+      addressCountry: "US",
+    });
+    expect(org.location).toMatchObject({
+      "@type": "Place",
+      name: "Secondary office",
+      address: {
+        addressLocality: "Lahore",
+        addressRegion: "Punjab",
+        addressCountry: "PK",
+      },
     });
     expect(org["@type"]).toEqual(expect.arrayContaining(["Organization", "LocalBusiness"]));
     const contactPoints = Array.isArray(org.contactPoint)

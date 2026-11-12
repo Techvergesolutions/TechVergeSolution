@@ -15,6 +15,7 @@ const ROUTE_H1 = {
   "/ai-facts": "Straight Answers About TechVerge",
   "/services": "Custom Software, Websites & Automation",
   "/portfolio": "Work That Solves Real Operational Problems",
+  "/locations": "Cities We Serve",
   "/contact": "Tell Us What You Want To Automate",
   "/blog": "Practical Guides on AI Voice Agents & Automation",
   "/privacy-policy": "Privacy Policy",
@@ -76,7 +77,7 @@ function aboutBody() {
   <p>We design and implement custom AI automation, voice agents, and software around your tools, handoffs, and growth goals — not a one-size-fits-all product.</p>
   <h2>A custom automation and software team</h2>
   <p>TechVerge Solutions designs and implements AI lead follow-up automation, inbound AI voice agents, business process automation, and custom AI-powered software. We build around your tools, call types, and handoffs.</p>
-  <p>Primary markets are the United States, United Kingdom, and United Arab Emirates. The team is based in Lahore, Punjab, Pakistan.</p>
+  <p>Primary markets are the United States, United Kingdom, and United Arab Emirates. Head office: 1209 Mountain Rd Pl NE #5036, Albuquerque, NM 87110, USA. Secondary office: Lahore, Punjab, Pakistan.</p>
   <p><a href="/services">View services</a> · <a href="/contact">Contact us</a> · <a href="/blog">Read guides</a></p>
 </main>`;
 }

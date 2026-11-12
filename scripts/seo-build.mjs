@@ -84,6 +84,7 @@ async function main() {
   }
 
   console.log("[seo-build] Done.");
+  process.exit(0);
 }
 
 main().catch((err) => {

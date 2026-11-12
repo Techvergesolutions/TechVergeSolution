@@ -68,9 +68,21 @@ function organizationNode() {
     priceRange: "Starting at $299 USD",
     address: {
       "@type": "PostalAddress",
-      addressLocality: "Lahore",
-      addressRegion: "Punjab",
-      addressCountry: "PK",
+      streetAddress: "1209 Mountain Rd Pl NE #5036",
+      addressLocality: "Albuquerque",
+      addressRegion: "NM",
+      postalCode: "87110",
+      addressCountry: "US",
+    },
+    location: {
+      "@type": "Place",
+      name: "Secondary office",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Lahore",
+        addressRegion: "Punjab",
+        addressCountry: "PK",
+      },
     },
     areaServed: areaServedNodes(),
     contactPoint: [
@@ -120,9 +132,11 @@ function professionalServiceNode() {
     priceRange: "Starting at $299 USD",
     address: {
       "@type": "PostalAddress",
-      addressLocality: "Lahore",
-      addressRegion: "Punjab",
-      addressCountry: "PK",
+      streetAddress: "1209 Mountain Rd Pl NE #5036",
+      addressLocality: "Albuquerque",
+      addressRegion: "NM",
+      postalCode: "87110",
+      addressCountry: "US",
     },
     areaServed: areaServedNodes(),
     provider: { "@id": `${SITE_URL}/#organization` },
@@ -545,6 +559,12 @@ export const prerenderRoutes = [
     },
   },
   {
+    path: "/locations",
+    title: "Locations | TechVerge Solutions",
+    description:
+      "Cities we serve in the United States, United Kingdom, and UAE for AI automation, voice agents, websites, mobile apps, and custom software.",
+  },
+  {
     path: "/contact",
     title: "Contact | TechVerge Solutions",
     description:
@@ -564,4 +584,4 @@ export const prerenderRoutes = [
   },
 ];
 
-export const EXPECTED_ROUTE_COUNT = 14;
+export const EXPECTED_ROUTE_COUNT = 15;

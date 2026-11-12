@@ -19,7 +19,15 @@ describe("structured data", () => {
       name: ORG_SCHEMA_NAME,
       "@id": `${absoluteUrl("/")}#organization`,
     });
-    expect(org.address).toMatchObject({ addressLocality: "Lahore", addressCountry: "PK" });
+    expect(org.address).toMatchObject({
+      streetAddress: "1209 Mountain Rd Pl NE #5036",
+      addressLocality: "Albuquerque",
+      addressCountry: "US",
+    });
+    expect(org.location).toMatchObject({
+      name: "Secondary office",
+      address: { addressLocality: "Lahore", addressCountry: "PK" },
+    });
     expect(org).not.toHaveProperty("aggregateRating");
     expect(org).not.toHaveProperty("review");
   });

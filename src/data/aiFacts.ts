@@ -1,5 +1,6 @@
 import {
   ORG_ADDRESS_DISPLAY,
+  ORG_SECONDARY_ADDRESS_DISPLAY,
   ORG_EMAIL,
   ORG_NAME,
   ORG_PHONE_LINES,
@@ -23,7 +24,7 @@ export const AI_FACTS: AiFact[] = [
   },
   {
     label: "Countries",
-    text: `We primarily serve businesses in the United States, and also work with clients in the United Kingdom and the United Arab Emirates. Delivery is remote. We are based in ${ORG_ADDRESS_DISPLAY} and do not claim local offices in every market we support.`,
+    text: `We primarily serve businesses in the United States, and also work with clients in the United Kingdom and the United Arab Emirates. Head office: ${ORG_ADDRESS_DISPLAY}. Secondary office: ${ORG_SECONDARY_ADDRESS_DISPLAY}. Work outside those offices is delivered remotely — we do not claim additional local offices in every city we serve.`,
   },
   {
     label: "Services",

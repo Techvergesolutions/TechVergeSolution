@@ -2,6 +2,7 @@ import {
   AREA_SERVED_COUNTRIES,
   DEFAULT_BLOG_AUTHOR,
   ORG_ADDRESS,
+  ORG_SECONDARY_ADDRESS,
   ORG_DESCRIPTION,
   ORG_NAME,
   ORG_SCHEMA_NAME,
@@ -65,6 +66,12 @@ export const pageSeo = {
     description:
       "Selected TechVerge case studies describing the operational problem, what we built, and the outcome — without invented metrics or unverified claims.",
     path: "/portfolio",
+  },
+  locations: {
+    title: formatPageTitle("Locations"),
+    description:
+      "Cities we serve in the United States, United Kingdom, and UAE for AI automation, voice agents, websites, mobile apps, and custom software.",
+    path: "/locations",
   },
   contact: {
     title: formatPageTitle("Contact"),
@@ -140,6 +147,10 @@ function postalAddressNode() {
   return { "@type": "PostalAddress" as const, ...ORG_ADDRESS };
 }
 
+function secondaryPostalAddressNode() {
+  return { "@type": "PostalAddress" as const, ...ORG_SECONDARY_ADDRESS };
+}
+
 export function organizationNode() {
   const contact = organizationSchemaContact();
   const sameAs = organizationSameAs();
@@ -156,6 +167,11 @@ export function organizationNode() {
     description: ORG_DESCRIPTION,
     ...organizationSchemaPriceRange(),
     address: postalAddressNode(),
+    location: {
+      "@type": "Place" as const,
+      name: "Secondary office",
+      address: secondaryPostalAddressNode(),
+    },
     areaServed: areaServedNodes(),
     ...contact,
     ...(ORG_PHONE_LINES.length || contact.email

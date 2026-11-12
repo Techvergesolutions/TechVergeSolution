@@ -14,13 +14,16 @@ Small and service businesses that rely on leads, appointments, calls, and follow
 
 ## Locations
 
-- Head office: Lahore, Punjab, Pakistan
+- Head office: 1209 Mountain Rd Pl NE #5036, Albuquerque, NM 87110, USA
+- Secondary office: Lahore, Punjab, Pakistan
 - Primary markets served: United States, United Kingdom, United Arab Emirates
+- City list (markets served; additional cities are remote, not extra local offices): /locations
 
 ## Key pages
 
 - [Services](https://www.techvergesolution.com/services): Overview of what we design and implement.
 - [About](https://www.techvergesolution.com/about): Who we are, how we work, and team roles.
+- [Locations](https://www.techvergesolution.com/locations): Major US, UK, and UAE cities we serve with AI automation, voice agents, websites, apps, and custom software.
 - [Contact](https://www.techvergesolution.com/contact): Book a strategy call or reach us at info@techvergesolution.com.
 - [Portfolio](https://www.techvergesolution.com/portfolio): Case studies by problem, solution, and outcome.
 - [Blog](https://www.techvergesolution.com/blog): Practical guides on automation and voice agents.
