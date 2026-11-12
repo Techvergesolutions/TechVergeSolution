@@ -1,7 +1,7 @@
-export const siteName = "TechVerge Solutions";
+export const siteName = "TechVerge Solution";
 export const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://www.techvergesolution.com").replace(/\/+$/, "");
 export const defaultDescription =
-  "TechVerge Solutions builds custom AI automation, voice agents, business workflows and software to help businesses reduce manual work and improve lead follow-up.";
+  "TechVerge Solution builds custom AI automation, voice agents, business workflows and software to help businesses reduce manual work and improve lead follow-up.";
 export const defaultOgImage = "/og-image.webp";
 
 export function absoluteUrl(path = "/"): string {

@@ -62,7 +62,7 @@ export const Footer = () => {
               <div className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center">
                 <img
                   src="/Logo.svg"
-                  alt="TechVerge Solutions logo"
+                  alt="TechVerge Solution logo"
                   width={40}
                   height={40}
                   loading="lazy"
@@ -71,7 +71,7 @@ export const Footer = () => {
                 />
               </div>
               <span className="font-display font-bold text-xl text-foreground">
-                TechVerge <span className="text-gradient">Solutions</span>
+                TechVerge <span className="text-gradient">Solution</span>
               </span>
             </Link>
             <p className="text-muted-foreground mb-2 font-medium text-foreground/90">
@@ -204,7 +204,7 @@ export const Footer = () => {
                     to="/about"
                     className="text-muted-foreground hover:text-primary transition-colors text-sm"
                   >
-                    About Us
+                    About
                   </Link>
                 </li>
                 <li>

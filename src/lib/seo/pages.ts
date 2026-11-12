@@ -1,6 +1,6 @@
 import { siteName as SITE_NAME, defaultDescription } from "./config";
 
-/** Title pattern: `[Page Name] | TechVerge Solutions` */
+/** Title pattern: `[Page Name] | TechVerge Solution` */
 export function formatPageTitle(pageName: string): string {
   return `${pageName} | ${SITE_NAME}`;
 }
@@ -37,37 +37,37 @@ export const pageSeo = {
   portfolio: {
     title: formatPageTitle("Portfolio"),
     description:
-      "Selected TechVerge case studies — real automation and software projects described by problem, solution, and outcome, without invented metrics.",
+      "Real projects: problem, solution, result. Selected TechVerge case studies in automation, voice agents, websites, and custom software.",
     path: "/portfolio",
   },
   contact: {
     title: formatPageTitle("Contact"),
     description:
-      "Contact TechVerge Solutions to discuss AI automation, voice agents, or custom software. Book a free strategy call or tell us about your workflow.",
+      "Contact TechVerge Solution to discuss AI automation, voice agents, or custom software. Book a free strategy call or tell us about your workflow.",
     path: "/contact",
   },
   privacyPolicy: {
     title: formatPageTitle("Privacy Policy"),
     description:
-      "How TechVerge Solutions collects, uses, and protects personal information when you use our website and services.",
+      "How TechVerge Solution collects, uses, and protects personal information when you use our website and services.",
     path: "/privacy-policy",
   },
   termsOfService: {
     title: formatPageTitle("Terms of Service"),
     description:
-      "Terms and conditions for using TechVerge Solutions websites and custom AI automation, voice agent, and software development services.",
+      "Terms and conditions for using TechVerge Solution websites and custom AI automation, voice agent, and software development services.",
     path: "/terms-of-service",
   },
   blog: {
     title: formatPageTitle("Blog"),
     description:
-      "Practical guides from TechVerge Solutions on AI voice agents, lead follow-up automation, and business workflows for US small and service businesses.",
+      "Practical guides from TechVerge Solution on AI voice agents, lead follow-up automation, and business workflows for US small and service businesses.",
     path: "/blog",
   },
   notFound: {
     title: formatPageTitle("Page Not Found"),
     description:
-      "The page you requested could not be found on TechVerge Solutions.",
+      "The page you requested could not be found on TechVerge Solution.",
     path: "/",
   },
 } as const satisfies Record<string, PageSeoConfig>;

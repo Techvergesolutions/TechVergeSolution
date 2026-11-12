@@ -14,7 +14,7 @@ export const HeroSection = () => {
       <div className="section-container relative z-10 pt-28 pb-16 sm:pb-20">
         <div className="max-w-4xl mx-auto text-center">
           <p className="font-display text-sm md:text-base font-semibold tracking-[0.2em] uppercase text-primary mb-5 sm:mb-6">
-            TechVerge Solutions
+            TechVerge Solution
           </p>
 
           <h1 className="font-display text-[1.75rem] leading-tight sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-5 sm:mb-6 sm:leading-[1.1] tracking-tight px-1">

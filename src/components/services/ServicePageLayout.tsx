@@ -59,7 +59,7 @@ export function ServicePageLayout({ service, breadcrumb }: ServicePageLayoutProp
         serviceSlug={service.slug}
         limit={4}
         title="Related & Recent Work"
-        description="Selected projects with factual delivery outcomes. No invented metrics — see the portfolio for full detail."
+        description="Real projects: problem, solution, result. See the portfolio for the full detail."
         muted={false}
       />
       <ServiceProcess process={service.process} />

@@ -74,7 +74,7 @@ const Services = () => {
           <CaseStudiesSummary
             limit={4}
             title="Work We've Shipped"
-            description="Selected projects with factual outcomes — no invented metrics. Explore the portfolio for problem, solution, and delivery detail."
+            description="Real projects: problem, solution, result. Explore the portfolio for the full delivery detail."
           />
 
           {/* 5. CTA → /contact */}

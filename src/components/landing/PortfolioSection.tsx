@@ -180,8 +180,7 @@ export const PortfolioSection = ({
               Selected Case Studies
             </h2>
             <p className="text-muted-foreground text-base md:text-lg">
-              Real projects described by the problem, what we delivered, and how it works —
-              without invented metrics.
+              Real projects: problem, solution, result.
             </p>
           </AnimatedSection>
         )}

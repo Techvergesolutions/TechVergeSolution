@@ -52,7 +52,7 @@ const Index = () => {
                   },
                   {
                     title: "Selected work",
-                    description: "Case studies by problem, solution, and outcome — no invented metrics.",
+                    description: "Real projects: problem, solution, result.",
                     to: "/portfolio",
                   },
                   {

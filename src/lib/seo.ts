@@ -16,13 +16,13 @@ import { siteUrl, siteName } from "./seo/config";
 export const SITE_URL = siteUrl;
 export const SITE_NAME = siteName || ORG_NAME;
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.webp`;
-export const DEFAULT_OG_IMAGE_ALT = "TechVerge Solutions — AI automation and custom software";
+export const DEFAULT_OG_IMAGE_ALT = "TechVerge Solution — AI automation and custom software";
 
 export const ORGANIZATION_ID = `${SITE_URL}/#organization`;
 export const WEBSITE_ID = `${SITE_URL}/#website`;
 export const PROFESSIONAL_SERVICE_ID = `${SITE_URL}/#professional-service`;
 
-/** Title pattern: `[Page Name] | TechVerge Solutions` */
+/** Title pattern: `[Page Name] | TechVerge Solution` */
 export function formatPageTitle(pageName: string): string {
   return `${pageName} | ${SITE_NAME}`;
 }
@@ -46,13 +46,13 @@ export const pageSeo = {
   about: {
     title: formatPageTitle("About"),
     description:
-      "Meet Tech Verge Solution: we design custom AI automation, voice agents, and software for small businesses in the United States, United Kingdom, and UAE.",
+      "Meet TechVerge Solution: we design custom AI automation, voice agents, and software for small businesses in the United States, United Kingdom, and UAE.",
     path: "/about",
   },
   aiFacts: {
     title: formatPageTitle("AI Facts"),
     description:
-      "Plain facts about TechVerge Solutions: who we serve, where we work, which services we build, typical timelines, how pricing starts, and how to contact us.",
+      "Plain facts about TechVerge Solution: who we serve, where we work, which services we build, typical timelines, how pricing starts, and how to contact us.",
     path: "/ai-facts",
   },
   services: {
@@ -64,7 +64,7 @@ export const pageSeo = {
   portfolio: {
     title: formatPageTitle("Portfolio"),
     description:
-      "Selected TechVerge case studies describing the operational problem, what we built, and the outcome — without invented metrics or unverified claims.",
+      "Real projects: problem, solution, result. Selected TechVerge case studies in automation, voice agents, websites, and custom software.",
     path: "/portfolio",
   },
   locations: {
@@ -76,19 +76,19 @@ export const pageSeo = {
   contact: {
     title: formatPageTitle("Contact"),
     description:
-      "Contact TechVerge Solutions to discuss AI automation, voice agents, or custom software. Book a strategy call or describe how your workflow works today.",
+      "Contact TechVerge Solution to discuss AI automation, voice agents, or custom software. Book a strategy call or describe how your workflow works today.",
     path: "/contact",
   },
   privacyPolicy: {
     title: formatPageTitle("Privacy Policy"),
     description:
-      "How TechVerge Solutions collects, uses, stores, and protects personal information when you visit our site, request a quote, or use our services.",
+      "How TechVerge Solution collects, uses, stores, and protects personal information when you visit our site, request a quote, or use our services.",
     path: "/privacy-policy",
   },
   termsOfService: {
     title: formatPageTitle("Terms of Service"),
     description:
-      "Terms for using TechVerge Solutions websites and commissioning custom AI automation, voice agents, websites, apps, and software for your business.",
+      "Terms for using TechVerge Solution websites and commissioning custom AI automation, voice agents, websites, apps, and software for your business.",
     path: "/terms-of-service",
   },
   blog: {
@@ -100,7 +100,7 @@ export const pageSeo = {
   notFound: {
     title: formatPageTitle("Page Not Found"),
     description:
-      "The page you requested could not be found on TechVerge Solutions.",
+      "The page you requested could not be found on TechVerge Solution.",
     path: "/",
   },
 } as const satisfies Record<string, PageSeoConfig>;
@@ -158,7 +158,7 @@ export function organizationNode() {
     "@type": ["Organization", "LocalBusiness"] as const,
     "@id": ORGANIZATION_ID,
     name: ORG_SCHEMA_NAME,
-    alternateName: [SITE_NAME, "Techverge Solution", "TechVerge", "Techverge"],
+    alternateName: ["Tech Verge Solution", "Techverge Solution", "TechVerge", "Techverge"],
     url: `${SITE_URL}/`,
     logo: {
       "@type": "ImageObject",

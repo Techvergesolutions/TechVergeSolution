@@ -10,6 +10,21 @@ import { collectBlogPosts } from "./collect-blog-posts.mjs";
 const DIST = path.join(ROOT, "dist");
 const GENERATED = path.join(ROOT, "src", "generated", "blog-posts.json");
 
+function formatBlogDate(isoDate) {
+  const match = String(isoDate ?? "").match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!match) return String(isoDate ?? "");
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  if (!year || month < 1 || month > 12 || day < 1 || day > 31) return String(isoDate ?? "");
+  return new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(Date.UTC(year, month - 1, day)));
+}
+
 function escapeHtml(value) {
   return String(value)
     .replace(/&/g, "&amp;")
@@ -47,7 +62,7 @@ function blogIndexHtml(posts) {
   <p>${escapeHtml(post.category || "Blog")}</p>
   <h2><a href="/blog/${escapeHtml(post.slug)}">${escapeHtml(post.title)}</a></h2>
   <p>${escapeHtml(post.excerpt || post.description)}</p>
-  <p><time datetime="${escapeHtml(post.datePublished)}">${escapeHtml(post.datePublished)}</time></p>
+  <p><time datetime="${escapeHtml(post.datePublished)}">${escapeHtml(formatBlogDate(post.datePublished))}</time></p>
 </article>`,
     )
     .join("\n");
@@ -93,7 +108,7 @@ function blogPostHtml(post) {
     (p) => p.slug === post.slug,
   );
   const body = full?.bodyHtml || `<p>${escapeHtml(post.description)}</p>`;
-  const author = post.author || full?.author || "TechVerge Solutions";
+  const author = post.author || full?.author || "TechVerge Solution";
   const faq = post.faq || full?.faq || [];
   const toc = full?.toc || [];
   const quick = full?.quickAnswer || post.excerpt || post.description;
@@ -113,8 +128,8 @@ function blogPostHtml(post) {
   <article>
     <header>
       <nav aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/blog">Blog</a> / ${escapeHtml(post.title)}</nav>
-      <p><time datetime="${escapeHtml(post.datePublished)}">${escapeHtml(post.datePublished)}</time>
-      · Updated <time datetime="${escapeHtml(post.dateModified || post.datePublished)}">${escapeHtml(post.dateModified || post.datePublished)}</time>
+      <p><time datetime="${escapeHtml(post.datePublished)}">${escapeHtml(formatBlogDate(post.datePublished))}</time>
+      · Updated <time datetime="${escapeHtml(post.dateModified || post.datePublished)}">${escapeHtml(formatBlogDate(post.dateModified || post.datePublished))}</time>
       · By <a href="/about">${escapeHtml(author)}</a></p>
       <h1>${escapeHtml(post.title)}</h1>
       <aside aria-label="Quick answer"><p><strong>Quick answer</strong></p><p>${escapeHtml(quick)}</p></aside>

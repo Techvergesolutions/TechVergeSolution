@@ -1,6 +1,6 @@
 # Blog image attribution
 
-Images stored under `public/images/blog/` for TechVerge Solutions articles.
+Images stored under `public/images/blog/` for TechVerge Solution articles.
 
 License notes below reflect the source sites’ stated terms at the time of download (2026-10-12). Re-check Unsplash/Pexels license pages if you redistribute elsewhere.
 

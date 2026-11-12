@@ -10,10 +10,10 @@
  */
 
 /** Marketing / UI site name */
-export const ORG_NAME = "TechVerge Solutions";
+export const ORG_NAME = "TechVerge Solution";
 
 /** schema.org Organization / LocalBusiness name */
-export const ORG_SCHEMA_NAME = "Tech Verge Solution";
+export const ORG_SCHEMA_NAME = "TechVerge Solution";
 
 // TODO: Confirm public contact email; leave empty to omit from JSON-LD only.
 export const ORG_EMAIL = "info@techvergesolution.com";
@@ -34,7 +34,7 @@ export const ORG_STARTING_PRICE_USD = 299;
 export const ORG_PRICE_RANGE = `Starting at $${ORG_STARTING_PRICE_USD} USD`;
 
 export const ORG_DESCRIPTION =
-  "Custom AI automation and voice agents for small businesses in the US, UK, and UAE—built by TechVerge Solutions to cut manual work and catch more leads.";
+  "Custom AI automation and voice agents for small businesses in the US, UK, and UAE—built by TechVerge Solution to cut manual work and catch more leads.";
 
 /** Countries listed in Organization.areaServed (matches primary marketing copy). */
 export const AREA_SERVED_COUNTRIES = [

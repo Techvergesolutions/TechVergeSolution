@@ -6,8 +6,8 @@ description: >-
 slug: ai-receptionist-for-doctors
 date: '2026-11-03'
 updated: '2026-11-03'
-author: TechVerge Solutions
-category: Automation
+author: TechVerge Solution
+category: AI Voice Agents
 tags:
   - AI receptionist
   - 'AI voice agent,'
@@ -20,9 +20,6 @@ heroImageAlt: >-
   AI receptionist for doctors answering patient calls 24/7 and automatically
   booking medical appointments.
 excerpt: >-
-  Blog Excerpt:
-
-
   Missed calls can mean lost patients and revenue for medical practices.
   Discover how an AI voice receptionist helps doctors answer calls 24/7,
   automate appointment bookings, handle patient inquiries, and improve the
@@ -80,7 +77,7 @@ Most missed calls happen at predictable moments, which also makes them fixable.
 about 12 lost new-patient visits a month. At an average first-visit value of $150 to $300, that is roughly $1,800 to $3,600 a month before counting follow-up visits. These numbers are an illustration, so replace them with your own call logs and average visit value.
 Conclusion
 
-Missed calls are one of the easiest leaks to fix in a medical practice. An AI voice receptionist answers every call, books appointments, answers routine questions and hands urgent cases to your team, all while keeping patient data protected.If you want to see how it would sound for your clinic, **TechVerge Solutions** builds custom AI voice agents for doctors, dentists and clinics in the USA, UK and UAE.
+Missed calls are one of the easiest leaks to fix in a medical practice. An AI voice receptionist answers every call, books appointments, answers routine questions and hands urgent cases to your team, all while keeping patient data protected.If you want to see how it would sound for your clinic, **TechVerge Solution** builds custom AI voice agents for doctors, dentists and clinics in the USA, UK and UAE.
 
 **Book a free 15-minute demo at **[**techvergesolution.com**](https://www.techvergesolution.com/)** and hear your own clinic's AI receptionist in action.**
 

@@ -20,7 +20,7 @@ export function AboutWhoWeAre() {
             </h2>
             <div className="space-y-4 text-muted-foreground text-base md:text-lg leading-relaxed">
               <p>
-                TechVerge Solutions designs and implements{" "}
+                TechVerge Solution designs and implements{" "}
                 <Link
                   to="/services/ai-automation"
                   className="text-primary hover:underline font-medium"

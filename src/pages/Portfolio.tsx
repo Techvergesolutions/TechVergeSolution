@@ -31,8 +31,8 @@ const Portfolio = () => {
                   Work That Solves Real Operational Problems
                 </h1>
                 <p className="text-muted-foreground text-base md:text-lg leading-relaxed mb-6">
-                  Browse selected projects by the problem we solved, what we built, and how it fits
-                  the client&apos;s workflow.
+                  Real projects: problem, solution, result. Browse selected work by the operational
+                  problem, what we built, and how it fits the client&apos;s workflow.
                 </p>
                 <p className="text-sm text-muted-foreground">
                   Looking for how we engage? See{" "}

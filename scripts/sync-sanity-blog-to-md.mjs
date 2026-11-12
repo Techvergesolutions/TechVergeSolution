@@ -14,6 +14,23 @@ loadEnvFiles();
 
 const CONTENT_DIR = path.join(ROOT, "content", "blog");
 
+function stripBlogExcerptLabel(value) {
+  return String(value ?? "").replace(/^\s*blog excerpt:\s*/i, "").trim();
+}
+
+function categoryForRow(row) {
+  const fromCms = (row.categories || [])
+    .map((category) => category?.title?.trim())
+    .find(Boolean);
+  if (fromCms) return fromCms;
+  const haystack = [row.title, row.slug, ...(row.tags || [])]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+  if (/voice agent|receptionist|phone agent/.test(haystack)) return "AI Voice Agents";
+  return "Automation";
+}
+
 function yamlEscape(value) {
   const s = String(value ?? "");
   if (/[:#{}[\],&*!|>'"%@`?]/.test(s) || s.includes("\n") || /^\d+\./.test(s)) {
@@ -106,6 +123,7 @@ export async function syncSanityBlogToMd() {
     _updatedAt,
     readingTimeMinutes,
     tags,
+    categories[]->{ title },
     mainImage { asset, alt },
     body,
     faqs[] { question, answer }
@@ -119,6 +137,13 @@ export async function syncSanityBlogToMd() {
     const faqs = (row.faqs || []).filter((f) => f?.question && f?.answer);
 
     if (existing.has(row.slug)) {
+      const topic = `${row.title || ""} ${row.slug}`.toLowerCase();
+      const questions = faqs.map((faq) => faq.question).join(" ").toLowerCase();
+      const faqsFit =
+        !faqs.length ||
+        !/voice|receptionist|phone/.test(topic) ||
+        /voice|receptionist|phone|call/.test(questions);
+      if (!faqsFit) continue;
       const out = path.join(CONTENT_DIR, `${row.slug}.md`);
       const raw = fs.readFileSync(out, "utf8");
       const next = upsertFaqFrontMatter(raw, faqs);
@@ -152,10 +177,11 @@ export async function syncSanityBlogToMd() {
       return block;
     });
 
-    const excerpt =
+    const excerpt = stripBlogExcerptLabel(
       row.excerpt?.trim() ||
-      row.description?.trim() ||
-      "Read the full article on the TechVerge Solutions blog.";
+        row.description?.trim() ||
+        "Read the full article on the TechVerge Solution blog.",
+    );
     const description =
       row.description?.trim() || excerpt.slice(0, 160) || row.title;
 
@@ -166,8 +192,8 @@ export async function syncSanityBlogToMd() {
         slug: row.slug,
         date: isoDateOnly(row.publishedAt),
         updated: isoDateOnly(row._updatedAt ?? row.publishedAt),
-        author: "TechVerge Solutions",
-        category: "Automation",
+        author: "TechVerge Solution",
+        category: categoryForRow(row),
         tags: row.tags || [],
         heroImage,
         heroImageAlt: row.mainImage?.alt?.trim() || row.title,

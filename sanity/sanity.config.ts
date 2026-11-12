@@ -5,7 +5,7 @@ import { schemaTypes } from "./schemaTypes";
 
 export default defineConfig({
   name: "techverge-blog",
-  title: "TechVerge Solutions Blog",
+  title: "TechVerge Solution Blog",
   projectId: "xo7s2xmj",
   dataset: "production",
   plugins: [structureTool(), visionTool()],

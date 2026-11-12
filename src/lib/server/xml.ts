@@ -1,3 +1,4 @@
+import { stripBlogExcerptLabel } from "../blogFormat";
 import { absoluteUrl, defaultDescription, siteName } from "../seo/config";
 import { blogPosts } from "../../data/blog";
 import type { IndexDocument } from "./content";
@@ -90,7 +91,7 @@ export function generateRssXml(documents: IndexDocument[]): string {
     .map((doc) => ({
       path: documentPath(doc)!,
       title: doc.title!.trim(),
-      description: doc.excerpt?.trim() || doc.description?.trim() || "",
+      description: stripBlogExcerptLabel(doc.excerpt) || stripBlogExcerptLabel(doc.description) || "",
       publishedAt: validDate(doc.publishedAt),
     }));
 
@@ -100,7 +101,7 @@ export function generateRssXml(documents: IndexDocument[]): string {
     feedItems.push({
       path: `/blog/${encodeURIComponent(post.slug)}`,
       title: post.title,
-      description: post.excerpt || post.description,
+      description: stripBlogExcerptLabel(post.excerpt) || post.description,
       publishedAt: validDate(post.dateModified || post.datePublished),
     });
   }

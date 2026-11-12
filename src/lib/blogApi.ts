@@ -1,3 +1,4 @@
+import { stripBlogExcerptLabel } from "./blogFormat";
 import { siteName, defaultOgImage } from "./seo/config";
 import type { PortableTextBlock } from "@portabletext/types";
 import {
@@ -142,29 +143,49 @@ function mapFeaturedImage(mainImage?: SanityPostRow["mainImage"]): BlogImage {
   }
 }
 
+/** True when CMS FAQs are about this post. A pasted FAQ set from another article is not. */
+export function cmsFaqsMatchPost(row: {
+  title?: string | null;
+  slug?: string | null;
+  faqs?: { question?: string | null; answer?: string | null }[] | null;
+}): boolean {
+  const topic = `${row.title ?? ""} ${row.slug ?? ""}`.toLowerCase();
+  const faqs = row.faqs ?? [];
+  if (!faqs.length || !/voice|receptionist|phone/.test(topic)) return true;
+  const questions = faqs.map((faq) => faq?.question ?? "").join(" ").toLowerCase();
+  return /voice|receptionist|phone|call/.test(questions);
+}
+
 function mapSanityRowToMeta(row: SanityPostRow): BlogPostMeta {
+  const compiled = getCompiledBlogPostBySlug(row.slug);
+  const compiledWins = Boolean(compiled && !cmsFaqsMatchPost(row));
   const featuredImage = mapFeaturedImage(row.mainImage);
   const datePublished = isoDateOnly(row.publishedAt);
   const dateModified = isoDateOnly(row.updatedAt ?? row._updatedAt ?? row.publishedAt);
-  const excerpt =
-    row.excerpt?.trim() ||
-    row.description?.trim() ||
-    `Read the full article on the ${siteName} blog.`;
+  const excerpt = compiledWins
+    ? compiled!.excerpt
+    : stripBlogExcerptLabel(row.excerpt) ||
+      stripBlogExcerptLabel(row.description) ||
+      compiled?.excerpt ||
+      `Read the full article on the ${siteName} blog.`;
 
   return {
     slug: row.slug,
-    title: row.title,
-    description:
-      row.description?.trim() ||
-      excerpt.slice(0, 160) ||
-      row.title,
+    title: compiledWins ? compiled!.title : row.title,
+    description: compiledWins
+      ? compiled!.description
+      : stripBlogExcerptLabel(row.description) ||
+        excerpt.slice(0, 160) ||
+        row.title,
     excerpt,
     datePublished,
     dateModified,
     readingTimeMinutes:
       row.readingTimeMinutes ?? estimateReadingMinutes(row.body),
     tags: row.tags?.filter(Boolean),
-    category: row.categories?.find((category) => category?.title?.trim())?.title?.trim() || undefined,
+    category:
+      row.categories?.find((category) => category?.title?.trim())?.title?.trim() ||
+      compiled?.category,
     featuredImage,
     ogImage: featuredImage.src.startsWith("http")
       ? featuredImage.src
@@ -219,7 +240,7 @@ export async function getSanityPostBySlug(
       ...meta,
       source: "sanity",
       seoTitle: row.seo?.seoTitle?.trim() || row.title,
-      seoDescription: row.seo?.seoDescription?.trim() || row.excerpt?.trim() || row.description?.trim() || meta.description,
+      seoDescription: stripBlogExcerptLabel(row.seo?.seoDescription) || stripBlogExcerptLabel(row.excerpt) || stripBlogExcerptLabel(row.description) || meta.description,
       customOgImage: row.seo?.ogImage?.asset ? ogImage.src : undefined,
       ogImage: ogImage.src,
       ogImageAlt: ogImage.alt,
@@ -266,6 +287,9 @@ export async function resolveBlogPost(slug: string): Promise<
     sanityPost = null;
   }
 
+  if (sanityPost && staticMeta && !cmsFaqsMatchPost(sanityPost)) {
+    return { kind: "static", meta: staticMeta };
+  }
   if (sanityPost) return { kind: "sanity", post: sanityPost };
   if (staticMeta) return { kind: "static", meta: staticMeta };
 

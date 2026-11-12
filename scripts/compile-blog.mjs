@@ -21,9 +21,21 @@ marked.setOptions({
   breaks: false,
 });
 
+function stripBlogExcerptLabel(value) {
+  return String(value ?? "").replace(/^\s*blog excerpt:\s*/i, "").trim();
+}
+
 function estimateReadingMinutes(text) {
   const words = text.trim().split(/\s+/).filter(Boolean).length;
   return Math.max(1, Math.round(words / 200));
+}
+
+function sanityFaqsFit(title, slug, faqs) {
+  if (!faqs?.length) return false;
+  const topic = `${title} ${slug}`.toLowerCase();
+  if (!/voice|receptionist|phone/.test(topic)) return true;
+  const questions = faqs.map((item) => item.question).join(" ").toLowerCase();
+  return /voice|receptionist|phone|call/.test(questions);
 }
 
 function normalizeFaq(faq) {
@@ -225,11 +237,11 @@ export async function compileBlog() {
     const dateModified = String(data.updated || data.date || "").slice(0, 10);
     const heroImage = String(data.heroImage || "/og-image.webp");
     const heroImageAlt = String(data.heroImageAlt || data.title);
-    const description = String(data.description || data.excerpt || data.title);
-    const excerpt = String(data.excerpt || description).trim();
+    const description = stripBlogExcerptLabel(data.description || data.excerpt || data.title);
+    const excerpt = stripBlogExcerptLabel(data.excerpt || description);
     const category = String(data.category || "Blog");
     const quickAnswer = data.quickAnswer
-      ? String(data.quickAnswer).trim()
+      ? stripBlogExcerptLabel(data.quickAnswer)
       : excerpt;
 
     posts.push({
@@ -240,7 +252,7 @@ export async function compileBlog() {
       quickAnswer,
       datePublished,
       dateModified,
-      author: String(data.author || "TechVerge Solutions"),
+      author: String(data.author || "TechVerge Solution"),
       category,
       tags: Array.isArray(data.tags) ? data.tags.map(String) : [],
       readingTimeMinutes:
@@ -254,10 +266,9 @@ export async function compileBlog() {
       },
       ogImage: heroImage,
       ogImageAlt: String(data.ogImageAlt || heroImageAlt),
-      faq:
-        sanityFaqs.get(slug)?.length > 0
-          ? sanityFaqs.get(slug)
-          : normalizeFaq(data.faq),
+      faq: sanityFaqsFit(String(data.title), slug, sanityFaqs.get(slug))
+        ? sanityFaqs.get(slug)
+        : normalizeFaq(data.faq),
       toc,
       relatedSlugs: normalizeRelated(data.related),
       cta: normalizeCta(data.cta, category),

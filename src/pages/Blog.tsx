@@ -87,9 +87,8 @@ const Blog = () => {
                 </h1>
                 <p className="text-muted-foreground text-base md:text-lg leading-relaxed">
                   Clear writing on AI voice agents, lead follow-up, and workflow
-                  automation for small and service businesses. Each guide is meant
-                  to answer a real operating question—without invented metrics or
-                  tool hype.
+                  automation for small and service businesses. Real projects:
+                  problem, solution, result.
                 </p>
               </AnimatedSection>
             </div>

@@ -52,7 +52,7 @@ export const TeamSection = () => {
                     ) : null}
                     <img
                       src={member.image}
-                      alt={`${member.name}, ${member.role} at TechVerge Solutions`}
+                      alt={`${member.name}, ${member.role} at TechVerge Solution`}
                       width={640}
                       height={640}
                       sizes="(max-width: 768px) 100vw, 33vw"

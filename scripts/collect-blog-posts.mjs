@@ -30,7 +30,7 @@ export async function collectBlogPosts() {
     description: post.description,
     datePublished: post.datePublished,
     dateModified: post.dateModified,
-    author: post.author || "TechVerge Solutions",
+    author: post.author || "TechVerge Solution",
     category: post.category || "Blog",
     imagePath: post.ogImage || post.featuredImage?.src || "/og-image.webp",
     imageAlt:

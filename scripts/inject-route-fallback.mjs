@@ -68,7 +68,7 @@ function injectRoot(html, inner) {
 }
 
 function headingFromTitle(title) {
-  return title.replace(/\s*\|\s*TechVerge Solutions\s*$/i, "").trim();
+  return title.replace(/\s*\|\s*TechVerge Solution\s*$/i, "").trim();
 }
 
 function aboutBody() {
@@ -76,7 +76,7 @@ function aboutBody() {
   <h1>Built For How Your Business Actually Works</h1>
   <p>We design and implement custom AI automation, voice agents, and software around your tools, handoffs, and growth goals — not a one-size-fits-all product.</p>
   <h2>A custom automation and software team</h2>
-  <p>TechVerge Solutions designs and implements AI lead follow-up automation, inbound AI voice agents, business process automation, and custom AI-powered software. We build around your tools, call types, and handoffs.</p>
+  <p>TechVerge Solution designs and implements AI lead follow-up automation, inbound AI voice agents, business process automation, and custom AI-powered software. We build around your tools, call types, and handoffs.</p>
   <p>Primary markets are the United States, United Kingdom, and United Arab Emirates. Head office: 1209 Mountain Rd Pl NE #5036, Albuquerque, NM 87110, USA. Secondary office: Lahore, Punjab, Pakistan.</p>
   <p><a href="/services">View services</a> · <a href="/contact">Contact us</a> · <a href="/blog">Read guides</a></p>
 </main>`;
@@ -91,7 +91,7 @@ function fallbackBody(route) {
     headingFromTitle(route.title);
   const desc = route.description || "";
   const extra = route.service?.name
-    ? `<p>${escapeHtml(route.service.name)} from TechVerge Solutions for teams in the US, UK, and UAE.</p>`
+    ? `<p>${escapeHtml(route.service.name)} from TechVerge Solution for teams in the US, UK, and UAE.</p>`
     : "";
   return `<main>
   <h1>${escapeHtml(h1)}</h1>

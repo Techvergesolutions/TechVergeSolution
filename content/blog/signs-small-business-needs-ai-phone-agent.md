@@ -6,8 +6,8 @@ description: >-
 slug: signs-small-business-needs-ai-phone-agent
 date: '2026-11-02'
 updated: '2026-11-02'
-author: TechVerge Solutions
-category: Automation
+author: TechVerge Solution
+category: AI Voice Agents
 tags:
   - AI phone agent
   - AI voice agents
@@ -151,8 +151,8 @@ A good setup includes a clear hand-off, so the agent can transfer the call or al
 
 ![Seven-step roadmap for launching an AI phone agent in a small business](https://cdn.sanity.io/images/xo7s2xmj/production/0c0ceb96a233b26a228201d6550089fb27dd7352-1200x675.svg?w=1200&q=85 "A simple 7-step roadmap to launch your first AI phone agent, starting with after-hours calls.")
 
-### Talk to TechVerge Solutions
+### Talk to TechVerge Solution
 
-TechVerge Solutions builds custom AI voice agents and automation for small businesses in the US, UK and UAE, designed to cut manual work and catch more leads. If two or more of the signs above sound familiar, [book a free consultation](https://www.techvergesolution.com/) and we will map out where an AI phone agent would help most.
+TechVerge Solution builds custom AI voice agents and automation for small businesses in the US, UK and UAE, designed to cut manual work and catch more leads. If two or more of the signs above sound familiar, [book a free consultation](https://www.techvergesolution.com/) and we will map out where an AI phone agent would help most.
 
 ##

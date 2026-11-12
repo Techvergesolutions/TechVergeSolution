@@ -10,7 +10,7 @@ const navLinks: { name: string; href: string; menu?: boolean }[] = [
   { name: "Services", href: "/services" },
   { name: "Portfolio", href: "/portfolio" },
   { name: "Blog", href: "/blog" },
-  { name: "About Us", href: "/about" },
+  { name: "About", href: "/about" },
   { name: "Locations", href: "/locations", menu: true },
   { name: "Contact", href: "/contact" },
 ];
@@ -44,7 +44,7 @@ export const Navbar = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 1024) setIsMobileMenuOpen(false);
+      if (window.innerWidth >= 768) setIsMobileMenuOpen(false);
     };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
@@ -102,7 +102,7 @@ export const Navbar = () => {
             <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg overflow-hidden flex items-center justify-center bg-muted shrink-0">
               <img
                 src="/Logo.svg"
-                alt="TechVerge Solutions logo"
+                alt="TechVerge Solution logo"
                 width={40}
                 height={40}
                 decoding="async"
@@ -111,11 +111,11 @@ export const Navbar = () => {
               />
             </div>
             <span className="font-display font-bold text-base sm:text-xl text-foreground whitespace-nowrap max-[360px]:sr-only">
-              TechVerge <span className="text-gradient">Solutions</span>
+              TechVerge <span className="text-gradient">Solution</span>
             </span>
           </Link>
 
-          <div className="hidden lg:flex items-center gap-4 lg:gap-6 xl:gap-8">
+          <div className="hidden md:flex items-center gap-3 lg:gap-4 xl:gap-6 min-w-0 text-sm">
             {navLinks.map((link) => {
               const active = isNavLinkActive(pathname, link.href);
               if (link.menu) {
@@ -210,12 +210,12 @@ export const Navbar = () => {
                 </Link>
               );
             })}
-            <BookingCta className="px-5 py-2.5 rounded-lg text-primary-foreground font-medium text-sm whitespace-nowrap" />
+            <BookingCta className="hidden xl:inline-flex px-5 py-2.5 rounded-lg text-primary-foreground font-medium text-sm whitespace-nowrap" />
           </div>
 
           <button
             type="button"
-            className="lg:hidden text-foreground p-2 relative z-[60] active:scale-95 transition-transform"
+            className="md:hidden text-foreground p-2 relative z-[60] active:scale-95 transition-transform"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
             aria-expanded={isMobileMenuOpen}
@@ -229,14 +229,14 @@ export const Navbar = () => {
           <>
             <button
               type="button"
-              className="fixed inset-0 bg-background/60 backdrop-blur-sm z-[40] lg:hidden border-0 p-0 cursor-default"
+              className="fixed inset-0 bg-background/60 backdrop-blur-sm z-[40] md:hidden border-0 p-0 cursor-default"
               aria-label="Close menu overlay"
               onClick={() => setIsMobileMenuOpen(false)}
             />
 
             <div
               id="mobile-primary-nav"
-              className="absolute top-full left-0 right-0 z-[50] lg:hidden px-4 pt-2 pb-6 animate-menu-in"
+              className="absolute top-full left-0 right-0 z-[50] md:hidden px-4 pt-2 pb-6 animate-menu-in"
             >
               <div className="glass-card rounded-2xl border border-border/50 shadow-2xl overflow-hidden bg-background/95">
                 <div className="p-6 flex flex-col gap-2">

@@ -7,6 +7,7 @@ import type { PortableTextBlock } from "@portabletext/types";
 import { getBlogPostBySlug, getCompiledBlogPostBySlug } from "../../data/blog";
 import { buildMetadata } from "../seo/metadata";
 import { articleJsonLd, faqPageJsonLd, serializeJsonLd, visibleFaqs } from "../seo/schema";
+import { stripBlogExcerptLabel } from "../blogFormat";
 import { siteName } from "../seo/config";
 import { escapeXml } from "./xml";
 import type { CmsImage, CmsSeo, CmsFaq } from "../sanity/queries";
@@ -69,7 +70,7 @@ export function renderBlogHead(template: string, slug: string, post: BlogHeadPos
   const title = post?.title?.trim() || (!post ? fallback?.title : undefined);
   const path = `/blog/${encodeURIComponent(slug)}`;
   const found = Boolean(title);
-  const description = post ? post.seo?.seoDescription?.trim() || post.excerpt?.trim() || post.description?.trim() || "" : fallback?.description || "The page you requested could not be found on TechVerge Solutions.";
+  const description = post ? stripBlogExcerptLabel(post.seo?.seoDescription) || stripBlogExcerptLabel(post.excerpt) || stripBlogExcerptLabel(post.description) || "" : fallback?.description || "The page you requested could not be found on TechVerge Solution.";
   const publishedTime = post?.publishedAt || (!post ? fallback?.datePublished : undefined);
   const modifiedTime = post?.updatedAt || publishedTime;
   const author = post?.author?.name?.trim();

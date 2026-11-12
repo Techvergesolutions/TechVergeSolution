@@ -16,20 +16,20 @@ export interface BlogAuthor {
 export const blogAuthors: Record<string, BlogAuthor> = {
   "techverge-solutions": {
     id: "techverge-solutions",
-    name: "TechVerge Solutions",
+    name: "TechVerge Solution",
     role: "AI automation & software team",
     bio: "We design and implement custom AI voice agents, lead follow-up, and business automation for small and service businesses in the US, UK, and UAE.",
     image: "/Logo.svg",
-    imageAlt: "TechVerge Solutions logo",
+    imageAlt: "TechVerge Solution logo",
     path: "/about",
   },
   "umer-arshad": {
     id: "umer-arshad",
     name: "Umer Arshad",
     role: "Founder & CEO",
-    bio: "Founder of TechVerge Solutions. Focused on practical AI automation and voice systems that fit how service businesses actually work.",
+    bio: "Founder of TechVerge Solution. Focused on practical AI automation and voice systems that fit how service businesses actually work.",
     image: "/Umer.webp",
-    imageAlt: "Umer Arshad, Founder & CEO of TechVerge Solutions",
+    imageAlt: "Umer Arshad, Founder & CEO of TechVerge Solution",
     path: "/about",
   },
 };

@@ -61,7 +61,7 @@ export const COMPANY_TIMELINE = [
     year: "2022",
     title: "Founded",
     detail:
-      "TechVerge Solutions started building custom software and automation for growing businesses.",
+      "TechVerge Solution started building custom software and automation for growing businesses.",
   },
   {
     year: "2023–2024",
@@ -78,4 +78,4 @@ export const COMPANY_TIMELINE = [
 ] as const;
 
 export const AFFILIATION_DISCLAIMER =
-  "TechVerge Solutions (techvergesolution.com) is not affiliated with Techverx, Techvify or similar-named companies.";
+  "TechVerge Solution (techvergesolution.com) is not affiliated with Techverx, Techvify or similar-named companies.";

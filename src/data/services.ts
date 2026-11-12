@@ -95,7 +95,7 @@ export const servicesConfig: Record<ServiceSlug, ServiceConfig> = {
     slug: "ai-automation",
     pageTitle: `AI Lead Follow-Up Automation | ${SITE_NAME}`,
     metaDescription:
-      "TechVerge Solutions designs AI automation for lead follow-up and back-office tasks so new enquiries get answered fast and routine work stops piling up.",
+      "TechVerge Solution designs AI automation for lead follow-up and back-office tasks so new enquiries get answered fast and routine work stops piling up.",
     eyebrow: "AI Lead Follow-Up Automation",
     headline: "AI Automation for Lead Follow-Up and Back-Office Work",
     subheadline:
@@ -306,7 +306,7 @@ export const servicesConfig: Record<ServiceSlug, ServiceConfig> = {
     slug: "ai-voice-agents",
     pageTitle: `AI Voice Agents 24/7 | ${SITE_NAME}`,
     metaDescription:
-      "TechVerge Solutions builds AI voice agents that answer inbound calls, qualify callers, and book jobs around the clock—with clear handoffs to your team.",
+      "TechVerge Solution builds AI voice agents that answer inbound calls, qualify callers, and book jobs around the clock—with clear handoffs to your team.",
     eyebrow: "AI Voice Agents",
     headline: "AI Voice Agents That Answer Calls and Book Jobs 24/7",
     subheadline:
@@ -517,7 +517,7 @@ export const servicesConfig: Record<ServiceSlug, ServiceConfig> = {
     slug: "business-automation",
     pageTitle: `Business Process Automation | ${SITE_NAME}`,
     metaDescription:
-      "TechVerge Solutions connects forms, CRM, email, and calendars with business process automation built for service businesses that outgrow manual admin.",
+      "TechVerge Solution connects forms, CRM, email, and calendars with business process automation built for service businesses that outgrow manual admin.",
     eyebrow: "Business Process Automation",
     headline: "Business Process Automation for Service Businesses",
     subheadline:

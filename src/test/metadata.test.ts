@@ -7,9 +7,9 @@ describe("clampMetaTitle", () => {
   it("keeps titles within the limit including site suffix", () => {
     const long =
       "How to Automate Your Business with n8n and AI in 2026: Seven Workflows";
-    const out = clampMetaTitle(long, "TechVerge Solutions");
+    const out = clampMetaTitle(long, "TechVerge Solution");
     expect(out.length).toBeLessThanOrEqual(META_TITLE_MAX);
-    expect(out.endsWith("| TechVerge Solutions")).toBe(true);
+    expect(out.endsWith("| TechVerge Solution")).toBe(true);
   });
 });
 

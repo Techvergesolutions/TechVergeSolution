@@ -5,8 +5,8 @@ describe("homepage AI search content", () => {
   it("includes about copy and required FAQ questions", () => {
     expect(HOMEPAGE_ABOUT.paragraphs.length).toBeGreaterThanOrEqual(2);
     const questions = HOMEPAGE_FAQ.map((f) => f.question);
-    expect(questions).toContain("What services does Tech Verge Solution offer?");
-    expect(questions).toContain("Where is Tech Verge Solution located?");
+    expect(questions).toContain("What services does TechVerge Solution offer?");
+    expect(questions).toContain("Where is TechVerge Solution located?");
   });
 
   it("mentions Albuquerque head office, Lahore secondary office, and core services", () => {

@@ -6,7 +6,7 @@ description: >-
 slug: ai-automation-small-business-2026
 date: '2026-10-12'
 updated: '2026-10-12'
-author: TechVerge Solutions
+author: TechVerge Solution
 category: Automation
 tags:
   - AI Automation
@@ -220,7 +220,7 @@ The most useful AI automation for a small business is not the one with the most 
 
 Choose one workflow—lead follow-up, support triage, scheduling, document processing, internal search, or reporting—and measure the results before expanding.
 
-For help assessing a workflow or connecting existing systems, see our [AI lead follow-up automation service](/services/ai-automation), related [business process automation](/services/business-automation), or [contact TechVerge Solutions](/contact) to map a practical next step.
+For help assessing a workflow or connecting existing systems, see our [AI lead follow-up automation service](/services/ai-automation), related [business process automation](/services/business-automation), or [contact TechVerge Solution](/contact) to map a practical next step.
 
 ## References
 

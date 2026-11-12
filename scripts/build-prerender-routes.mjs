@@ -42,7 +42,7 @@ function blogIndexJsonLd(posts) {
     "@id": blogUrl,
     name: `${SITE_NAME} Blog`,
     description:
-      "Practical TechVerge Solutions guides on AI voice agents, lead follow-up, and workflow automation for small and service businesses—clear and jargon-light.",
+      "Practical TechVerge Solution guides on AI voice agents, lead follow-up, and workflow automation for small and service businesses—clear and jargon-light.",
     url: blogUrl,
     publisher: { "@id": `${SITE_URL}/#organization` },
     inLanguage: "en-US",
@@ -154,9 +154,9 @@ export async function buildPrerenderRoutes() {
 
   const blogIndex = {
     path: "/blog",
-    title: "AI Automation Guides | TechVerge Solutions",
+    title: "AI Automation Guides | TechVerge Solution",
     description:
-      "Practical TechVerge Solutions guides on AI voice agents, lead follow-up, and workflow automation for small and service businesses—clear and jargon-light.",
+      "Practical TechVerge Solution guides on AI voice agents, lead follow-up, and workflow automation for small and service businesses—clear and jargon-light.",
     extraJsonLd: [blogIndexJsonLd(posts)],
   };
 
@@ -167,7 +167,7 @@ export async function buildPrerenderRoutes() {
       : `${SITE_URL}${post.imagePath}`;
     return {
       path,
-      title: `${post.title} | TechVerge Solutions`,
+      title: `${post.title} | TechVerge Solution`,
       description: post.description,
       ogImage,
       ogImageAlt: post.imageAlt,

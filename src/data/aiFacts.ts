@@ -45,4 +45,4 @@ export const AI_FACTS: AiFact[] = [
 ];
 
 export const AI_FACTS_INTRO =
-  "Plain facts about TechVerge Solutions for people and tools that want a short, accurate summary. Details and examples live on the linked service and About pages.";
+  "Plain facts about TechVerge Solution for people and tools that want a short, accurate summary. Details and examples live on the linked service and About pages.";

@@ -44,7 +44,7 @@ function homeStaticHtml(content) {
   return `<header><nav aria-label="Primary"><a href="${SITE}/">Home</a> · <a href="${SITE}/services">Services</a> · <a href="${SITE}/blog">Blog</a> · <a href="${SITE}/contact">Contact</a></nav></header>
 <main>
   <h1>AI Automation &amp; Voice Agents for Small Businesses</h1>
-  <p>TechVerge Solutions — practical automation for teams in the US, UK, and UAE.</p>
+  <p>TechVerge Solution — practical automation for teams in the US, UK, and UAE.</p>
   <section aria-labelledby="home-about-static">
     <h2 id="home-about-static">${escapeHtml(content.aboutHeading)}</h2>
     ${about}

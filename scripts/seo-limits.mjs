@@ -45,7 +45,7 @@ export function clampMetaDescription(
   const pads = [
     " Built for small and service businesses.",
     " Serving teams in the United States, United Kingdom, and UAE.",
-    " Talk with TechVerge Solutions to scope a practical next step.",
+    " Talk with TechVerge Solution to scope a practical next step.",
   ];
   for (const pad of pads) {
     if (text.length >= min) break;

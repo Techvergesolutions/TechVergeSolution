@@ -52,7 +52,7 @@ const SERVICES = [
 ];
 
 const ORG_DESCRIPTION =
-  "Custom AI automation and voice agents for small businesses in the US, UK, and UAE—built by TechVerge Solutions to cut manual work and catch more leads.";
+  "Custom AI automation and voice agents for small businesses in the US, UK, and UAE—built by TechVerge Solution to cut manual work and catch more leads.";
 
 const WHO_WE_SERVE =
   "Small and service businesses that rely on leads, appointments, calls, and follow-up—especially teams in the United States, with clients also in the United Kingdom and United Arab Emirates.";
@@ -73,7 +73,7 @@ function line(title, url, blurb) {
 export async function generateLlmsTxt() {
   const posts = await collectBlogPosts();
   const lines = [
-    "# TechVerge Solutions",
+    "# TechVerge Solution",
     "",
     "> Custom AI automation, voice agents, and business software for small teams.",
     "",

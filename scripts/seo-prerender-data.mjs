@@ -7,13 +7,13 @@
 import { loadEnv } from "vite";
 const env = loadEnv(process.env.SEO_BUILD_MODE || "production", process.cwd(), "NEXT_PUBLIC_");
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || env.NEXT_PUBLIC_SITE_URL || "https://www.techvergesolution.com").replace(/\/+$/, "");
-export const SITE_NAME = "TechVerge Solutions";
+export const SITE_NAME = "TechVerge Solution";
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.webp`;
 export const DEFAULT_OG_IMAGE_ALT =
-  "TechVerge Solutions — AI automation and custom software";
+  "TechVerge Solution — AI automation and custom software";
 
 export const ORG_DESCRIPTION =
-  "Custom AI automation and voice agents for small businesses in the US, UK, and UAE—built by TechVerge Solutions to cut manual work and catch more leads.";
+  "Custom AI automation and voice agents for small businesses in the US, UK, and UAE—built by TechVerge Solution to cut manual work and catch more leads.";
 
 export const AREA_SERVED_COUNTRIES = [
   "United States",
@@ -55,8 +55,8 @@ function organizationNode() {
   return {
     "@type": ["Organization", "LocalBusiness"],
     "@id": `${SITE_URL}/#organization`,
-    name: "Tech Verge Solution",
-    alternateName: [SITE_NAME, "Techverge Solution", "TechVerge", "Techverge"],
+    name: "TechVerge Solution",
+    alternateName: ["Tech Verge Solution", "Techverge Solution", "TechVerge", "Techverge"],
     url: `${SITE_URL}/`,
     logo: {
       "@type": "ImageObject",
@@ -124,7 +124,7 @@ function professionalServiceNode() {
   return {
     "@type": ["ProfessionalService", "LocalBusiness"],
     "@id": `${SITE_URL}/#professional-service`,
-    name: "Tech Verge Solution",
+    name: "TechVerge Solution",
     url: `${SITE_URL}/`,
     image: DEFAULT_OG_IMAGE,
     telephone: "+15055231081",
@@ -284,32 +284,32 @@ export function blogPostingJsonLd(input) {
 export const prerenderRoutes = [
   {
     path: "/",
-    title: "AI Automation & Voice Agents | TechVerge Solutions",
+    title: "AI Automation & Voice Agents | TechVerge Solution",
     description: ORG_DESCRIPTION,
   },
   {
     path: "/about",
-    title: "About | TechVerge Solutions",
+    title: "About | TechVerge Solution",
     description:
-      "Meet Tech Verge Solution: we design custom AI automation, voice agents, and software for small businesses in the United States, United Kingdom, and UAE.",
+      "Meet TechVerge Solution: we design custom AI automation, voice agents, and software for small businesses in the United States, United Kingdom, and UAE.",
   },
   {
     path: "/ai-facts",
-    title: "AI Facts | TechVerge Solutions",
+    title: "AI Facts | TechVerge Solution",
     description:
-      "Plain facts about TechVerge Solutions: who we serve, where we work, which services we build, typical timelines, how pricing starts, and how to contact us.",
+      "Plain facts about TechVerge Solution: who we serve, where we work, which services we build, typical timelines, how pricing starts, and how to contact us.",
   },
   {
     path: "/services",
-    title: "Services | TechVerge Solutions",
+    title: "Services | TechVerge Solution",
     description:
       "Explore TechVerge services: AI lead follow-up, inbound voice agents, business process automation, custom websites, mobile apps, and AI software for your team.",
   },
   {
     path: "/services/ai-automation",
-    title: "AI Lead Follow-Up Automation | TechVerge Solutions",
+    title: "AI Lead Follow-Up Automation | TechVerge Solution",
     description:
-      "TechVerge Solutions designs AI automation for lead follow-up and back-office tasks so new enquiries get answered fast and routine work stops piling up.",
+      "TechVerge Solution designs AI automation for lead follow-up and back-office tasks so new enquiries get answered fast and routine work stops piling up.",
     service: {
       name: "AI Automation for Lead Follow-Up and Back-Office Work",
       serviceType: "AI Lead Follow-Up Automation",
@@ -349,9 +349,9 @@ export const prerenderRoutes = [
   },
   {
     path: "/services/ai-voice-agents",
-    title: "AI Voice Agents 24/7 | TechVerge Solutions",
+    title: "AI Voice Agents 24/7 | TechVerge Solution",
     description:
-      "TechVerge Solutions builds AI voice agents that answer inbound calls, qualify callers, and book jobs around the clock—with clear handoffs to your team.",
+      "TechVerge Solution builds AI voice agents that answer inbound calls, qualify callers, and book jobs around the clock—with clear handoffs to your team.",
     service: {
       name: "AI Voice Agents That Answer Calls and Book Jobs 24/7",
       serviceType: "AI Voice Agents",
@@ -391,9 +391,9 @@ export const prerenderRoutes = [
   },
   {
     path: "/services/business-automation",
-    title: "Business Process Automation | TechVerge Solutions",
+    title: "Business Process Automation | TechVerge Solution",
     description:
-      "TechVerge Solutions connects forms, CRM, email, and calendars with business process automation built for service businesses that outgrow manual admin.",
+      "TechVerge Solution connects forms, CRM, email, and calendars with business process automation built for service businesses that outgrow manual admin.",
     service: {
       name: "Business Process Automation for Service Businesses",
       serviceType: "Business Process Automation",
@@ -433,7 +433,7 @@ export const prerenderRoutes = [
   },
   {
     path: "/services/ai-saas-development",
-    title: "Custom AI SaaS & Software | TechVerge Solutions",
+    title: "Custom AI SaaS & Software | TechVerge Solution",
     description:
       "We design and build custom AI-powered applications and internal tools for your workflows — software you own, not a TechVerge product you subscribe to.",
     service: {
@@ -475,9 +475,9 @@ export const prerenderRoutes = [
   },
   {
     path: "/services/custom-website-development",
-    title: "Custom Website Development | TechVerge Solutions",
+    title: "Custom Website Development | TechVerge Solution",
     description:
-      "Custom website design and development for businesses: responsive layouts, CMS integration, performance, and support from TechVerge Solutions.",
+      "Custom website design and development for businesses: responsive layouts, CMS integration, performance, and support from TechVerge Solution.",
     service: {
       name: "Custom Website Development",
       serviceType: "Custom Website Development",
@@ -485,9 +485,9 @@ export const prerenderRoutes = [
   },
   {
     path: "/services/mobile-app-development",
-    title: "Mobile App Development | TechVerge Solutions",
+    title: "Mobile App Development | TechVerge Solution",
     description:
-      "Custom iOS and Android app development from TechVerge Solutions: product planning, interface design, testing, launch, and practical handoff.",
+      "Custom iOS and Android app development from TechVerge Solution: product planning, interface design, testing, launch, and practical handoff.",
     service: {
       name: "Mobile App Development",
       serviceType: "Mobile App Development",
@@ -495,20 +495,20 @@ export const prerenderRoutes = [
   },
   {
     path: "/portfolio",
-    title: "Portfolio | TechVerge Solutions",
+    title: "Portfolio | TechVerge Solution",
     description:
       "Selected TechVerge case studies describing the operational problem, what we built, and the outcome — without invented metrics or unverified claims.",
   },
   {
     path: "/blog",
-    title: "AI Automation Guides | TechVerge Solutions",
+    title: "AI Automation Guides | TechVerge Solution",
     description:
       "Practical TechVerge guides on AI voice agents, lead follow-up, and workflow automation for small and service businesses — clear, specific, and jargon-light.",
   },
   {
     path: "/blog/ai-voice-agents-for-small-business-2026",
     title:
-      "AI Voice Agents for Small Businesses in 2026: Use Cases, Costs, and Limitations | TechVerge Solutions",
+      "AI Voice Agents for Small Businesses in 2026: Use Cases, Costs, and Limitations | TechVerge Solution",
     description:
       "A practical guide for US small and appointment-based businesses on AI voice agents in 2026 — suitable use cases, cost drivers, limitations, privacy basics, and when human handoff matters.",
     ogImage: `${SITE_URL}/images/blog/ai-voice-agents-hero.webp`,
@@ -560,27 +560,27 @@ export const prerenderRoutes = [
   },
   {
     path: "/locations",
-    title: "Locations | TechVerge Solutions",
+    title: "Locations | TechVerge Solution",
     description:
       "Cities we serve in the United States, United Kingdom, and UAE for AI automation, voice agents, websites, mobile apps, and custom software.",
   },
   {
     path: "/contact",
-    title: "Contact | TechVerge Solutions",
+    title: "Contact | TechVerge Solution",
     description:
-      "Contact TechVerge Solutions to discuss AI automation, voice agents, or custom software. Book a strategy call or describe how your workflow works today.",
+      "Contact TechVerge Solution to discuss AI automation, voice agents, or custom software. Book a strategy call or describe how your workflow works today.",
   },
   {
     path: "/privacy-policy",
-    title: "Privacy Policy | TechVerge Solutions",
+    title: "Privacy Policy | TechVerge Solution",
     description:
-      "How TechVerge Solutions collects, uses, stores, and protects personal information when you visit our site, request a quote, or use our services.",
+      "How TechVerge Solution collects, uses, stores, and protects personal information when you visit our site, request a quote, or use our services.",
   },
   {
     path: "/terms-of-service",
-    title: "Terms of Service | TechVerge Solutions",
+    title: "Terms of Service | TechVerge Solution",
     description:
-      "Terms for using TechVerge Solutions websites and commissioning custom AI automation, voice agents, websites, apps, and software for your business.",
+      "Terms for using TechVerge Solution websites and commissioning custom AI automation, voice agents, websites, apps, and software for your business.",
   },
 ];
 

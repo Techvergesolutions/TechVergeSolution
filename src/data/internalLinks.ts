@@ -13,7 +13,7 @@ export const HOMEPAGE_GUIDE_LINKS: InternalGuideLink[] = [
     slug: "ai-voice-agents-for-small-business-2026",
     anchor: "AI voice agents for small businesses in 2026",
     blurb:
-      "Use cases, cost drivers, limitations, and when human handoff matters for appointment-based teams.",
+      "Use cases, limitations, and when human handoff matters for appointment-based teams.",
   },
   {
     slug: "ai-automation-small-business-2026",
@@ -36,13 +36,13 @@ export const SERVICE_GUIDE_LINKS: Record<ServiceSlug, InternalGuideLink[]> = {
       slug: "ai-voice-agents-for-small-business-2026",
       anchor: "our guide to AI voice agents for small businesses",
       blurb:
-        "Where inbound agents fit, what they cost to build thoughtfully, and where they still fall short.",
+        "Where inbound agents fit, and where they still fall short.",
     },
     {
-      slug: "ai-automation-small-business-2026",
-      anchor: "AI automation workflows that pair well with voice coverage",
+      slug: "ai-voice-agents-for-small-businesses-how-they-work-cost",
+      anchor: "what AI voice agents cost in 2026",
       blurb:
-        "Lead follow-up and scheduling automations that often sit behind a voice or form intake layer.",
+        "Per-minute fees, setup, and the charges a headline quote usually leaves out.",
     },
   ],
   "ai-automation": [

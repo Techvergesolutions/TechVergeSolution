@@ -21,7 +21,7 @@ describe("dynamic blog HTML", () => {
     expect(response.headers.get("cache-control")).toBe("no-store");
     const raw = await response.text();
     const doc = new JSDOM(raw).window.document;
-    expect(doc.title).toBe("SEO title | TechVerge Solutions");
+    expect(doc.title).toBe("SEO title | TechVerge Solution");
     expect(doc.querySelector('meta[name="description"]')?.getAttribute("content")).toBe("SEO description");
     expect(doc.querySelectorAll('link[rel="canonical"]')).toHaveLength(1);
     expect(doc.querySelector('link[rel="canonical"]')?.getAttribute("href")).toMatch(/\/blog\/new-post$/);
@@ -41,7 +41,7 @@ describe("dynamic blog HTML", () => {
     state.post = { ...post, title: "Updated title", seo: { seoTitle: null, seoDescription: null, canonicalUrl: "https://example.com/original", noIndex: true }, faqs: [] };
     const response = await handler.fetch(new Request("https://example.com/api/blog-page?slug=new-post"));
     const doc = new JSDOM(await response.text()).window.document;
-    expect(doc.title).toBe("Updated title | TechVerge Solutions");
+    expect(doc.title).toBe("Updated title | TechVerge Solution");
     expect(doc.querySelector('meta[name="description"]')?.getAttribute("content")).toBe('A "useful" summary');
     expect(doc.querySelector('meta[name="robots"]')?.getAttribute("content")).toBe("noindex, follow");
     expect(doc.querySelector('link[rel="canonical"]')?.getAttribute("href")).toBe("https://example.com/original");

@@ -468,9 +468,9 @@ export async function prerenderMeta() {
   // Dedicated 404 shell (same SPA assets; client NotFound sets noindex)
   const notFoundRoute = {
     path: "/404",
-    title: "Page Not Found | TechVerge Solutions",
+    title: "Page Not Found | TechVerge Solution",
     description:
-      "The page you requested could not be found on TechVerge Solutions.",
+      "The page you requested could not be found on TechVerge Solution.",
   };
   let notFoundHtml = applyRouteMeta(templateHtml, notFoundRoute);
   notFoundHtml = upsertTag(notFoundHtml, {

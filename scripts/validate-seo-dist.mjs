@@ -219,7 +219,7 @@ export async function validateSeoDist(options = {}) {
       if (!ld.some((b) => b["@type"] === "FAQPage")) {
         fail(`${rel}: missing FAQPage JSON-LD on homepage`);
       }
-      if (!/What services does Tech Verge Solution offer/i.test(html)) {
+      if (!/What services does TechVerge Solution offer/i.test(html)) {
         fail(`${rel}: homepage missing services FAQ text for AI search`);
       }
       if (!/1209 Mountain Rd Pl NE #5036/i.test(html) || !/Albuquerque/i.test(html)) {
@@ -297,7 +297,7 @@ export async function validateSeoDist(options = {}) {
   }
 
   const llms = read("llms.txt");
-  if (!llms.includes("TechVerge Solutions") || !llms.includes("/sitemap.xml")) {
+  if (!llms.includes("TechVerge Solution") || !llms.includes("/sitemap.xml")) {
     fail("llms.txt missing required discovery links");
   }
   for (const requiredPath of [
