@@ -46,7 +46,7 @@ export function articleJsonLd(input: {
     path: input.path,
     datePublished: datePublished || "",
     dateModified: dateModified || datePublished || "",
-    imagePath: input.image?.trim() || "/og-image.webp",
+    imagePath: input.image?.trim() || "/og-logo.webp",
     authorName: input.authorName?.trim() || undefined,
   });
 }

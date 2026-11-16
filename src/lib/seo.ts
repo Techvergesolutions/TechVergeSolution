@@ -15,8 +15,8 @@ import { siteUrl, siteName } from "./seo/config";
 
 export const SITE_URL = siteUrl;
 export const SITE_NAME = siteName || ORG_NAME;
-export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.webp`;
-export const DEFAULT_OG_IMAGE_ALT = "TechVerge Solution — AI automation and custom software";
+export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-logo.webp`;
+export const DEFAULT_OG_IMAGE_ALT = "TechVerge Solution logo";
 
 export const ORGANIZATION_ID = `${SITE_URL}/#organization`;
 export const WEBSITE_ID = `${SITE_URL}/#website`;

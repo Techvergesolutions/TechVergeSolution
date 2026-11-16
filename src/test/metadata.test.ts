@@ -40,7 +40,7 @@ describe("buildMetadata", () => {
     expect(meta.description.length).toBeGreaterThanOrEqual(META_DESCRIPTION_MIN);
     expect(meta.description.length).toBeLessThanOrEqual(META_DESCRIPTION_MAX);
     expect(meta.alternates.canonical).toMatch(/^https:\/\/www\.techvergesolution\.com\//);
-    expect(meta.openGraph.images[0]).toContain("og-image");
+    expect(meta.openGraph.images[0]).toContain("og-logo.webp");
     expect(meta.twitter.card).toBe("summary_large_image");
   });
 });

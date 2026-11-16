@@ -8,9 +8,8 @@ import { loadEnv } from "vite";
 const env = loadEnv(process.env.SEO_BUILD_MODE || "production", process.cwd(), "NEXT_PUBLIC_");
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || env.NEXT_PUBLIC_SITE_URL || "https://www.techvergesolution.com").replace(/\/+$/, "");
 export const SITE_NAME = "TechVerge Solution";
-export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.webp`;
-export const DEFAULT_OG_IMAGE_ALT =
-  "TechVerge Solution — AI automation and custom software";
+export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-logo.webp`;
+export const DEFAULT_OG_IMAGE_ALT = "TechVerge Solution logo";
 
 export const ORG_DESCRIPTION =
   "Custom AI automation and voice agents for small businesses in the US, UK, and UAE—built by TechVerge Solution to cut manual work and catch more leads.";
