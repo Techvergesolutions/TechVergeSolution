@@ -71,6 +71,12 @@ export const SOCIAL_PROFILES = {
   instagram: "https://www.instagram.com/techvergsolutions/",
   facebook: "https://www.facebook.com/profile.php?id=61579426794497",
   github: "https://github.com/solutiontechverge-hub",
+  githubCompany: "https://github.com/Techvergesolutions",
+  youtube: "https://www.youtube.com/channel/UCyovYCoZLQHm3kirLo2l_SA",
+  tiktok: "https://www.tiktok.com/@techvergesolution",
+  x: "https://x.com/233abcl0",
+  pinterest: "https://www.pinterest.com/techvergesolution/",
+  wikipedia: "https://en.wikipedia.org/wiki/User:UmerArshadTech",
   trustpilot: "https://www.trustpilot.com/users/6ae4b71dd0b152fb750a51f5",
 } as const;
 
@@ -86,6 +92,12 @@ export const FOOTER_SOCIAL_LINKS: {
   { name: "Instagram", href: SOCIAL_PROFILES.instagram, key: "instagram" },
   { name: "Facebook", href: SOCIAL_PROFILES.facebook, key: "facebook" },
   { name: "GitHub", href: SOCIAL_PROFILES.github, key: "github" },
+  { name: "GitHub", href: SOCIAL_PROFILES.githubCompany, key: "githubCompany" },
+  { name: "YouTube", href: SOCIAL_PROFILES.youtube, key: "youtube" },
+  { name: "TikTok", href: SOCIAL_PROFILES.tiktok, key: "tiktok" },
+  { name: "X", href: SOCIAL_PROFILES.x, key: "x" },
+  { name: "Pinterest", href: SOCIAL_PROFILES.pinterest, key: "pinterest" },
+  { name: "Wikipedia", href: SOCIAL_PROFILES.wikipedia, key: "wikipedia" },
 ];
 
 const PLACEHOLDER = /TODO|PLACEHOLDER/i;

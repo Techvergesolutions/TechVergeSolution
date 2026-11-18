@@ -16,6 +16,12 @@ const organizationDetails = {
     "https://www.instagram.com/techvergsolutions/",
     "https://www.facebook.com/profile.php?id=61579426794497",
     "https://github.com/solutiontechverge-hub",
+    "https://github.com/Techvergesolutions",
+    "https://www.youtube.com/channel/UCyovYCoZLQHm3kirLo2l_SA",
+    "https://www.tiktok.com/@techvergesolution",
+    "https://x.com/233abcl0",
+    "https://www.pinterest.com/techvergesolution/",
+    "https://en.wikipedia.org/wiki/User:UmerArshadTech",
   ],
 };
 

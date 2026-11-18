@@ -1,4 +1,4 @@
-import { Facebook, Github, Instagram, Linkedin, MessageCircle } from "lucide-react";
+import { BookOpen, Facebook, Github, Instagram, Linkedin, MessageCircle, Youtube } from "lucide-react";
 import { Link } from "react-router-dom";
 import { BookingCta } from "@/components/cta/BookingCta";
 import { trackEvent } from "@/lib/analytics";
@@ -17,11 +17,41 @@ import {
 } from "@/data/organizationProfiles";
 import { AFFILIATION_DISCLAIMER } from "@/data/team";
 
+function TikTokIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M14.5 3c.4 2.4 1.8 4.1 4.1 4.5v2.4c-1.4 0-2.7-.4-3.9-1.2v6.6c0 3.3-2.6 5.7-5.8 5.7S3 18.6 3 15.3c0-3.2 2.5-5.6 5.7-5.7v2.5c-1.8.1-3.2 1.5-3.2 3.2 0 1.8 1.5 3.2 3.3 3.2s3.2-1.4 3.2-3.2V3h2.5Z" />
+    </svg>
+  );
+}
+
+function PinterestIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M12 2C6.5 2 2 6.4 2 11.8c0 4.2 2.6 7.8 6.3 9.1-.1-.8-.2-2 0-2.8.2-.7 1.3-5.4 1.3-5.4s-.3-.7-.3-1.6c0-1.5.9-2.6 2-2.6.9 0 1.4.7 1.4 1.5 0 .9-.6 2.3-.9 3.6-.3 1.1.5 1.9 1.6 1.9 1.9 0 3.2-2.4 3.2-5.3 0-2.2-1.5-3.8-4.2-3.8-3.1 0-5 2.3-5 4.8 0 .9.3 1.8.7 2.4.1.1.1.2.1.3l-.3 1.1c0 .2-.2.2-.4.1-1.4-.6-2-2.2-2-4 0-3 2.5-6.6 7.5-6.6 4 0 6.6 2.9 6.6 6 0 4.1-2.3 7.1-5.6 7.1-1.1 0-2.2-.6-2.6-1.3l-.7 2.7c-.3 1-1 2.2-1.4 3 .9.3 1.9.4 2.9.4 5.5 0 10-4.4 10-9.8C22 6.4 17.5 2 12 2Z" />
+    </svg>
+  );
+}
+
+function XIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M14.7 10.3 22.4 2h-1.8l-6.7 7.2L8.6 2H2.2l8.1 11.2L2.2 22h1.8l7.1-7.6L15.4 22h6.4l-7.1-11.7Zm-2.5 2.7-.8-1.1L4.6 3.3h2.8l5.3 7.1.8 1.1 6.9 9.2h-2.8l-5.4-7.7Z" />
+    </svg>
+  );
+}
+
 const socialIcons = {
   linkedin: Linkedin,
   instagram: Instagram,
   facebook: Facebook,
   github: Github,
+  githubCompany: Github,
+  youtube: Youtube,
+  tiktok: TikTokIcon,
+  x: XIcon,
+  pinterest: PinterestIcon,
+  wikipedia: BookOpen,
   trustpilot: Linkedin,
   whatsapp: MessageCircle,
 } as const;
@@ -125,7 +155,7 @@ export const Footer = () => {
             <div className="flex flex-wrap items-center gap-4 text-sm mb-5">
               {links.map(({ name, href, Icon }) => (
                 <a
-                  key={name}
+                  key={href}
                   href={href}
                   target="_blank"
                   rel="noopener noreferrer"
