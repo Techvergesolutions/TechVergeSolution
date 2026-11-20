@@ -14,6 +14,8 @@ import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { pageSeo } from "@/lib/seo";
 import { PageBreadcrumbs } from "@/components/PageBreadcrumbs";
 import { HOMEPAGE_GUIDE_LINKS } from "@/data/internalLinks";
+import { TrustedBrandsSection } from "@/components/landing/TrustedBrandsSection";
+import { WorkCompletedSection } from "@/components/landing/WorkCompletedSection";
 
 const About = () => {
   const seo = pageSeo.about;
@@ -41,9 +43,11 @@ const About = () => {
               </AnimatedSection>
             </div>
           </section>
+          <TrustedBrandsSection />
           <AboutWhoWeAre />
           <MarketsServed />
           <WhySection />
+          <WorkCompletedSection />
           <AboutToolsTimeline />
           <IndustriesSection />
           <ProcessSection />

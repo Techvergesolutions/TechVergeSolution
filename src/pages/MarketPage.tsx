@@ -7,6 +7,8 @@ import { Seo } from "@/components/Seo";
 import { sanityClient, urlForImage } from "@/lib/sanity";
 import { fetchSanityQuery } from "@/lib/sanity/queries";
 import NotFound from "./NotFound";
+import { TrustedBrandsSection } from "@/components/landing/TrustedBrandsSection";
+import { WorkCompletedSection } from "@/components/landing/WorkCompletedSection";
 
 export default function MarketPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -27,15 +29,21 @@ export default function MarketPage() {
   return <>
     <Seo title={title} description={description} path={`/markets/${encodeURIComponent(slug)}`} image={image} canonicalUrl={page.seo?.canonicalUrl || undefined} noindex={page.seo?.noIndex ?? false} />
     <div className="min-h-screen bg-background overflow-x-hidden"><Navbar /><main>
-      <article className="section-container max-w-4xl pt-32 pb-20 md:pt-40 md:pb-28">
+      <header className="section-container max-w-4xl pt-32 md:pt-40">
         <h1 className="font-display text-4xl md:text-5xl font-bold mb-6">{page.title}</h1>
         {page.summary && <p className="text-muted-foreground text-lg leading-relaxed mb-10">{page.summary}</p>}
+      </header>
+      <TrustedBrandsSection />
+      <article className="section-container max-w-4xl pb-8">
         <PortableTextContent value={page.body} />
+      </article>
+      <WorkCompletedSection />
+      <div className="section-container max-w-4xl pb-20 md:pb-28">
         {testimonials.length > 0 && <section className="mt-14"><h2 className="font-display text-3xl font-bold mb-6">Testimonials</h2>
           <div className="space-y-6">{testimonials.map((item) => <blockquote key={item._key} className="border-l-4 border-primary/40 pl-4"><p>{item.quote}</p><footer className="mt-2 text-muted-foreground">{item.name}{item.role ? `, ${item.role}` : ""}</footer></blockquote>)}</div>
         </section>}
         <section className="mt-14 rounded-2xl border border-border/60 bg-card/40 p-8"><Link to="/contact" className="inline-flex rounded-xl bg-primary px-6 py-3 font-semibold text-primary-foreground">Contact Us</Link></section>
-      </article>
+      </div>
     </main><Footer /></div>
   </>;
 }

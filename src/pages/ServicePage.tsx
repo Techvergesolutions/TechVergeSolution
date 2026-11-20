@@ -15,6 +15,8 @@ import { ServiceGuides } from "@/components/services/ServiceGuides";
 import { trackEvent } from "@/lib/analytics";
 import { getServiceBySlug } from "@/data/services";
 import { ServicePageLayout } from "@/components/services/ServicePageLayout";
+import { TrustedBrandsSection } from "@/components/landing/TrustedBrandsSection";
+import { WorkCompletedSection } from "@/components/landing/WorkCompletedSection";
 
 export default function ServicePage() {
   const { slug } = useParams<{ slug: string }>();
@@ -86,6 +88,7 @@ export default function ServicePage() {
             <h1 className="font-display text-4xl md:text-5xl font-bold mt-6 mb-6">{service.heroHeading || name}</h1>
             {service.shortDescription && <p className="text-muted-foreground text-lg leading-relaxed">{service.shortDescription}</p>}
           </header>
+          <TrustedBrandsSection />
           {service.body?.length ? <PortableTextContent value={service.body} /> : null}
           {!!service.industries?.some((item) => item.title?.trim()) && <section className="mt-14">
             <h2 className="font-display text-3xl font-bold mb-6">Industries</h2>
@@ -106,6 +109,7 @@ export default function ServicePage() {
             <div className="space-y-6">{faq.map((item, index) => <div key={`${index}-${item.question}`}><h3 className="font-bold text-lg mb-2">{item.question}</h3><p className="text-muted-foreground">{item.answer}</p></div>)}</div>
           </section>}
           <ServiceGuides serviceId={service._id} manual={service.relatedPosts ?? []} />
+          <WorkCompletedSection />
           <section className="mt-14 rounded-2xl border border-border/60 bg-card/40 p-8">
             <h2 className="font-display text-2xl font-bold mb-4">Discuss Your Project</h2>
             <Link to="/contact" onClick={() => trackEvent("service_cta_click", { service_name: name })} className="inline-flex rounded-xl bg-primary px-6 py-3 font-semibold text-primary-foreground">Contact Us</Link>

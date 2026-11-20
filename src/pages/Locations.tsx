@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { Link } from "react-router-dom";
 import { MapPin } from "lucide-react";
 import { Navbar } from "@/components/landing/Navbar";
@@ -13,6 +14,8 @@ import {
   ORG_ADDRESS_DISPLAY,
   ORG_SECONDARY_ADDRESS_DISPLAY,
 } from "@/data/organizationProfiles";
+import { TrustedBrandsSection } from "@/components/landing/TrustedBrandsSection";
+import { WorkCompletedSection } from "@/components/landing/WorkCompletedSection";
 
 const Locations = () => {
   const seo = pageSeo.locations;
@@ -50,10 +53,13 @@ const Locations = () => {
             </div>
           </section>
 
+          <TrustedBrandsSection />
+
           <section className="relative pb-16 md:pb-24">
             <div className="section-container relative z-10 space-y-14 md:space-y-20">
               {SERVICE_MARKETS.map((market, index) => (
-                <AnimatedSection key={market.id} delay={index * 0.04}>
+                <Fragment key={market.id}>
+                <AnimatedSection delay={index * 0.04}>
                   <div
                     id={market.id}
                     className="scroll-mt-28 rounded-2xl border border-border/50 bg-card/30 p-6 md:p-10"
@@ -88,6 +94,8 @@ const Locations = () => {
                     </ul>
                   </div>
                 </AnimatedSection>
+                {index === 0 ? <WorkCompletedSection /> : null}
+                </Fragment>
               ))}
 
               <AnimatedSection className="max-w-2xl mx-auto text-center">

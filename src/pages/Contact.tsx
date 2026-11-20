@@ -5,6 +5,8 @@ import { Seo } from "@/components/Seo";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { pageSeo } from "@/lib/seo";
 import { PageBreadcrumbs } from "@/components/PageBreadcrumbs";
+import { TrustedBrandsSection } from "@/components/landing/TrustedBrandsSection";
+import { WorkCompletedSection } from "@/components/landing/WorkCompletedSection";
 
 const Contact = () => {
   const seo = pageSeo.contact;
@@ -32,7 +34,9 @@ const Contact = () => {
               </AnimatedSection>
             </div>
           </section>
+          <TrustedBrandsSection />
           <ContactSection hidePageHeader />
+          <WorkCompletedSection />
         </main>
         <Footer />
       </div>

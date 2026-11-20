@@ -17,6 +17,8 @@ import { RelatedServices } from "./RelatedServices";
 import { ServiceCta } from "./ServiceCta";
 import { RelatedGuidesSection } from "@/components/blog/RelatedGuidesSection";
 import { SERVICE_GUIDE_LINKS } from "@/data/internalLinks";
+import { TrustedBrandsSection } from "@/components/landing/TrustedBrandsSection";
+import { WorkCompletedSection } from "@/components/landing/WorkCompletedSection";
 
 interface ServicePageLayoutProps {
   service: ServiceConfig;
@@ -43,6 +45,7 @@ export function ServicePageLayout({ service, breadcrumb }: ServicePageLayoutProp
   return (
     <>
       <ServiceHero service={service} breadcrumb={breadcrumb} />
+      <TrustedBrandsSection />
       <ServiceProblem problem={service.problem} />
       <ServiceBuilds builds={service.builds} />
       <ServiceDeliverables deliverables={service.deliverables} />
@@ -53,6 +56,7 @@ export function ServicePageLayout({ service, breadcrumb }: ServicePageLayoutProp
         description="We select proven tools when they fit your build — Next.js, AI integrations, Node.js, Supabase, and the connectors your workflow needs. These are implementation choices, not a packaged TechVerge platform."
       />
       <ServiceHowItWorks howItWorks={service.howItWorks} />
+      <WorkCompletedSection />
       <ServiceUseCases useCases={service.useCases} />
       <ServiceIntegrations integrations={service.integrations} />
       <CaseStudiesSummary

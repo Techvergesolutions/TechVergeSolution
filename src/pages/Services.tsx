@@ -10,6 +10,8 @@ import { TechStackBadges } from "@/components/services/TechStackBadges";
 import { CaseStudiesSummary } from "@/components/services/CaseStudiesSummary";
 import { pageSeo } from "@/lib/seo";
 import { PageBreadcrumbs } from "@/components/PageBreadcrumbs";
+import { TrustedBrandsSection } from "@/components/landing/TrustedBrandsSection";
+import { WorkCompletedSection } from "@/components/landing/WorkCompletedSection";
 
 const Services = () => {
   const seo = pageSeo.services;
@@ -58,6 +60,8 @@ const Services = () => {
             </div>
           </section>
 
+          <TrustedBrandsSection />
+
           {/* 2. Core Features → /services/:slug */}
           <section className="section-container py-16 md:py-20">
             <h2 className="font-display text-3xl font-bold text-center mb-10">Our Services</h2>
@@ -69,6 +73,8 @@ const Services = () => {
             title="Tools We Use When Building"
             description="Next.js, AI integrations, Node.js, Supabase, and more — selected as implementation tools for your custom build, not as TechVerge product names."
           />
+
+          <WorkCompletedSection />
 
           {/* 4. Case Studies summary */}
           <CaseStudiesSummary

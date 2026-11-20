@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { Navbar } from "@/components/landing/Navbar";
 import { HeroSection } from "@/components/landing/HeroSection";
+import { TrustedBrandsSection } from "@/components/landing/TrustedBrandsSection";
+import { WorkCompletedSection } from "@/components/landing/WorkCompletedSection";
 import { CapabilitiesSection } from "@/components/landing/CapabilitiesSection";
 import { ProblemSection } from "@/components/landing/ProblemSection";
 import { SolutionsSection } from "@/components/landing/SolutionsSection";
@@ -32,10 +34,12 @@ const Index = () => {
         <Navbar />
         <main>
           <HeroSection />
+          <TrustedBrandsSection />
           <HomeAboutSection />
           <HomeFaqSection />
           <CapabilitiesSection />
           <ProblemSection />
+          <WorkCompletedSection />
           <SolutionsSection />
           <ProcessSection />
           <LatestPosts />

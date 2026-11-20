@@ -9,6 +9,8 @@ import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { pageSeo } from "@/lib/seo";
 import { useServices } from "@/hooks/useServices";
 import { PageBreadcrumbs } from "@/components/PageBreadcrumbs";
+import { TrustedBrandsSection } from "@/components/landing/TrustedBrandsSection";
+import { WorkCompletedSection } from "@/components/landing/WorkCompletedSection";
 
 const Portfolio = () => {
   const seo = pageSeo.portfolio;
@@ -47,7 +49,9 @@ const Portfolio = () => {
               </AnimatedSection>
             </div>
           </section>
+          <TrustedBrandsSection />
           <PortfolioSection showAllByDefault hidePageHeader />
+          <WorkCompletedSection />
 
           <section className="relative py-12 md:py-16 overflow-hidden border-t border-border/40">
             <div className="section-container relative z-10">
